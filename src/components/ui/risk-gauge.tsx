@@ -32,11 +32,11 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <div className="relative" style={{ width: size, height: size / 2 + 20 }}>
+    <div className="flex flex-col items-center space-y-6">
+      <div className="relative" style={{ width: size, height: size / 2 + 50 }}>
         <svg
           width={size}
-          height={size / 2 + 20}
+          height={size / 2 + 50}
           className="overflow-visible"
         >
           {/* Background arc */}
@@ -64,35 +64,14 @@ export const RiskGauge: React.FC<RiskGaugeProps> = ({
             }}
           />
           
-          {/* Needle */}
-          <line
-            x1={size / 2}
-            y1={size / 2}
-            x2={size / 2 + Math.cos((value / 100) * Math.PI - Math.PI / 2) * (radius - 10)}
-            y2={size / 2 + Math.sin((value / 100) * Math.PI - Math.PI / 2) * (radius - 10)}
-            stroke="#1E40AF"
-            strokeWidth="3"
-            strokeLinecap="round"
-            className="transition-all duration-1000 ease-out"
-          />
-          
-          {/* Needle center */}
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r="6"
-            fill="#1E40AF"
-            stroke="white"
-            strokeWidth="2"
-          />
         </svg>
         
-        {/* Value display */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center">
-          <div className="text-3xl font-bold text-gray-900">
+        {/* Value display - positioned with proper spacing */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-center w-full px-4">
+          <div className="text-4xl font-bold text-gray-900 mb-1">
             {Math.round(value)}%
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-lg font-medium text-gray-600">
             {getRiskLevel(value)}
           </div>
         </div>

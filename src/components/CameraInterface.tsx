@@ -19,34 +19,31 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   });
   const [isCapturing, setIsCapturing] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [qualityCheck, setQualityCheck] = useState<{
-    blur: "pass" | "fail";
-    exposure: "pass" | "fail";
-    coverage: "pass" | "fail";
-    artifacts: "pass" | "fail";
-  } | null>(null);
   const [riskScore, setRiskScore] = useState<number | null>(null);
   const [riskLevel, setRiskLevel] = useState<"Low" | "Medium" | "High" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const runQualityCheck = () => {
-    setIsCapturing(true);
-    setTimeout(() => {
-      setQualityCheck({
-        blur: Math.random() > 0.3 ? "pass" : "fail",
-        exposure: Math.random() > 0.2 ? "pass" : "fail",
-        coverage: Math.random() > 0.4 ? "pass" : "fail",
-        artifacts: Math.random() > 0.1 ? "pass" : "fail",
-      });
-      setIsCapturing(false);
-    }, 1000);
-  };
 
   const handleInputChange = (field: string, value: string) => {
+    // Trim whitespace and ensure proper formatting for numeric fields
+    let processedValue = value.trim();
+    
+    // For numeric fields, remove any non-numeric characters
+    if (field === 'age' || field === 'systolicBP' || field === 'diastolicBP') {
+      // For blood pressure fields, only allow integers (no decimals)
+      if (field === 'systolicBP' || field === 'diastolicBP') {
+        processedValue = processedValue.replace(/[^0-9]/g, '');
+      } else {
+        // For age, allow decimals
+        processedValue = processedValue.replace(/[^0-9.]/g, '');
+      }
+    }
+    
     setPatientData(prev => ({
       ...prev,
-      [field]: value
+      [field]: processedValue
     }));
     setError(null);
   };
@@ -56,9 +53,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
     if (!file) return;
     const objectUrl = URL.createObjectURL(file);
     setCapturedImage(objectUrl);
-    setQualityCheck(null);
     setError(null);
-    runQualityCheck();
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -67,9 +62,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
     if (!file) return;
     const objectUrl = URL.createObjectURL(file);
     setCapturedImage(objectUrl);
-    setQualityCheck(null);
     setError(null);
-    runQualityCheck();
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -78,22 +71,38 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
   const handleRetake = () => {
     setCapturedImage(null);
-    setQualityCheck(null);
     setRiskScore(null);
     setRiskLevel(null);
     setError(null);
   };
 
-  const calculateRiskScore = () => {
+  const calculateRiskScore = async () => {
     // Validate inputs
     if (!patientData.age || !patientData.systolicBP || !patientData.diastolicBP) {
       setError("Please fill in all patient data fields");
       return;
     }
 
+    if (!capturedImage) {
+      setError("Please upload an image first");
+      return;
+    }
+
     const age = parseInt(patientData.age);
     const systolicBP = parseFloat(patientData.systolicBP);
     const diastolicBP = parseFloat(patientData.diastolicBP);
+
+    // Debug logging
+    console.log("Input values:", {
+      age: patientData.age,
+      systolicBP: patientData.systolicBP,
+      diastolicBP: patientData.diastolicBP
+    });
+    console.log("Parsed values:", {
+      age,
+      systolicBP,
+      diastolicBP
+    });
 
     if (isNaN(age) || isNaN(systolicBP) || isNaN(diastolicBP)) {
       setError("Please enter valid numeric values");
@@ -105,46 +114,72 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
       return;
     }
 
-    if (systolicBP < 50 || systolicBP > 300 || diastolicBP < 30 || diastolicBP > 200) {
-      setError("Please enter valid blood pressure values");
+    // More specific blood pressure validation with better error messages
+    if (systolicBP < 50 || systolicBP > 300) {
+      setError(`Systolic blood pressure must be between 50-300 mmHg. You entered: ${systolicBP}`);
       return;
     }
 
-    // Dummy risk score calculation based on patient data
-    let baseRisk = 0;
-    
-    // Age factor
-    if (age < 40) baseRisk += 10;
-    else if (age < 60) baseRisk += 25;
-    else if (age < 80) baseRisk += 45;
-    else baseRisk += 65;
-    
-    // Blood pressure factor
-    if (systolicBP > 180 || diastolicBP > 110) baseRisk += 30;
-    else if (systolicBP > 160 || diastolicBP > 100) baseRisk += 20;
-    else if (systolicBP > 140 || diastolicBP > 90) baseRisk += 10;
-    
-    // Add some randomness for demo purposes
-    const randomFactor = (Math.random() - 0.5) * 20;
-    const finalRisk = Math.max(5, Math.min(95, baseRisk + randomFactor));
-    
-    setRiskScore(finalRisk / 100); // Convert to 0-1 scale
-    
-    // Determine risk level based on score
-    if (finalRisk < 30) {
-      setRiskLevel("Low");
-    } else if (finalRisk < 60) {
-      setRiskLevel("Medium");
-    } else if (finalRisk < 80) {
-      setRiskLevel("High");
-    } else {
-      setRiskLevel("High");
+    if (diastolicBP < 30 || diastolicBP > 200) {
+      setError(`Diastolic blood pressure must be between 30-200 mmHg. You entered: ${diastolicBP}`);
+      return;
     }
-    
-    setError(null);
+
+    // Additional validation: diastolic should be less than systolic
+    if (diastolicBP >= systolicBP) {
+      setError("Diastolic blood pressure must be less than systolic blood pressure");
+      return;
+    }
+
+    // Validate that both values are positive integers (no decimals for BP)
+    if (systolicBP % 1 !== 0 || diastolicBP % 1 !== 0) {
+      setError("Blood pressure values should be whole numbers (no decimals)");
+      return;
+    }
+
+    try {
+      setError(null);
+      setIsCalculating(true);
+      
+      // Convert image URL to File object
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const file = new File([blob], "retinal_image.jpg", { type: "image/jpeg" });
+
+      // Create FormData for the API request
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("age", age.toString());
+      formData.append("systolic_bp", systolicBP.toString());
+      formData.append("diastolic_bp", diastolicBP.toString());
+
+      // Call the FastAPI backend
+      const apiResponse = await fetch("http://localhost:8000/predict-risk", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!apiResponse.ok) {
+        const errorData = await apiResponse.json();
+        throw new Error(errorData.detail || "Failed to calculate risk score");
+      }
+
+      const result = await apiResponse.json();
+      
+      if (result.success) {
+        setRiskScore(result.risk_score / 100); // Convert percentage back to 0-1 scale
+        setRiskLevel(result.risk_level);
+      } else {
+        throw new Error("Failed to get risk assessment result");
+      }
+    } catch (error) {
+      console.error("Error calculating risk score:", error);
+      setError(error instanceof Error ? error.message : "Failed to calculate risk score. Please try again.");
+    } finally {
+      setIsCalculating(false);
+    }
   };
 
-  const isQualityGood = qualityCheck && Object.values(qualityCheck).every(check => check === "pass");
   const isFormValid = patientData.age && patientData.systolicBP && patientData.diastolicBP;
 
   return (
@@ -192,11 +227,13 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                   <Input
                     id="systolicBP"
                     type="number"
-                    placeholder="Enter systolic BP"
+                    placeholder="Enter systolic BP (50-300)"
                     value={patientData.systolicBP}
                     onChange={(e) => handleInputChange("systolicBP", e.target.value)}
                     min="50"
                     max="300"
+                    step="1"
+                    required
                   />
                 </div>
                 
@@ -205,11 +242,13 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                   <Input
                     id="diastolicBP"
                     type="number"
-                    placeholder="Enter diastolic BP"
+                    placeholder="Enter diastolic BP (30-200)"
                     value={patientData.diastolicBP}
                     onChange={(e) => handleInputChange("diastolicBP", e.target.value)}
                     min="30"
                     max="200"
+                    step="1"
+                    required
                   />
                 </div>
               </CardContent>
@@ -279,11 +318,20 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     )}
                     <Button 
                       onClick={calculateRiskScore}
-                      disabled={!isFormValid}
+                      disabled={!isFormValid || isCalculating}
                       className="bg-primary hover:bg-primary/90"
                     >
-                      <Calculator className="w-4 h-4 mr-2" />
-                      Calculate Risk Score
+                      {isCalculating ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Analyzing...
+                        </>
+                      ) : (
+                        <>
+                          <Calculator className="w-4 h-4 mr-2" />
+                          Calculate Risk Score
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -302,131 +350,101 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
         {/* Risk Score Results */}
         {riskScore !== null && riskLevel && (
-          <Card>
-            <CardHeader>
+          <Card className="overflow-hidden shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-xl">Result</CardTitle>
+                <CardTitle className="text-2xl font-bold text-gray-900">Risk Assessment Result</CardTitle>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="hover:bg-white/50">
                     <Mail className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="hover:bg-white/50">
                     <Printer className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="hover:bg-white/50">
                     <User className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center space-y-8">
-                {/* Risk Gauge */}
-                <RiskGauge value={riskScore * 100} size={300} strokeWidth={25} />
+            <CardContent className="p-8">
+              <div className="flex flex-col lg:flex-row items-center gap-8">
+                {/* Left Side - Risk Gauge */}
+                <div className="flex-shrink-0">
+                  <RiskGauge value={riskScore * 100} size={280} strokeWidth={20} />
+                </div>
                 
-                {/* Risk Details Card */}
-                <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm w-full max-w-md">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-gray-900 mb-2">
-                      {Math.round(riskScore * 100)}%
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      10-year risk of CV event
-                    </div>
-                  </div>
-                </div>
-
-                {/* Risk Level Badge */}
-                <div className={`inline-flex items-center px-6 py-3 rounded-full text-lg font-medium ${
-                  riskLevel === "Low" 
-                    ? "bg-green-100 text-green-800" 
-                    : riskLevel === "Medium"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-red-100 text-red-800"
-                }`}>
-                  {riskLevel} Risk
-                </div>
-
-                {/* Risk Factors */}
-                <div className="w-full max-w-2xl">
-                  <h4 className="font-medium text-gray-900 mb-4 text-center">Risk Factors Analyzed:</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      Retinal vessel analysis
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      Carotid intima-media thickness
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      Brain stroke indicators
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      Pulse wave velocity (age & BP)
+                {/* Right Side - Risk Details */}
+                <div className="flex-1 space-y-6">
+                  {/* Risk Percentage Card */}
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+                    <div className="text-center">
+                      <div className="text-5xl font-bold text-gray-900 mb-2">
+                        {Math.round(riskScore * 100)}%
+                      </div>
+                      <div className="text-base text-gray-600 font-medium">
+                        Stroke Risk Assessment
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Warning for high risk */}
-                {riskLevel === "High" && (
-                  <Alert className="w-full max-w-2xl">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      High risk detected. Please consult with a healthcare professional immediately.
-                    </AlertDescription>
-                  </Alert>
-                )}
+                  {/* Risk Level Badge */}
+                  <div className="flex justify-center">
+                    <div className={`inline-flex items-center px-8 py-4 rounded-full text-xl font-semibold shadow-lg ${
+                      riskLevel === "Low" 
+                        ? "bg-green-100 text-green-800 border-2 border-green-200" 
+                        : riskLevel === "Medium"
+                        ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-200"
+                        : "bg-red-100 text-red-800 border-2 border-red-200"
+                    }`}>
+                      {riskLevel} Risk
+                    </div>
+                  </div>
+
+                  {/* Risk Factors */}
+                  <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
+                      Risk Factors Analyzed
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-sm text-gray-700">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <span>Retinal vessel analysis</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-700">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <span>Brain stroke indicators</span>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-sm text-gray-700">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <span>Carotid intima-media thickness</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-gray-700">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
+                          <span>Estimated Pulse wave velocity</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Warning for high risk */}
+                  {riskLevel === "High" && (
+                    <Alert className="w-full">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        High risk detected. Please consult with a healthcare professional immediately.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Quality Check Results */}
-        {qualityCheck && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {isQualityGood ? (
-                  <CheckCircle className="w-5 h-5 text-success" />
-                ) : (
-                  <AlertTriangle className="w-5 h-5 text-warning" />
-                )}
-                Image Quality Assessment
-              </CardTitle>
-              <CardDescription>
-                Automated quality checks for optimal analysis results
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(qualityCheck).map(([check, status]) => (
-                  <div key={check} className="flex items-center gap-2">
-                    {status === "pass" ? (
-                      <CheckCircle className="w-4 h-4 text-success" />
-                    ) : (
-                      <AlertTriangle className="w-4 h-4 text-destructive" />
-                    )}
-                    <span className="text-sm capitalize">
-                      {check === "artifacts" ? "No Artifacts" : check}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              
-              {!isQualityGood && (
-                <Alert className="mt-4">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    Image quality issues detected. Consider retaking the image for optimal analysis results.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );

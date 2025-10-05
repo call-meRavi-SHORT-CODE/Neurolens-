@@ -17,7 +17,7 @@ import timm
 
 
 
-def predict_eye_stroke(img_path, model_path="backend/models/eye_stroke.h5", class_names=["NORMAL", "RAO", "CRVO", "BRVO"]):
+def predict_eye_stroke(img_path, model_path="C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//eye_stroke.h5", class_names=["NORMAL", "RAO", "CRVO", "BRVO"]):
     """
     Load an image, preprocess, predict class using the given model,
     and return the scaled value.
@@ -59,9 +59,9 @@ def predict_eye_stroke(img_path, model_path="backend/models/eye_stroke.h5", clas
 
 # MODEL 2
 
-model_path = "backend/models/cimt_model.pth"
+model_path = "C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//cimt_model.pth"
 
-def predict_cimt(eye_image_path, model_path="backend/models/cimt_model.pth", eye_side='left', output_type='regression'):
+def predict_cimt(eye_image_path, model_path="C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//cimt_model.pth", eye_side='left', output_type='regression'):
     # ---------------------------
     # Define device
     # ---------------------------
@@ -72,8 +72,8 @@ def predict_cimt(eye_image_path, model_path="backend/models/cimt_model.pth", eye
     # Define model architecture
     # ---------------------------
     class SiameseSeResNeXt(nn.Module):
-        def __init__(self, dropout_p=0.3, spatial_dropout_p=0.3, output_type='regression'):
-            super(SiameseSeResNeXt, self).__init__()
+        def _init_(self, dropout_p=0.3, spatial_dropout_p=0.3, output_type='regression'):
+            super(SiameseSeResNeXt, self)._init_()
             self.output_type = output_type
             model_name = 'seresnext50_32x4d'
             base_model = timm.create_model(model_name, pretrained=True)
@@ -163,7 +163,7 @@ def predict_cimt(eye_image_path, model_path="backend/models/cimt_model.pth", eye
 # MODEL 3
 
 
-def predict_brain_stroke(img_path: str, pth_path: str, size: int = 512) -> float:
+def predict_brain_stroke(img_path: str, pth_path: str = "C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//brain_stroke.pth", size: int = 512) -> float:
     """
     Predict C class (normal/abnormal) from image and return scaled value.
     Normal → 0.2, Abnormal → 0.9
@@ -197,8 +197,8 @@ def predict_brain_stroke(img_path: str, pth_path: str, size: int = 512) -> float
         return m, m.num_features
 
     class HeadCls(nn.Module):
-        def __init__(self, in_features, n_classes):
-            super().__init__()
+        def _init_(self, in_features, n_classes):
+            super()._init_()
             self.fc = nn.Linear(in_features, n_classes)
         def forward(self, x): return self.fc(x)
 
