@@ -160,6 +160,52 @@ def predict_cimt(eye_image_path, model_path="C://Users//USER//Downloads//NEUROLE
 
 
 
+
+
+
+# MODEL 4
+
+def calculate_ePWV_scale(age, SBP, DBP):
+    MBP = DBP + 0.4 * (SBP - DBP)
+    ePWV = (0.587
+            - (0.402 * age)
+            + (4.560 * 0.001 * (age ** 2))
+            - (2.621 * 0.00001 * (age ** 2) * MBP)
+            + (3.176 * 0.001 * age * MBP)
+            - (1.832 * 0.01 * MBP))
+
+    if age < 40:
+        if ePWV < 7:
+            scale = 0.2
+        elif 7 <= ePWV <= 8:
+            scale = 0.55
+        else:  # ePWV > 8
+            scale = 0.9
+    elif 40 <= age <= 59:
+        if ePWV < 9:
+            scale = 0.2
+        elif 9 <= ePWV <= 10:
+            scale = 0.55
+        else:  # ePWV > 10
+            scale = 0.9
+    else:  # age >= 60
+        if ePWV < 11:
+            scale = 0.2
+        elif 11 <= ePWV <= 12:
+            scale = 0.55
+        else:  # ePWV > 12
+            scale = 0.9
+
+
+    return scale
+
+
+
+
+
+
+
+
 # MODEL 3
 
 
@@ -230,40 +276,3 @@ def predict_brain_stroke(img_path: str, pth_path: str = "C://Users//USER//Downlo
         return 0.9
 
 
-
-
-
-# MODEL 4
-
-def calculate_ePWV_scale(age, SBP, DBP):
-    MBP = DBP + 0.4 * (SBP - DBP)
-    ePWV = (0.587
-            - (0.402 * age)
-            + (4.560 * 0.001 * (age ** 2))
-            - (2.621 * 0.00001 * (age ** 2) * MBP)
-            + (3.176 * 0.001 * age * MBP)
-            - (1.832 * 0.01 * MBP))
-
-    if age < 40:
-        if ePWV < 7:
-            scale = 0.2
-        elif 7 <= ePWV <= 8:
-            scale = 0.55
-        else:  # ePWV > 8
-            scale = 0.9
-    elif 40 <= age <= 59:
-        if ePWV < 9:
-            scale = 0.2
-        elif 9 <= ePWV <= 10:
-            scale = 0.55
-        else:  # ePWV > 10
-            scale = 0.9
-    else:  # age >= 60
-        if ePWV < 11:
-            scale = 0.2
-        elif 11 <= ePWV <= 12:
-            scale = 0.55
-        else:  # ePWV > 12
-            scale = 0.9
-
-    return scale
