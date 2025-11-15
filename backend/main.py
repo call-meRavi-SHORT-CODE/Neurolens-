@@ -31,6 +31,6 @@ def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float, brain_m
 
 
 # Example usage
-if _name_ == "_main_":
+if __name__ == "__main__":
     result = predict_stroke_risk("C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//test.jpg", 20, 120, 80)
     print(f"Stroke Risk Score: {result:.3f}")

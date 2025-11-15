@@ -76,7 +76,27 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
     setError(null);
   };
 
+  const testBackendConnection = async () => {
+    try {
+      console.log("Testing backend connection...");
+      const response = await fetch("http://localhost:8000/test");
+      const data = await response.json();
+      console.log("Backend test response:", data);
+      return true;
+    } catch (error) {
+      console.error("Backend connection test failed:", error);
+      return false;
+    }
+  };
+
   const calculateRiskScore = async () => {
+    // Test backend connection first
+    const isBackendConnected = await testBackendConnection();
+    if (!isBackendConnected) {
+      setError("Cannot connect to backend server. Please make sure the backend is running on http://localhost:8000");
+      return;
+    }
+
     // Validate inputs
     if (!patientData.age || !patientData.systolicBP || !patientData.diastolicBP) {
       setError("Please fill in all patient data fields");
@@ -154,10 +174,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
       formData.append("diastolic_bp", diastolicBP.toString());
 
       // Call the FastAPI backend
+      console.log("Making API request to: http://localhost:8000/predict-risk");
       const apiResponse = await fetch("http://localhost:8000/predict-risk", {
         method: "POST",
         body: formData,
       });
+      console.log("API response status:", apiResponse.status);
 
       if (!apiResponse.ok) {
         const errorData = await apiResponse.json();

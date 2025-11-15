@@ -72,8 +72,8 @@ def predict_cimt(eye_image_path, model_path="C://Users//USER//Downloads//NEUROLE
     # Define model architecture
     # ---------------------------
     class SiameseSeResNeXt(nn.Module):
-        def _init_(self, dropout_p=0.3, spatial_dropout_p=0.3, output_type='regression'):
-            super(SiameseSeResNeXt, self)._init_()
+        def __init__(self, dropout_p=0.3, spatial_dropout_p=0.3, output_type='regression'):
+            super(SiameseSeResNeXt, self).__init__()
             self.output_type = output_type
             model_name = 'seresnext50_32x4d'
             base_model = timm.create_model(model_name, pretrained=True)
@@ -197,8 +197,8 @@ def predict_brain_stroke(img_path: str, pth_path: str = "C://Users//USER//Downlo
         return m, m.num_features
 
     class HeadCls(nn.Module):
-        def _init_(self, in_features, n_classes):
-            super()._init_()
+        def __init__(self, in_features, n_classes):
+            super().__init__()
             self.fc = nn.Linear(in_features, n_classes)
         def forward(self, x): return self.fc(x)
 

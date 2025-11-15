@@ -3,14 +3,44 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import tempfile
 import os
-from models import predict_eye_stroke, predict_cimt, predict_brain_stroke, calculate_ePWV_scale
+import sys
+
+# Add the backend directory to Python path
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, backend_dir)
+
+# Lazy import models to avoid loading during startup
+models_loaded = False
+
+def load_models():
+    global models_loaded
+    if not models_loaded:
+        try:
+            from models import predict_eye_stroke, predict_cimt, predict_brain_stroke, calculate_ePWV_scale
+            globals()['predict_eye_stroke'] = predict_eye_stroke
+            globals()['predict_cimt'] = predict_cimt
+            globals()['predict_brain_stroke'] = predict_brain_stroke
+            globals()['calculate_ePWV_scale'] = calculate_ePWV_scale
+            models_loaded = True
+            print("Models loaded successfully!")
+        except Exception as e:
+            print(f"Error loading models: {e}")
+            raise e
 
 app = FastAPI(title="NeuroLens Risk Assessment API", version="1.0.0")
+
+# Add startup event to preload models
+@app.on_event("startup")
+async def startup_event():
+    print("Starting up NeuroLens API...")
+    print("Preloading models in background...")
+    # Don't block startup, models will be loaded on first request
+    print("API ready! Models will load on first prediction request.")
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "http://127.0.0.1:3000", "http://127.0.0.1:5173", "http://127.0.0.1:8080"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +60,9 @@ def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float) -> floa
         float: Stroke risk score between 0.0 and 1.0
     """
     try:
+        # Load models if not already loaded
+        load_models()
+        
         # Get predictions from all models
         ER = predict_eye_stroke(img_path)  # Eye Retinal
         CR = predict_cimt(img_path)  # Carotid Intima-Media Thickness
@@ -46,6 +79,10 @@ def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float) -> floa
 @app.get("/")
 async def root():
     return {"message": "NeuroLens Risk Assessment API is running"}
+
+@app.get("/test")
+async def test_endpoint():
+    return {"status": "success", "message": "Backend is accessible from frontend"}
 
 @app.post("/predict-risk")
 async def predict_risk(
@@ -117,7 +154,7 @@ async def predict_risk(
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

@@ -309,7 +309,7 @@ export const Dashboard = () => {
             className="h-16 border-accent text-accent hover:bg-accent/10"
           >
             <Camera className="w-5 h-5 mr-2" />
-            Camera
+            Stroke Risk Analysis
           </Button>
           <Button 
             onClick={() => setActiveView("patientList")} 
