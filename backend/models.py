@@ -158,8 +158,6 @@ def predict_cimt(eye_image_path, model_path="C://Users//USER//Downloads//NEUROLE
     return scaled_value
 
 
-
-
 # MODEL 3
 
 
@@ -232,7 +230,6 @@ def predict_brain_stroke(img_path: str, pth_path: str = "C://Users//USER//Downlo
 
 
 
-
 # MODEL 4
 
 def calculate_ePWV_scale(age, SBP, DBP):
@@ -266,4 +263,16 @@ def calculate_ePWV_scale(age, SBP, DBP):
         else:  # ePWV > 12
             scale = 0.9
 
+
     return scale
+
+
+
+
+
+
+
+
+
+
+
