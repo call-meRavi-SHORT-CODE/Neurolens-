@@ -82,89 +82,89 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-foreground">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4 py-8">
+      <Card className="w-full max-w-md bg-slate-900 border border-slate-800 shadow-xl rounded-2xl">
+        <CardHeader className="text-center border-b border-slate-800 pb-6">
+          <CardTitle className="text-3xl font-bold text-white mb-2">
             NeuroLens Signup
           </CardTitle>
-          <p className="text-muted-foreground">
+          <p className="text-slate-400">
             Create your doctor account
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name" className="text-slate-300">Full Name</Label>
               <Input
                 id="name"
                 type="text"
                 placeholder="Dr. John Doe"
                 {...register('name')}
-                className={errors.name ? 'border-destructive' : ''}
+                className={`h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all ${errors.name ? 'border-red-500' : ''}`}
               />
               {errors.name && (
-                <p className="text-sm text-destructive">{errors.name.message}</p>
+                <p className="text-sm text-red-400">{errors.name.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-slate-300">Email</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="doctor@hospital.com"
                 {...register('email')}
-                className={errors.email ? 'border-destructive' : ''}
+                className={`h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all ${errors.email ? 'border-red-500' : ''}`}
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-red-400">{errors.email.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="hospital_name">Hospital Name</Label>
+              <Label htmlFor="hospital_name" className="text-slate-300">Hospital Name</Label>
               <Input
                 id="hospital_name"
                 type="text"
                 placeholder="General Hospital"
                 {...register('hospital_name')}
-                className={errors.hospital_name ? 'border-destructive' : ''}
+                className={`h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all ${errors.hospital_name ? 'border-red-500' : ''}`}
               />
               {errors.hospital_name && (
-                <p className="text-sm text-destructive">{errors.hospital_name.message}</p>
+                <p className="text-sm text-red-400">{errors.hospital_name.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="hospital_location">Hospital Location</Label>
+              <Label htmlFor="hospital_location" className="text-slate-300">Hospital Location</Label>
               <Input
                 id="hospital_location"
                 type="text"
                 placeholder="New York, NY"
                 {...register('hospital_location')}
-                className={errors.hospital_location ? 'border-destructive' : ''}
+                className={`h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all ${errors.hospital_location ? 'border-red-500' : ''}`}
               />
               {errors.hospital_location && (
-                <p className="text-sm text-destructive">{errors.hospital_location.message}</p>
+                <p className="text-sm text-red-400">{errors.hospital_location.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-slate-300">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   {...register('password')}
-                  className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
+                  className={`h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all pr-10 ${errors.password ? 'border-red-500' : ''}`}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-slate-400 hover:text-slate-300"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -175,25 +175,25 @@ const Signup = () => {
                 </Button>
               </div>
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-sm text-red-400">{errors.password.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-slate-300">Confirm Password</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm your password"
                   {...register('confirmPassword')}
-                  className={errors.confirmPassword ? 'border-destructive pr-10' : 'pr-10'}
+                  className={`h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-slate-400 hover:text-slate-300"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
@@ -204,13 +204,13 @@ const Signup = () => {
                 </Button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                <p className="text-sm text-red-400">{errors.confirmPassword.message}</p>
               )}
             </div>
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all"
               disabled={loading}
             >
               {loading ? 'Creating Account...' : 'Create Account'}
@@ -218,11 +218,11 @@ const Signup = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-slate-400">
               Already have an account?{' '}
               <Link
                 to="/login"
-                className="font-medium text-primary hover:underline"
+                className="font-medium text-cyan-400 hover:text-cyan-300 hover:underline"
               >
                 Sign in
               </Link>
