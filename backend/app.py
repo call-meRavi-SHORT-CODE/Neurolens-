@@ -46,9 +46,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float) -> float:
+def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float) -> dict:
     """
-    Accepts image, age, SBP, DBP as input and returns stroke risk score (0.0 to 1.0)
+    Accepts image, age, SBP, DBP as input and returns detailed stroke risk analysis
     
     Args:
         img_path: Path to the input image
@@ -57,7 +57,7 @@ def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float) -> floa
         DBP: Diastolic Blood Pressure
     
     Returns:
-        float: Stroke risk score between 0.0 and 1.0
+        dict: Detailed analysis including individual model results and final risk score
     """
     try:
         # Load models if not already loaded
@@ -72,7 +72,14 @@ def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float) -> floa
         # Calculate weighted stroke risk score
         StrokeRiskScore = 0.22*ER + 0.35*CR + 0.10*BR + 0.33*PR
         
-        return StrokeRiskScore
+        return {
+            "final_risk": StrokeRiskScore,
+            "eye_risk": ER,
+            "cimt_value": CR,
+            "brain_risk": BR,
+            "epwv_value": PR,
+            "retinal_occlusion_prob": ER  # Using eye risk as retinal occlusion probability
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error in risk prediction: {str(e)}")
 
@@ -116,23 +123,32 @@ async def predict_risk(
         
         try:
             # Predict stroke risk
-            risk_score = predict_stroke_risk(tmp_file_path, age, systolic_bp, diastolic_bp)
+            results = predict_stroke_risk(tmp_file_path, age, systolic_bp, diastolic_bp)
             
             # Convert to percentage and round to 2 decimal places
-            risk_percentage = round(risk_score * 100, 2)
+            risk_percentage = round(results["final_risk"] * 100, 2)
             
             # Determine risk level
             if risk_percentage < 30:
                 risk_level = "Low"
+                recommendation = "Your stroke risk is low. Maintain a healthy lifestyle with regular exercise, balanced diet, and routine check-ups."
             elif risk_percentage < 60:
                 risk_level = "Medium"
+                recommendation = "Your stroke risk is moderate. Consider lifestyle modifications, regular monitoring of blood pressure, and consultation with your healthcare provider."
             else:
                 risk_level = "High"
+                recommendation = "Your stroke risk is high. Immediate medical attention recommended. Please consult with a healthcare professional for comprehensive evaluation and treatment plan."
             
             return JSONResponse(content={
                 "success": True,
                 "risk_score": risk_percentage,
                 "risk_level": risk_level,
+                "cimt_value": round(results["cimt_value"], 3),
+                "epwv_value": round(results["epwv_value"], 2),
+                "retinal_occlusion_prob": round(results["retinal_occlusion_prob"], 3),
+                "eye_risk": round(results["eye_risk"], 3),
+                "brain_risk": round(results["brain_risk"], 3),
+                "recommendation": recommendation,
                 "risk_factors": {
                     "retinal_vessel_analysis": True,
                     "brain_stroke_indicators": True,

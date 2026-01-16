@@ -11,7 +11,7 @@ import { PatientDetails } from "./PatientDetails";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Patient, Visit, getPatients, getVisits, searchPatients } from "@/lib/database";
+import { Patient, Visit, VisitWithPatient, getPatients, getVisits, searchPatients } from "@/lib/database";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,7 @@ export const Dashboard = () => {
   const [activeView, setActiveView] = useState<"dashboard" | "newPatient" | "newVisit" | "camera" | "patientDetails" | "patientList">("dashboard");
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [visits, setVisits] = useState<Visit[]>([]);
+  const [visits, setVisits] = useState<VisitWithPatient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(false);
@@ -128,12 +128,25 @@ export const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
+  // Refresh data when returning to dashboard
+  useEffect(() => {
+    if (activeView === "dashboard") {
+      fetchDashboardData();
+    }
+  }, [activeView]);
+
   if (activeView === "newPatient") {
-    return <PatientRegistration onBack={() => setActiveView("dashboard")} />;
+    return <PatientRegistration onBack={() => {
+      setActiveView("dashboard");
+      fetchDashboardData(); // Refresh after patient registration
+    }} />;
   }
 
   if (activeView === "newVisit") {
-    return <NewVisit onBack={() => setActiveView("dashboard")} />;
+    return <NewVisit onBack={() => {
+      setActiveView("dashboard");
+      fetchDashboardData(); // Refresh after visit creation
+    }} />;
   }
 
   if (activeView === "camera") {
@@ -390,7 +403,7 @@ export const Dashboard = () => {
             ) : (
               <div className="space-y-4">
                 {visits.slice(0, 5).map((visit, index) => {
-                  const patient = patients.find(p => p.id === visit.patient_id);
+                  const patient = visit.patient || patients.find(p => p.id === visit.patient_id);
                   const age = patient ? getAge(patient) : null;
                   
                   return (

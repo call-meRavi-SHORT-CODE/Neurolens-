@@ -1,45 +1,132 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, User, Calendar, Phone, MapPin, Activity, TrendingUp } from "lucide-react";
-import { Patient, Visit, getPatientById, getVisitsByPatient, parseDiseases } from "@/lib/database";
-import { toast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ArrowLeft, User, Calendar, Phone, MapPin, Activity, TrendingUp, Edit, Save, X, Users, Search as SearchIcon } from "lucide-react";
+import { Patient, Visit, getPatients, getPatientById, getVisitsByPatient, updatePatient, searchPatients } from "@/lib/database";
+import { toast } from "sonner";
 
 interface PatientDetailsProps {
-  patientId: string;
+  patientId?: string;
   onBack: () => void;
 }
 
 export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
-  const [patient, setPatient] = useState<Patient | null>(null);
+  const [allPatients, setAllPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [visits, setVisits] = useState<Visit[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editFormData, setEditFormData] = useState<Partial<Patient>>({});
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
   useEffect(() => {
-    const fetchPatientData = async () => {
-      try {
-        const [patientData, visitsData] = await Promise.all([
-          getPatientById(patientId),
-          getVisitsByPatient(patientId)
-        ]);
-        setPatient(patientData);
-        setVisits(visitsData || []);
-      } catch (error) {
-        console.error('Error fetching patient data:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load patient details",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchAllPatients();
+  }, []);
 
-    fetchPatientData();
+  useEffect(() => {
+    if (patientId) {
+      loadPatientDetails(patientId);
+    }
   }, [patientId]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm, allPatients]);
+
+  const fetchAllPatients = async () => {
+    setLoading(true);
+    try {
+      const patientsData = await getPatients();
+      setAllPatients(patientsData || []);
+      setFilteredPatients(patientsData || []);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+      toast("Failed to load patients");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (searchTerm.length >= 2) {
+      try {
+        const results = await searchPatients(searchTerm);
+        setFilteredPatients(results || []);
+      } catch (error) {
+        console.error('Search error:', error);
+      }
+    } else {
+      setFilteredPatients(allPatients);
+    }
+  };
+
+  const loadPatientDetails = async (id: string) => {
+    try {
+      const [patientData, visitsData] = await Promise.all([
+        getPatientById(id),
+        getVisitsByPatient(id)
+      ]);
+      setSelectedPatient(patientData);
+      setVisits(visitsData || []);
+      setEditFormData(patientData);
+      setShowDetailsDialog(true);
+    } catch (error) {
+      console.error('Error fetching patient data:', error);
+      toast("Failed to load patient details");
+    }
+  };
+
+  const handlePatientClick = (patient: Patient) => {
+    loadPatientDetails(patient.id);
+  };
+
+  const handleEditClick = () => {
+    if (selectedPatient) {
+      setEditFormData(selectedPatient);
+      setIsEditing(true);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    if (selectedPatient) {
+      setEditFormData(selectedPatient);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedPatient || !editFormData) return;
+
+    try {
+      const updatedPatient = await updatePatient(selectedPatient.id, {
+        name: editFormData.name,
+        age: editFormData.age,
+        gender: editFormData.gender,
+        phone: editFormData.phone,
+        address: editFormData.address,
+        notes: editFormData.notes
+      });
+
+      setSelectedPatient(updatedPatient);
+      setIsEditing(false);
+      
+      // Refresh the patients list
+      await fetchAllPatients();
+      
+      toast("Patient information updated successfully");
+    } catch (error) {
+      console.error('Error updating patient:', error);
+      toast("Failed to update patient information");
+    }
+  };
 
   const getAge = (patient: Patient) => {
     if (patient.age) return patient.age;
@@ -78,288 +165,278 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
       <div className="min-h-screen bg-background p-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading patient details...</p>
+          <p className="text-muted-foreground">Loading patients...</p>
         </div>
       </div>
     );
   }
 
-  if (!patient) {
-    return (
-      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground">Patient not found</p>
-          <Button onClick={onBack} className="mt-4">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Go Back
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
+  // Main Patient List View
   return (
     <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
         <div className="flex items-center gap-4">
           <Button variant="ghost" onClick={onBack} className="p-2">
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{patient.name}</h1>
-            <p className="text-muted-foreground">Patient Details & Visit History</p>
+            <h1 className="text-2xl font-bold">Patient Directory</h1>
+            <p className="text-muted-foreground">View and edit patient information</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Patient Information */}
-          <div className="lg:col-span-1 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="w-5 h-5" />
-                  Patient Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                    <User className="w-8 h-8 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-lg">{patient.name}</h3>
-                  <p className="text-sm text-muted-foreground">MRN: {patient.mrn}</p>
-                </div>
+        {/* Search Bar */}
+        <div className="relative">
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            placeholder="Search patients by name, MRN, or phone..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
 
-                <Separator />
-
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Age:</span>
-                    <span className="font-medium">{getAge(patient)} years</span>
-                  </div>
-                  {patient.gender && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Gender:</span>
-                      <span className="font-medium capitalize">{patient.gender}</span>
+        {/* Patient Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredPatients.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <Users className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
+              <p className="text-muted-foreground">
+                {searchTerm ? `No patients found matching "${searchTerm}"` : "No patients registered yet"}
+              </p>
+            </div>
+          ) : (
+            filteredPatients.map((patient) => (
+              <Card 
+                key={patient.id} 
+                className="cursor-pointer hover:bg-accent/5 transition-colors"
+                onClick={() => handlePatientClick(patient)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <User className="w-6 h-6 text-primary" />
                     </div>
-                  )}
-                  {patient.dob && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">DOB:</span>
-                      <span className="font-medium">{new Date(patient.dob).toLocaleDateString()}</span>
-                    </div>
-                  )}
-                  {patient.blood_group && (
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Blood Group:</span>
-                      <Badge variant="outline">{patient.blood_group}</Badge>
-                    </div>
-                  )}
-                </div>
-
-                {patient.phone && (
-                  <>
-                    <Separator />
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">{patient.phone}</span>
-                    </div>
-                  </>
-                )}
-
-                {patient.address && (
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
-                    <span className="text-sm">{patient.address}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Physical Measurements */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Physical Measurements</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {patient.height && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Height:</span>
-                    <span className="font-medium">{patient.height} cm</span>
-                  </div>
-                )}
-                {patient.weight && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Weight:</span>
-                    <span className="font-medium">{patient.weight} kg</span>
-                  </div>
-                )}
-                {patient.bmi && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">BMI:</span>
-                    <div className="text-right">
-                      <span className="font-medium">{patient.bmi}</span>
-                      <Badge 
-                        variant="outline" 
-                        className={`ml-2 ${getBMICategory(patient.bmi).color}`}
-                      >
-                        {getBMICategory(patient.bmi).category}
-                      </Badge>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-medium truncate">{patient.name}</h4>
+                      <p className="text-sm text-muted-foreground truncate">MRN: {patient.mrn}</p>
                     </div>
                   </div>
-                )}
-                {patient.physician && (
-                  <>
-                    <Separator />
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Physician:</span>
-                      <span className="font-medium">{patient.physician}</span>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Medical Information */}
-            {(patient.allergies || patient.notes) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Medical Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {patient.allergies && (
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground">Allergies:</span>
-                      <p className="text-sm mt-1">{patient.allergies}</p>
-                    </div>
-                  )}
-                  {patient.notes && (
-                    <div>
-                      <span className="text-sm font-medium text-muted-foreground">Notes:</span>
-                      <p className="text-sm mt-1">{patient.notes}</p>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {getAge(patient) && (
+                      <Badge variant="outline">{getAge(patient)} years</Badge>
+                    )}
+                    {patient.gender && (
+                      <Badge variant="outline" className="capitalize">{patient.gender}</Badge>
+                    )}
+                  </div>
+                  {patient.phone && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Phone className="w-3 h-3" />
+                      <span className="truncate">{patient.phone}</span>
                     </div>
                   )}
                 </CardContent>
               </Card>
-            )}
-          </div>
-
-          {/* Visit History */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
-                  Visit History ({visits.length})
-                </CardTitle>
-                <CardDescription>Complete medical visit timeline</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {visits.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Activity className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
-                    <p className="text-muted-foreground">No visits recorded yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {visits.map((visit, index) => (
-                      <Card key={visit.id} className="border-l-4 border-l-primary/20">
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start mb-3">
-                            <div>
-                              <h4 className="font-medium">{visit.reason}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                {formatDate(visit.visit_date)}
-                              </p>
-                            </div>
-                            <Badge variant="outline">
-                              Visit #{visits.length - index}
-                            </Badge>
-                          </div>
-
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
-                            <div className="text-center p-2 bg-muted/30 rounded">
-                              <p className="text-xs text-muted-foreground">BP</p>
-                              <p className="font-medium">
-                                {visit.systolic}/{visit.diastolic}
-                              </p>
-                            </div>
-                            {visit.heart_rate && (
-                              <div className="text-center p-2 bg-muted/30 rounded">
-                                <p className="text-xs text-muted-foreground">HR</p>
-                                <p className="font-medium">{visit.heart_rate} bpm</p>
-                              </div>
-                            )}
-                            {visit.mean_bp && (
-                              <div className="text-center p-2 bg-muted/30 rounded">
-                                <p className="text-xs text-muted-foreground">Mean BP</p>
-                                <p className="font-medium">{visit.mean_bp} mmHg</p>
-                              </div>
-                            )}
-                            {visit.epwv_result && (
-                              <div className="text-center p-2 bg-primary/10 rounded">
-                                <p className="text-xs text-muted-foreground">ePWV</p>
-                                <p className="font-medium text-primary">
-                                  {visit.epwv_result} m/s
-                                </p>
-                              </div>
-                            )}
-                          </div>
-
-                          {visit.diseases && (
-                            <div className="mb-3">
-                              <p className="text-xs text-muted-foreground mb-1">Medical History:</p>
-                              <div className="flex flex-wrap gap-1">
-                                {parseDiseases(visit.diseases).map((disease) => (
-                                  <Badge key={disease} variant="secondary" className="text-xs">
-                                    {disease}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {visit.technician && (
-                            <p className="text-xs text-muted-foreground">
-                              Technician: {visit.technician}
-                              {visit.location && ` • Location: ${visit.location}`}
-                            </p>
-                          )}
-
-                          {visit.epwv_risk_level && (
-                            <div className="mt-2 p-2 bg-accent/10 rounded">
-                              <div className="flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4" />
-                                <span className="text-sm font-medium">
-                                  Risk Level: 
-                                </span>
-                                <Badge 
-                                  variant={
-                                    visit.epwv_risk_level === "High" ? "destructive" : 
-                                    visit.epwv_risk_level === "Medium" ? "default" : 
-                                    "secondary"
-                                  }
-                                  className={visit.epwv_risk_level === "Medium" ? "bg-warning text-warning-foreground" : ""}
-                                >
-                                  {visit.epwv_risk_level}
-                                </Badge>
-                              </div>
-                              {visit.epwv_recommendations && (
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  {visit.epwv_recommendations}
-                                </p>
-                              )}
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+            ))
+          )}
         </div>
+
+        {/* Patient Details Dialog */}
+        <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center justify-between">
+                <span>{selectedPatient?.name}</span>
+                {!isEditing && (
+                  <Button onClick={handleEditClick} variant="outline" size="sm">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
+                )}
+              </DialogTitle>
+              <DialogDescription>
+                MRN: {selectedPatient?.mrn}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-6">
+              {isEditing ? (
+                /* Edit Form */
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-name">Full Name *</Label>
+                      <Input
+                        id="edit-name"
+                        value={editFormData.name || ""}
+                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-age">Age</Label>
+                      <Input
+                        id="edit-age"
+                        type="number"
+                        value={editFormData.age || ""}
+                        onChange={(e) => setEditFormData({ ...editFormData, age: parseInt(e.target.value) || undefined })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-gender">Gender</Label>
+                      <Select 
+                        value={editFormData.gender || ""} 
+                        onValueChange={(value) => setEditFormData({ ...editFormData, gender: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Male">Male</SelectItem>
+                          <SelectItem value="Female">Female</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-phone">Phone Number</Label>
+                      <Input
+                        id="edit-phone"
+                        value={editFormData.phone || ""}
+                        onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-address">Address</Label>
+                    <Input
+                      id="edit-address"
+                      value={editFormData.address || ""}
+                      onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-notes">Medical Notes</Label>
+                    <Input
+                      id="edit-notes"
+                      value={editFormData.notes || ""}
+                      onChange={(e) => setEditFormData({ ...editFormData, notes: e.target.value })}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-end gap-3 pt-4">
+                    <Button variant="outline" onClick={handleCancelEdit}>
+                      <X className="w-4 h-4 mr-2" />
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSaveEdit}>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Changes
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                /* View Mode */
+                selectedPatient && (
+                  <div className="space-y-6">
+                    {/* Patient Information */}
+                    <div>
+                      <h3 className="font-semibold mb-3">Patient Information</h3>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Age:</span>
+                          <p className="font-medium">{getAge(selectedPatient)} years</p>
+                        </div>
+                        {selectedPatient.gender && (
+                          <div>
+                            <span className="text-muted-foreground">Gender:</span>
+                            <p className="font-medium capitalize">{selectedPatient.gender}</p>
+                          </div>
+                        )}
+                        {selectedPatient.phone && (
+                          <div>
+                            <span className="text-muted-foreground">Phone:</span>
+                            <p className="font-medium">{selectedPatient.phone}</p>
+                          </div>
+                        )}
+                        {selectedPatient.address && (
+                          <div className="col-span-2">
+                            <span className="text-muted-foreground">Address:</span>
+                            <p className="font-medium">{selectedPatient.address}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {selectedPatient.notes && (
+                      <>
+                        <Separator />
+                        <div>
+                          <h3 className="font-semibold mb-2">Medical Notes</h3>
+                          <p className="text-sm">{selectedPatient.notes}</p>
+                        </div>
+                      </>
+                    )}
+
+                    <Separator />
+
+                    {/* Visit History */}
+                    <div>
+                      <h3 className="font-semibold mb-3 flex items-center gap-2">
+                        <Activity className="w-4 h-4" />
+                        Visit History ({visits.length})
+                      </h3>
+                      {visits.length === 0 ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">No visits recorded</p>
+                      ) : (
+                        <div className="space-y-3 max-h-96 overflow-y-auto">
+                          {visits.map((visit) => (
+                            <Card key={visit.id} className="border-l-4 border-l-primary">
+                              <CardContent className="p-3">
+                                <div className="flex justify-between items-start mb-2">
+                                  <div>
+                                    <p className="font-medium text-sm">{visit.reason}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {formatDate(visit.visit_date)}
+                                    </p>
+                                  </div>
+                                  {visit.epwv_risk_level && (
+                                    <Badge 
+                                      variant={
+                                        visit.epwv_risk_level === "High" ? "destructive" : 
+                                        visit.epwv_risk_level === "Medium" ? "default" : 
+                                        "secondary"
+                                      }
+                                    >
+                                      {visit.epwv_risk_level} Risk
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                  <div>
+                                    <span className="text-muted-foreground">BP:</span>
+                                    <span className="ml-1 font-medium">{visit.systolic}/{visit.diastolic} mmHg</span>
+                                  </div>
+                                  {visit.epwv_result && (
+                                    <div>
+                                      <span className="text-muted-foreground">ePWV:</span>
+                                      <span className="ml-1 font-medium">{visit.epwv_result} m/s</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

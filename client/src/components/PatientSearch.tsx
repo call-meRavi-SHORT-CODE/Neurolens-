@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, User } from "lucide-react";
-import { Patient, searchPatients } from "@/lib/database";
+import { Patient, searchPatients, getPatients } from "@/lib/database";
 import { toast } from "@/hooks/use-toast";
 
 interface PatientSearchProps {
@@ -15,15 +15,40 @@ interface PatientSearchProps {
 export const PatientSearch = ({ onPatientSelect, onNewPatient }: PatientSearchProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [allPatients, setAllPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  // Load all patients on component mount
+  useEffect(() => {
+    loadAllPatients();
+  }, []);
+
+  // Filter patients when search term changes
   useEffect(() => {
     if (searchTerm.length >= 2) {
       handleSearch();
     } else {
-      setPatients([]);
+      setPatients(allPatients);
     }
-  }, [searchTerm]);
+  }, [searchTerm, allPatients]);
+
+  const loadAllPatients = async () => {
+    setLoading(true);
+    try {
+      const results = await getPatients();
+      setAllPatients(results || []);
+      setPatients(results || []);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load patients",
+        variant: "destructive"
+      });
+      console.error('Load patients error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async () => {
     setLoading(true);
@@ -84,18 +109,25 @@ export const PatientSearch = ({ onPatientSelect, onNewPatient }: PatientSearchPr
         </div>
 
         {loading && (
-          <div className="text-center py-4 text-muted-foreground">
-            Searching patients...
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading patients...</p>
           </div>
         )}
 
-        {searchTerm.length > 0 && searchTerm.length < 2 && (
-          <div className="text-center py-4 text-muted-foreground">
-            Type at least 2 characters to search...
+        {!loading && patients.length === 0 && searchTerm.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>No patients registered yet</p>
+            <p className="text-sm mt-2">Create your first patient to get started</p>
+            <Button onClick={onNewPatient} className="mt-4" size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Create First Patient
+            </Button>
           </div>
         )}
 
-        {patients.length > 0 && (
+        {!loading && patients.length > 0 && (
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {patients.map((patient) => (
               <Card key={patient.id} className="cursor-pointer hover:bg-accent/5 transition-colors">
@@ -130,12 +162,12 @@ export const PatientSearch = ({ onPatientSelect, onNewPatient }: PatientSearchPr
           </div>
         )}
 
-        {searchTerm.length >= 2 && patients.length === 0 && !loading && (
+        {!loading && searchTerm.length > 0 && patients.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No patients found matching "{searchTerm}"</p>
-            <p className="text-sm">Create a new patient instead?</p>
-            <Button onClick={onNewPatient} className="mt-3" size="sm">
+            <p className="text-sm mt-2">Try a different search or create a new patient</p>
+            <Button onClick={onNewPatient} className="mt-4" size="sm">
               <Plus className="w-4 h-4 mr-2" />
               Create New Patient
             </Button>

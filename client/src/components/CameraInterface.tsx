@@ -5,25 +5,59 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RiskGauge } from "@/components/ui/risk-gauge";
-import { ArrowLeft, RotateCcw, CheckCircle, AlertTriangle, Upload, Heart, Calculator, Mail, Printer, User } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, RotateCcw, CheckCircle, AlertTriangle, Upload, Heart, Calculator, Download, FileText, Activity, TrendingUp } from "lucide-react";
+import { PatientSearch } from "./PatientSearch";
+import { Patient } from "@/lib/database";
+import { useNavigate } from "react-router-dom";
 
 interface CameraInterfaceProps {
   onBack: () => void;
 }
 
+interface StrokeRiskResults {
+  success: boolean;
+  risk_score: number; // 0-100
+  risk_level: "Low" | "Medium" | "High";
+  cimt_value: number;
+  epwv_value: number;
+  retinal_occlusion_prob: number;
+  eye_risk: number;
+  brain_risk: number;
+  recommendation: string;
+}
+
 export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState<"patient" | "capture" | "results">("patient");
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  
   const [patientData, setPatientData] = useState({
     age: "",
     systolicBP: "",
     diastolicBP: ""
   });
-  const [isCapturing, setIsCapturing] = useState(false);
+  
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [riskScore, setRiskScore] = useState<number | null>(null);
-  const [riskLevel, setRiskLevel] = useState<"Low" | "Medium" | "High" | null>(null);
+  const [results, setResults] = useState<StrokeRiskResults | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handlePatientSelect = (patient: Patient) => {
+    setSelectedPatient(patient);
+    // Pre-fill age if available
+    if (patient.age) {
+      setPatientData(prev => ({ ...prev, age: patient.age!.toString() }));
+    }
+    setCurrentStep("capture");
+  };
+
+  const handleNewPatient = () => {
+    navigate("/new-patient");
+  };
 
 
   const handleInputChange = (field: string, value: string) => {
@@ -112,18 +146,6 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
     const systolicBP = parseFloat(patientData.systolicBP);
     const diastolicBP = parseFloat(patientData.diastolicBP);
 
-    // Debug logging
-    console.log("Input values:", {
-      age: patientData.age,
-      systolicBP: patientData.systolicBP,
-      diastolicBP: patientData.diastolicBP
-    });
-    console.log("Parsed values:", {
-      age,
-      systolicBP,
-      diastolicBP
-    });
-
     if (isNaN(age) || isNaN(systolicBP) || isNaN(diastolicBP)) {
       setError("Please enter valid numeric values");
       return;
@@ -134,26 +156,18 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
       return;
     }
 
-    // More specific blood pressure validation with better error messages
     if (systolicBP < 50 || systolicBP > 300) {
-      setError(`Systolic blood pressure must be between 50-300 mmHg. You entered: ${systolicBP}`);
+      setError(`Systolic blood pressure must be between 50-300 mmHg`);
       return;
     }
 
     if (diastolicBP < 30 || diastolicBP > 200) {
-      setError(`Diastolic blood pressure must be between 30-200 mmHg. You entered: ${diastolicBP}`);
+      setError(`Diastolic blood pressure must be between 30-200 mmHg`);
       return;
     }
 
-    // Additional validation: diastolic should be less than systolic
     if (diastolicBP >= systolicBP) {
       setError("Diastolic blood pressure must be less than systolic blood pressure");
-      return;
-    }
-
-    // Validate that both values are positive integers (no decimals for BP)
-    if (systolicBP % 1 !== 0 || diastolicBP % 1 !== 0) {
-      setError("Blood pressure values should be whole numbers (no decimals)");
       return;
     }
 
@@ -174,12 +188,10 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
       formData.append("diastolic_bp", diastolicBP.toString());
 
       // Call the FastAPI backend
-      console.log("Making API request to: http://localhost:8000/predict-risk");
       const apiResponse = await fetch("http://localhost:8000/predict-risk", {
         method: "POST",
         body: formData,
       });
-      console.log("API response status:", apiResponse.status);
 
       if (!apiResponse.ok) {
         const errorData = await apiResponse.json();
@@ -189,8 +201,8 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
       const result = await apiResponse.json();
       
       if (result.success) {
-        setRiskScore(result.risk_score / 100); // Convert percentage back to 0-1 scale
-        setRiskLevel(result.risk_level);
+        setResults(result);
+        setCurrentStep("results");
       } else {
         throw new Error("Failed to get risk assessment result");
       }
@@ -202,18 +214,252 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
     }
   };
 
-  const isFormValid = patientData.age && patientData.systolicBP && patientData.diastolicBP;
+  const downloadPDFReport = async () => {
+    if (!results || !selectedPatient) return;
+    
+    // TODO: Implement PDF generation
+    alert("PDF download functionality will be implemented");
+  };
 
+  const getAge = (patient: Patient) => {
+    if (patient.age) return patient.age;
+    if (patient.dob) {
+      const today = new Date();
+      const birthDate = new Date(patient.dob);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
+    return null;
+  };
+
+  // Patient Selection Step
+  if (currentStep === "patient") {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={onBack} className="p-2">
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold">Stroke Risk Analysis</h1>
+              <p className="text-muted-foreground">Select a patient to begin analysis</p>
+            </div>
+          </div>
+          
+          <PatientSearch 
+            onPatientSelect={handlePatientSelect}
+            onNewPatient={handleNewPatient}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Results Step
+  if (currentStep === "results" && results && selectedPatient) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-6xl mx-auto space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => setCurrentStep("capture")} className="p-2">
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold">Stroke Risk Analysis Results</h1>
+                <p className="text-muted-foreground">{selectedPatient.name} • {getAge(selectedPatient)}y • {new Date().toLocaleDateString()}</p>
+              </div>
+            </div>
+            <Button onClick={downloadPDFReport} className="gap-2">
+              <Download className="w-4 h-4" />
+              Download PDF Report
+            </Button>
+          </div>
+
+          {/* Risk Category Card */}
+          <Card className="border-2">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+              <CardTitle className="text-2xl">Risk Category</CardTitle>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center gap-8">
+                <RiskGauge value={results.risk_score} size={200} strokeWidth={16} />
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-6xl font-bold text-gray-900">{Math.round(results.risk_score)}%</div>
+                    <p className="text-lg text-muted-foreground mt-2">Final Stroke Risk Score</p>
+                  </div>
+                  <div className={`inline-flex items-center px-6 py-3 rounded-full text-xl font-semibold ${
+                    results.risk_level === "Low" 
+                      ? "bg-green-100 text-green-800 border-2 border-green-200" 
+                      : results.risk_level === "Medium"
+                      ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-200"
+                      : "bg-red-100 text-red-800 border-2 border-red-200"
+                  }`}>
+                    {results.risk_level} Risk
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Detailed Results */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Detailed Results
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
+                    <span className="font-medium">CIMT Value</span>
+                    <Badge variant="outline">{results.cimt_value.toFixed(3)} mm</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
+                    <span className="font-medium">ePWV</span>
+                    <Badge variant="outline">{results.epwv_value.toFixed(2)} m/s</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
+                    <span className="font-medium">Retinal Occlusion Probability</span>
+                    <Badge variant="outline">{(results.retinal_occlusion_prob * 100).toFixed(1)}%</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
+                    <span className="font-medium">Eye Risk Score</span>
+                    <Badge variant="outline">{(results.eye_risk * 100).toFixed(1)}%</Badge>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
+                    <span className="font-medium">Brain Risk Score</span>
+                    <Badge variant="outline">{(results.brain_risk * 100).toFixed(1)}%</Badge>
+                  </div>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm text-muted-foreground">Patient Vitals</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex justify-between p-2 bg-muted/50 rounded">
+                      <span>Age:</span>
+                      <span className="font-medium">{patientData.age} years</span>
+                    </div>
+                    <div className="flex justify-between p-2 bg-muted/50 rounded">
+                      <span>BP:</span>
+                      <span className="font-medium">{patientData.systolicBP}/{patientData.diastolicBP} mmHg</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Fundus Image and Recommendations */}
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Fundus Image</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {capturedImage && (
+                    <img 
+                      src={capturedImage} 
+                      alt="Retinal fundus" 
+                      className="w-full rounded-lg border"
+                    />
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Recommendations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Alert className={
+                    results.risk_level === "High" ? "border-red-200 bg-red-50" :
+                    results.risk_level === "Medium" ? "border-yellow-200 bg-yellow-50" :
+                    "border-green-200 bg-green-50"
+                  }>
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      {results.recommendation}
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Risk Breakdown Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5" />
+                Risk Components Breakdown
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between mb-2 text-sm">
+                    <span>Eye Retinal Risk (22%)</span>
+                    <span className="font-medium">{(results.eye_risk * 100).toFixed(1)}%</span>
+                  </div>
+                  <Progress value={results.eye_risk * 100} className="h-3" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2 text-sm">
+                    <span>Carotid Risk (35%)</span>
+                    <span className="font-medium">{(results.cimt_value * 10).toFixed(1)}%</span>
+                  </div>
+                  <Progress value={results.cimt_value * 10} className="h-3" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2 text-sm">
+                    <span>Brain Risk (10%)</span>
+                    <span className="font-medium">{(results.brain_risk * 100).toFixed(1)}%</span>
+                  </div>
+                  <Progress value={results.brain_risk * 100} className="h-3" />
+                </div>
+                <div>
+                  <div className="flex justify-between mb-2 text-sm">
+                    <span>Pulse Wave Velocity (33%)</span>
+                    <span className="font-medium">{results.epwv_value.toFixed(1)} m/s</span>
+                  </div>
+                  <Progress value={Math.min(results.epwv_value * 10, 100)} className="h-3" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  const isFormValid = patientData.age && patientData.systolicBP && patientData.diastolicBP && capturedImage;
+
+  // Capture Step (default view)
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={onBack} className="p-2">
+          <Button variant="ghost" onClick={() => setCurrentStep("patient")} className="p-2">
             <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Retinal Image Capture</h1>
-            <p className="text-muted-foreground">Capture high-quality retinal images for analysis</p>
+            <h1 className="text-2xl font-bold">Retinal Image Analysis</h1>
+            <p className="text-muted-foreground">
+              Patient: {selectedPatient?.name} • MRN: {selectedPatient?.mrn}
+            </p>
           </div>
         </div>
 
@@ -224,10 +470,10 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Heart className="w-5 h-5" />
-                  Patient Information
+                  Patient Vitals
                 </CardTitle>
                 <CardDescription>
-                  Enter patient details for risk assessment
+                  Enter current vital signs for analysis
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -273,6 +519,18 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     required
                   />
                 </div>
+
+                {selectedPatient && (
+                  <div className="mt-4 p-3 bg-accent/10 rounded-lg border">
+                    <h4 className="text-sm font-semibold mb-2">Patient Information</h4>
+                    <div className="text-sm space-y-1 text-muted-foreground">
+                      <p>Name: {selectedPatient.name}</p>
+                      <p>Age: {getAge(selectedPatient)} years</p>
+                      <p>Gender: {selectedPatient.gender || "Not specified"}</p>
+                      <p>MRN: {selectedPatient.mrn}</p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -283,19 +541,20 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Upload className="w-5 h-5" />
-                  Upload Retinal Image
+                  Upload Fundus Image
                 </CardTitle>
                 <CardDescription>
-                  Upload a high-quality retinal image for analysis
+                  Upload a high-quality retinal fundus image
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="relative">
                   {/* Upload Area */}
                   <div
-                    className="aspect-square bg-muted rounded-lg flex items-center justify-center relative overflow-hidden border border-dashed"
+                    className="aspect-square bg-muted rounded-lg flex items-center justify-center relative overflow-hidden border-2 border-dashed cursor-pointer hover:bg-accent/5 transition-colors"
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
+                    onClick={() => !capturedImage && fileInputRef.current?.click()}
                   >
                     {capturedImage ? (
                       <img 
@@ -306,13 +565,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     ) : (
                       <div className="text-center p-8">
                         <Upload className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-muted-foreground mb-4">
+                        <p className="text-muted-foreground mb-2 font-medium">
                           Click or drag an image to upload
                         </p>
-                        <Button onClick={() => fileInputRef.current?.click()}>
-                          <Upload className="w-4 h-4 mr-2" />
-                          Choose Image
-                        </Button>
+                        <p className="text-xs text-muted-foreground">
+                          Supports JPG, PNG formats
+                        </p>
                         <input
                           ref={fileInputRef}
                           type="file"
@@ -320,12 +578,6 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                           className="hidden"
                           onChange={handleFileChange}
                         />
-                      </div>
-                    )}
-                    
-                    {isCapturing && (
-                      <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                       </div>
                     )}
                   </div>
@@ -338,23 +590,6 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                         Change Image
                       </Button>
                     )}
-                    <Button 
-                      onClick={calculateRiskScore}
-                      disabled={!isFormValid || isCalculating}
-                      className="bg-primary hover:bg-primary/90"
-                    >
-                      {isCalculating ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <Calculator className="w-4 h-4 mr-2" />
-                          Calculate Risk Score
-                        </>
-                      )}
-                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -370,103 +605,27 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
           </Alert>
         )}
 
-        {/* Risk Score Results */}
-        {riskScore !== null && riskLevel && (
-          <Card className="overflow-hidden shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl font-bold text-gray-900">Risk Assessment Result</CardTitle>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" className="hover:bg-white/50">
-                    <Mail className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hover:bg-white/50">
-                    <Printer className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="hover:bg-white/50">
-                    <User className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="p-8">
-              <div className="flex flex-col lg:flex-row items-center gap-8">
-                {/* Left Side - Risk Gauge */}
-                <div className="flex-shrink-0">
-                  <RiskGauge value={riskScore * 100} size={280} strokeWidth={20} />
-                </div>
-                
-                {/* Right Side - Risk Details */}
-                <div className="flex-1 space-y-6">
-                  {/* Risk Percentage Card */}
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
-                    <div className="text-center">
-                      <div className="text-5xl font-bold text-gray-900 mb-2">
-                        {Math.round(riskScore * 100)}%
-                      </div>
-                      <div className="text-base text-gray-600 font-medium">
-                        Stroke Risk Assessment
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Risk Level Badge */}
-                  <div className="flex justify-center">
-                    <div className={`inline-flex items-center px-8 py-4 rounded-full text-xl font-semibold shadow-lg ${
-                      riskLevel === "Low" 
-                        ? "bg-green-100 text-green-800 border-2 border-green-200" 
-                        : riskLevel === "Medium"
-                        ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-200"
-                        : "bg-red-100 text-red-800 border-2 border-red-200"
-                    }`}>
-                      {riskLevel} Risk
-                    </div>
-                  </div>
-
-                  {/* Risk Factors */}
-                  <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">
-                      Risk Factors Analyzed
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 text-sm text-gray-700">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                          <span>Retinal vessel analysis</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-gray-700">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                          <span>Brain stroke indicators</span>
-                        </div>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 text-sm text-gray-700">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                          <span>Carotid intima-media thickness</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm text-gray-700">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full flex-shrink-0"></div>
-                          <span>Estimated Pulse wave velocity</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Warning for high risk */}
-                  {riskLevel === "High" && (
-                    <Alert className="w-full">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>
-                        High risk detected. Please consult with a healthcare professional immediately.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
+        {/* Analyze Button */}
+        <div className="flex justify-center">
+          <Button 
+            onClick={calculateRiskScore}
+            disabled={!isFormValid || isCalculating}
+            size="lg"
+            className="w-full md:w-auto px-12"
+          >
+            {isCalculating ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                Analyzing Image...
+              </>
+            ) : (
+              <>
+                <Calculator className="w-5 h-5 mr-2" />
+                Calculate Stroke Risk
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
