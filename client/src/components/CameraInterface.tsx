@@ -260,23 +260,23 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   // Patient Selection Step
   if (currentStep === "patient") {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-background pb-12">
+      <div className="min-h-screen bg-slate-950 pb-12">
         {/* Top Navigation Bar */}
-        <div ref={headerRef} className="sticky top-0 z-50 bg-white dark:bg-card border-b border-gray-200 dark:border-border shadow-sm">
+        <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={onBack}
-                className="rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="rounded-xl hover:bg-slate-800"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">Stroke Risk Analysis</h1>
-                <p className="text-xs text-gray-600 dark:text-muted-foreground">Select a patient to begin analysis</p>
+                <h1 className="text-xl font-bold text-white">Stroke Risk Analysis</h1>
+                <p className="text-xs text-slate-400">Select a patient to begin analysis</p>
               </div>
             </div>
           </div>
@@ -295,9 +295,9 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   // Results Step
   if (currentStep === "results" && results && selectedPatient) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-background pb-12">
+      <div className="min-h-screen bg-slate-950 pb-12">
         {/* Top Navigation Bar */}
-        <div ref={headerRef} className="sticky top-0 z-50 bg-white dark:bg-card border-b border-gray-200 dark:border-border shadow-sm">
+        <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -305,14 +305,14 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setCurrentStep("capture")}
-                  className="rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="rounded-xl hover:bg-slate-800"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">Stroke Risk Analysis Results</h1>
-                  <p className="text-xs text-gray-600 dark:text-muted-foreground">{selectedPatient.name} • {getAge(selectedPatient)}y • {new Date().toLocaleDateString()}</p>
+                  <h1 className="text-xl font-bold text-white">Stroke Risk Analysis Results</h1>
+                  <p className="text-xs text-slate-400">{selectedPatient.name} • {getAge(selectedPatient)}y • {new Date().toLocaleDateString()}</p>
                 </div>
               </div>
               <Button onClick={downloadPDFReport} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
@@ -325,13 +325,13 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
         <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-6">
           {/* Risk Category Card */}
-          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-card p-6">
+          <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+            <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-card p-6">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
                   <Activity className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-foreground">Risk Assessment</CardTitle>
+                <CardTitle className="text-2xl font-bold text-white">Risk Assessment</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-10">
@@ -340,7 +340,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                   <RiskGauge value={results.risk_score} size={220} strokeWidth={18} />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-5xl font-black text-gray-900 dark:text-foreground">{Math.round(results.risk_score)}</div>
+                      <div className="text-5xl font-black text-white">{Math.round(results.risk_score)}</div>
                       <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</div>
                     </div>
                   </div>
@@ -368,13 +368,13 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Detailed Results */}
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-blue-950 p-5">
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-blue-950 p-5">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
                     <Activity className="w-6 h-6 text-white" />
                   </div>
-                  <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Measurements</CardTitle>
+                  <CardTitle className="text-xl font-bold text-white">Clinical Measurements</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="p-6 space-y-4">
@@ -404,15 +404,15 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                 <Separator className="my-5" />
                 
                 <div className="space-y-3">
-                  <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-wider">Patient Vitals</h4>
+                  <h4 className="font-bold text-sm text-slate-300 uppercase tracking-wider">Patient Vitals</h4>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="flex flex-col p-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl border border-blue-100 dark:border-blue-900">
                       <span className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Age</span>
-                      <span className="font-bold text-lg text-gray-900 dark:text-foreground">{patientData.age} <span className="text-xs font-normal">years</span></span>
+                      <span className="font-bold text-lg text-white">{patientData.age} <span className="text-xs font-normal">years</span></span>
                     </div>
                     <div className="flex flex-col p-3 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 rounded-xl border border-red-100 dark:border-red-900">
                       <span className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Blood Pressure</span>
-                      <span className="font-bold text-lg text-gray-900 dark:text-foreground">{patientData.systolicBP}/{patientData.diastolicBP} <span className="text-xs font-normal">mmHg</span></span>
+                      <span className="font-bold text-lg text-white">{patientData.systolicBP}/{patientData.diastolicBP} <span className="text-xs font-normal">mmHg</span></span>
                     </div>
                   </div>
                 </div>
@@ -421,13 +421,13 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
             {/* Fundus Image and Recommendations */}
             <div className="space-y-6">
-              <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-                <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950 dark:to-blue-950 p-5">
+              <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950 dark:to-blue-950 p-5">
                   <div className="flex items-center gap-3">
                     <div className="w-11 h-11 rounded-xl bg-cyan-500 flex items-center justify-center shadow-lg">
                       <Activity className="w-6 h-6 text-white" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Analysis</CardTitle>
+                    <CardTitle className="text-xl font-bold text-white">Retinal Analysis</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -436,7 +436,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                       <img 
                         src={capturedImage} 
                         alt="Retinal fundus" 
-                        className="w-full rounded-2xl border-2 border-gray-200 dark:border-border shadow-lg transition-transform group-hover:scale-[1.02]"
+                        className="w-full rounded-2xl border-2 border-slate-800 shadow-lg transition-transform group-hover:scale-[1.02]"
                       />
                       <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     </div>
@@ -444,13 +444,13 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-                <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-5">
+              <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-5">
                   <div className="flex items-center gap-3">
                     <div className="w-11 h-11 rounded-xl bg-purple-500 flex items-center justify-center shadow-lg">
                       <FileText className="w-6 h-6 text-white" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Recommendations</CardTitle>
+                    <CardTitle className="text-xl font-bold text-white">Clinical Recommendations</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -466,7 +466,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     }`}>
                       <AlertTriangle className="h-5 w-5 text-white" />
                     </div>
-                    <AlertDescription className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 font-medium">
+                    <AlertDescription className="text-sm leading-relaxed text-slate-200 font-medium">
                       {results.recommendation}
                     </AlertDescription>
                   </Alert>
@@ -476,13 +476,13 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
           </div>
 
           {/* Risk Breakdown Chart */}
-          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 p-6">
+          <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+            <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 p-6">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Risk Components Analysis</CardTitle>
+                <CardTitle className="text-xl font-bold text-white">Risk Components Analysis</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="p-8 space-y-5">
@@ -527,23 +527,23 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
   // Capture Step (default view)
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-background pb-12">
+    <div className="min-h-screen bg-slate-950 pb-12">
       {/* Top Navigation Bar */}
-      <div ref={headerRef} className="sticky top-0 z-50 bg-white dark:bg-card border-b border-gray-200 dark:border-border shadow-sm">
+      <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setCurrentStep("patient")}
-              className="rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="rounded-xl hover:bg-slate-800"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Image Analysis</h1>
-              <p className="text-xs text-gray-600 dark:text-muted-foreground">
+              <h1 className="text-xl font-bold text-white">Retinal Image Analysis</h1>
+              <p className="text-xs text-slate-400">
                 Patient: {selectedPatient?.name} • MRN: {selectedPatient?.mrn}
               </p>
             </div>
@@ -555,21 +555,21 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Patient Data Input */}
           <div className="space-y-4">
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 p-5">
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 p-5">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center shadow-lg">
                     <Heart className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Patient Vitals</CardTitle>
+                    <CardTitle className="text-xl font-bold text-white">Patient Vitals</CardTitle>
                     <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Enter current vital signs for analysis</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="age" className="text-sm font-medium text-gray-700 dark:text-gray-300">Age (years)</Label>
+                  <Label htmlFor="age" className="text-sm font-medium text-slate-300">Age (years)</Label>
                   <Input
                     id="age"
                     type="number"
@@ -578,12 +578,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     onChange={(e) => handleInputChange("age", e.target.value)}
                     min="0"
                     max="120"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl border-slate-700 focus:border-cyan-500 focus:border-blue-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="systolicBP" className="text-sm font-medium text-gray-700 dark:text-gray-300">Systolic Blood Pressure (mmHg)</Label>
+                  <Label htmlFor="systolicBP" className="text-sm font-medium text-slate-300">Systolic Blood Pressure (mmHg)</Label>
                   <Input
                     id="systolicBP"
                     type="number"
@@ -594,12 +594,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     max="300"
                     step="1"
                     required
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl border-slate-700 focus:border-cyan-500 focus:border-blue-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="diastolicBP" className="text-sm font-medium text-gray-700 dark:text-gray-300">Diastolic Blood Pressure (mmHg)</Label>
+                  <Label htmlFor="diastolicBP" className="text-sm font-medium text-slate-300">Diastolic Blood Pressure (mmHg)</Label>
                   <Input
                     id="diastolicBP"
                     type="number"
@@ -610,32 +610,32 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     max="200"
                     step="1"
                     required
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl border-slate-700 focus:border-cyan-500 focus:border-blue-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
 
                 {selectedPatient && (
                   <div className="mt-5 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">
-                    <h4 className="text-sm font-bold mb-3 text-gray-900 dark:text-foreground uppercase tracking-wider flex items-center gap-2">
+                    <h4 className="text-sm font-bold mb-3 text-white uppercase tracking-wider flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
                       Patient Information
                     </h4>
                     <div className="text-sm space-y-2.5">
                       <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
                         <span className="font-semibold text-gray-600 dark:text-gray-400">Name:</span>
-                        <span className="font-bold text-gray-900 dark:text-foreground">{selectedPatient.name}</span>
+                        <span className="font-bold text-white">{selectedPatient.name}</span>
                       </div>
                       <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
                         <span className="font-semibold text-gray-600 dark:text-gray-400">Age:</span>
-                        <span className="font-bold text-gray-900 dark:text-foreground">{getAge(selectedPatient)} years</span>
+                        <span className="font-bold text-white">{getAge(selectedPatient)} years</span>
                       </div>
                       <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
                         <span className="font-semibold text-gray-600 dark:text-gray-400">Gender:</span>
-                        <span className="font-bold text-gray-900 dark:text-foreground">{selectedPatient.gender || "Not specified"}</span>
+                        <span className="font-bold text-white">{selectedPatient.gender || "Not specified"}</span>
                       </div>
                       <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
                         <span className="font-semibold text-gray-600 dark:text-gray-400">MRN:</span>
-                        <span className="font-bold text-gray-900 dark:text-foreground">{selectedPatient.mrn}</span>
+                        <span className="font-bold text-white">{selectedPatient.mrn}</span>
                       </div>
                     </div>
                   </div>
@@ -646,14 +646,14 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
           {/* Image Upload */}
           <div>
-            <Card className="h-full bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 p-5">
+            <Card className="h-full bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 p-5">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
                     <Upload className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Image</CardTitle>
+                    <CardTitle className="text-xl font-bold text-white">Retinal Image</CardTitle>
                     <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Upload a high-quality fundus photograph</CardDescription>
                   </div>
                 </div>
@@ -704,7 +704,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                   {/* Controls */}
                   <div className="flex justify-center gap-4 mt-4">
                     {capturedImage && (
-                      <Button onClick={handleRetake} variant="outline" className="rounded-xl border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+                      <Button onClick={handleRetake} variant="outline" className="rounded-xl border-gray-300 hover:bg-slate-800">
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Change Image
                       </Button>

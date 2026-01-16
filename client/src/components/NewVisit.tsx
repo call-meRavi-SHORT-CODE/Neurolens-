@@ -247,50 +247,50 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
 
       case 1:
         return (
-          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-gray-200 dark:border-border bg-white dark:bg-card">
+          <Card className="bg-slate-900 border border-slate-800 shadow-sm rounded-2xl overflow-hidden">
+            <CardHeader className="border-b border-slate-800 bg-slate-900">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
                   <ClipboardList className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">Visit Information</CardTitle>
+                  <CardTitle className="text-lg font-bold text-white">Visit Information</CardTitle>
                   <CardDescription className="text-xs">Basic information about this visit</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-6 space-y-5">
               {selectedPatient && (
-                <div className="p-4 bg-white dark:bg-card border border-blue-300 dark:border-blue-800 rounded-xl">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-foreground">Selected Patient: {selectedPatient.name}</p>
-                  <p className="text-xs text-gray-600 dark:text-muted-foreground">MRN: {selectedPatient.mrn}</p>
+                <div className="p-4 bg-slate-800 border border-blue-500/30 rounded-xl">
+                  <p className="text-sm font-semibold text-white">Selected Patient: {selectedPatient.name}</p>
+                  <p className="text-xs text-slate-400">MRN: {selectedPatient.mrn}</p>
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="reason" className="text-sm font-medium text-gray-700 dark:text-gray-300">Reason for Visit *</Label>
+                <Label htmlFor="reason" className="text-sm font-medium text-slate-300">Reason for Visit *</Label>
                 <Input
                   id="reason"
                   value={visitData.reason}
                   onChange={(e) => setVisitData({ ...visitData, reason: e.target.value })}
                   placeholder="e.g., Routine screening, Follow-up"
-                  className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                  className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="technician" className="text-sm font-medium text-gray-700 dark:text-gray-300">Technician</Label>
+                  <Label htmlFor="technician" className="text-sm font-medium text-slate-300">Technician</Label>
                   <Input
                     id="technician"
                     value={visitData.technician}
                     onChange={(e) => setVisitData({ ...visitData, technician: e.target.value })}
                     placeholder="Technician name"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="location" className="text-sm font-medium text-gray-700 dark:text-gray-300">Location</Label>
+                  <Label htmlFor="location" className="text-sm font-medium text-slate-300">Location</Label>
                   <Select onValueChange={(value) => setVisitData({ ...visitData, location: value })}>
-                    <SelectTrigger className="h-11 rounded-xl border-gray-300 dark:border-border">
+                    <SelectTrigger className="h-11 rounded-xl border-slate-700 focus:border-cyan-500">
                       <SelectValue placeholder="Select location" />
                     </SelectTrigger>
                     <SelectContent>
@@ -307,14 +307,14 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
 
       case 2:
         return (
-          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-gray-200 dark:border-border bg-white dark:bg-card">
+          <Card className="bg-slate-900 border border-slate-800 shadow-sm rounded-2xl overflow-hidden">
+            <CardHeader className="border-b border-slate-800 bg-slate-900">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center">
                   <Heart className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">Vital Signs</CardTitle>
+                  <CardTitle className="text-lg font-bold text-white">Vital Signs</CardTitle>
                   <CardDescription className="text-xs">Record patient's current vital measurements</CardDescription>
                 </div>
               </div>
@@ -322,73 +322,73 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
             <CardContent className="p-6 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="age" className="text-sm font-medium text-gray-700 dark:text-gray-300">Age (years) *</Label>
+                  <Label htmlFor="age" className="text-sm font-medium text-slate-300">Age (years) *</Label>
                   <Input
                     id="age"
                     type="number"
                     value={visitData.age}
                     onChange={(e) => setVisitData({ ...visitData, age: e.target.value })}
                     placeholder="Enter age"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="heartRate" className="text-sm font-medium text-gray-700 dark:text-gray-300">Heart Rate (bpm)</Label>
+                  <Label htmlFor="heartRate" className="text-sm font-medium text-slate-300">Heart Rate (bpm)</Label>
                   <Input
                     id="heartRate"
                     type="number"
                     value={visitData.heartRate}
                     onChange={(e) => setVisitData({ ...visitData, heartRate: e.target.value })}
                     placeholder="Enter heart rate"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="systolic" className="text-sm font-medium text-gray-700 dark:text-gray-300">Systolic BP (mmHg) *</Label>
+                  <Label htmlFor="systolic" className="text-sm font-medium text-slate-300">Systolic BP (mmHg) *</Label>
                   <Input
                     id="systolic"
                     type="number"
                     value={visitData.systolic}
                     onChange={(e) => setVisitData({ ...visitData, systolic: e.target.value })}
                     placeholder="Enter systolic BP"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="diastolic" className="text-sm font-medium text-gray-700 dark:text-gray-300">Diastolic BP (mmHg) *</Label>
+                  <Label htmlFor="diastolic" className="text-sm font-medium text-slate-300">Diastolic BP (mmHg) *</Label>
                   <Input
                     id="diastolic"
                     type="number"
                     value={visitData.diastolic}
                     onChange={(e) => setVisitData({ ...visitData, diastolic: e.target.value })}
                     placeholder="Enter diastolic BP"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="height" className="text-sm font-medium text-gray-700 dark:text-gray-300">Height (cm)</Label>
+                  <Label htmlFor="height" className="text-sm font-medium text-slate-300">Height (cm)</Label>
                   <Input
                     id="height"
                     type="number"
                     value={visitData.height}
                     onChange={(e) => setVisitData({ ...visitData, height: e.target.value })}
                     placeholder="Enter height"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="weight" className="text-sm font-medium text-gray-700 dark:text-gray-300">Weight (kg)</Label>
+                  <Label htmlFor="weight" className="text-sm font-medium text-slate-300">Weight (kg)</Label>
                   <Input
                     id="weight"
                     type="number"
                     value={visitData.weight}
                     onChange={(e) => setVisitData({ ...visitData, weight: e.target.value })}
                     placeholder="Enter weight"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="temperature" className="text-sm font-medium text-gray-700 dark:text-gray-300">Temperature (°C)</Label>
+                  <Label htmlFor="temperature" className="text-sm font-medium text-slate-300">Temperature (°C)</Label>
                   <Input
                     id="temperature"
                     type="number"
@@ -396,25 +396,25 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
                     value={visitData.temperature}
                     onChange={(e) => setVisitData({ ...visitData, temperature: e.target.value })}
                     placeholder="Enter temperature"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="spO2" className="text-sm font-medium text-gray-700 dark:text-gray-300">SpO₂ (%)</Label>
+                  <Label htmlFor="spO2" className="text-sm font-medium text-slate-300">SpO₂ (%)</Label>
                   <Input
                     id="spO2"
                     type="number"
                     value={visitData.spO2}
                     onChange={(e) => setVisitData({ ...visitData, spO2: e.target.value })}
                     placeholder="Enter oxygen saturation"
-                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                   />
                 </div>
               </div>
               {getMeanBP() && (
-                <div className="p-4 bg-white dark:bg-card border border-green-300 dark:border-green-800 rounded-xl">
+                <div className="p-4 bg-slate-800 border border-green-500/30 rounded-xl">
                   <p className="text-sm">
-                    <span className="font-semibold text-gray-900 dark:text-foreground">Mean Blood Pressure:</span> 
+                    <span className="font-semibold text-white">Mean Blood Pressure:</span> 
                     <span className="ml-2 text-green-600 dark:text-green-400 font-bold">{getMeanBP()} mmHg</span>
                   </p>
                 </div>
@@ -425,14 +425,14 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
 
       case 3:
         return (
-          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-gray-200 dark:border-border bg-white dark:bg-card">
+          <Card className="bg-slate-900 border border-slate-800 shadow-sm rounded-2xl overflow-hidden">
+            <CardHeader className="border-b border-slate-800 bg-slate-900">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center">
                   <Stethoscope className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">Medical History</CardTitle>
+                  <CardTitle className="text-lg font-bold text-white">Medical History</CardTitle>
                   <CardDescription className="text-xs">Select relevant medical conditions</CardDescription>
                 </div>
               </div>
@@ -440,20 +440,20 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
             <CardContent className="p-6 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {getDiseasesList().map((disease) => (
-                  <div key={disease} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <div key={disease} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
                     <Checkbox
                       id={disease}
                       checked={selectedDiseases.includes(disease)}
                       onCheckedChange={(checked) => handleDiseaseChange(disease, checked as boolean)}
-                      className="border-gray-300"
+                      className="border-slate-600"
                     />
-                    <Label htmlFor={disease} className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer">{disease}</Label>
+                    <Label htmlFor={disease} className="text-sm text-slate-300 cursor-pointer">{disease}</Label>
                   </div>
                 ))}
               </div>
               {selectedDiseases.length > 0 && (
-                <div className="p-4 bg-white dark:bg-card border border-purple-300 dark:border-purple-800 rounded-xl">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-foreground mb-3">Selected Conditions ({selectedDiseases.length}):</p>
+                <div className="p-4 bg-slate-800 border border-purple-500/30 rounded-xl">
+                  <p className="text-sm font-semibold text-white mb-3">Selected Conditions ({selectedDiseases.length}):</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedDiseases.map((disease) => (
                       <Badge key={disease} className="bg-purple-500 text-white dark:bg-purple-600 rounded-lg px-3 py-1">
@@ -470,22 +470,22 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
       case 4:
         return (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 p-5">
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-5">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
                     <Camera className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Image Upload</CardTitle>
-                    <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Upload fundus image for stroke risk analysis</CardDescription>
+                    <CardTitle className="text-xl font-bold text-white">Retinal Image Upload</CardTitle>
+                    <CardDescription className="text-xs text-slate-400">Upload fundus image for stroke risk analysis</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="relative">
                   <div
-                    className="aspect-square bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-950 rounded-2xl flex items-center justify-center relative overflow-hidden border-3 border-dashed border-blue-300 dark:border-blue-700 cursor-pointer hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-900 dark:hover:to-cyan-950 transition-all duration-300 shadow-inner"
+                    className="aspect-square bg-slate-800/50 rounded-2xl flex items-center justify-center relative overflow-hidden border-2 border-dashed border-blue-500/50 cursor-pointer hover:border-blue-400 hover:bg-slate-700/50 transition-all duration-300 shadow-inner"
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
                     onClick={() => !capturedImage && fileInputRef.current?.click()}
@@ -501,16 +501,16 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
                       </div>
                     ) : (
                       <div className="text-center p-8">
-                        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center shadow-lg">
-                          <Upload className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-blue-500/20 flex items-center justify-center shadow-lg">
+                          <Upload className="w-10 h-10 text-blue-400" />
                         </div>
-                        <p className="text-gray-900 dark:text-gray-100 mb-2 font-bold text-lg">
+                        <p className="text-gray-900 text-white mb-2 font-bold text-lg">
                           Upload Fundus Image
                         </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        <p className="text-sm text-slate-400 mb-3">
                           Click or drag to upload
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 bg-white/50 dark:bg-gray-900/50 rounded-lg px-4 py-2 inline-block">
+                        <p className="text-xs text-slate-400 bg-slate-700/50 rounded-lg px-4 py-2 inline-block">
                           JPG, PNG formats supported
                         </p>
                         <input
@@ -526,7 +526,7 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
 
                   <div className="flex justify-center gap-4 mt-4">
                     {capturedImage && (
-                      <Button onClick={handleRetake} variant="outline" className="rounded-xl border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+                      <Button onClick={handleRetake} variant="outline" className="rounded-xl border-gray-300 hover:bg-slate-800">
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Change Image
                       </Button>
@@ -543,56 +543,56 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-5">
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
                     <Activity className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Visit Summary</CardTitle>
-                    <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Review before analysis</CardDescription>
+                    <CardTitle className="text-xl font-bold text-white">Visit Summary</CardTitle>
+                    <CardDescription className="text-xs text-slate-400">Review before analysis</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6 space-y-4">
                 {selectedPatient && (
-                  <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border border-blue-200 dark:border-blue-800 rounded-xl">
-                    <h4 className="text-sm font-bold mb-2 text-gray-900 dark:text-foreground">Patient</h4>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">{selectedPatient.name}</p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">MRN: {selectedPatient.mrn}</p>
+                  <div className="p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/30 rounded-xl">
+                    <h4 className="text-sm font-bold mb-2 text-white">Patient</h4>
+                    <p className="text-sm text-slate-300">{selectedPatient.name}</p>
+                    <p className="text-xs text-slate-400">MRN: {selectedPatient.mrn}</p>
                   </div>
                 )}
 
-                <div className="p-4 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 border border-red-200 dark:border-red-800 rounded-xl">
-                  <h4 className="text-sm font-bold mb-2 text-gray-900 dark:text-foreground">Vital Signs</h4>
+                <div className="p-4 bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/30 rounded-xl">
+                  <h4 className="text-sm font-bold mb-2 text-white">Vital Signs</h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Age:</span>
-                      <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{visitData.age} yrs</span>
+                      <span className="text-slate-400">Age:</span>
+                      <span className="ml-2 font-semibold text-white">{visitData.age} yrs</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">BP:</span>
-                      <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{visitData.systolic}/{visitData.diastolic}</span>
+                      <span className="text-slate-400">BP:</span>
+                      <span className="ml-2 font-semibold text-white">{visitData.systolic}/{visitData.diastolic}</span>
                     </div>
                     {visitData.heartRate && (
                       <div>
-                        <span className="text-gray-600 dark:text-gray-400">HR:</span>
-                        <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{visitData.heartRate} bpm</span>
+                        <span className="text-slate-400">HR:</span>
+                        <span className="ml-2 font-semibold text-white">{visitData.heartRate} bpm</span>
                       </div>
                     )}
                     {getMeanBP() && (
                       <div>
-                        <span className="text-gray-600 dark:text-gray-400">MBP:</span>
-                        <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{getMeanBP()} mmHg</span>
+                        <span className="text-slate-400">MBP:</span>
+                        <span className="ml-2 font-semibold text-white">{getMeanBP()} mmHg</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {selectedDiseases.length > 0 && (
-                  <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border border-purple-200 dark:border-purple-800 rounded-xl">
-                    <h4 className="text-sm font-bold mb-2 text-gray-900 dark:text-foreground">Medical History</h4>
+                  <div className="p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl">
+                    <h4 className="text-sm font-bold mb-2 text-white">Medical History</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedDiseases.map((disease) => (
                         <Badge key={disease} className="bg-purple-500 text-white rounded-lg text-xs">
@@ -633,13 +633,13 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
         return (
           <div className="space-y-6">
             {/* Risk Assessment Card */}
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-card p-6">
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-slate-800 to-slate-900 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
                     <Activity className="w-6 h-6 text-white" />
                   </div>
-                  <CardTitle className="text-2xl font-bold text-gray-900 dark:text-foreground">Stroke Risk Assessment</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-white">Stroke Risk Assessment</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="p-10">
@@ -648,14 +648,14 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
                     <RiskGauge value={strokeResults.risk_score} size={220} strokeWidth={18} />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
-                        <div className="text-5xl font-black text-gray-900 dark:text-foreground">{Math.round(strokeResults.risk_score)}</div>
-                        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</div>
+                        <div className="text-5xl font-black text-white">{Math.round(strokeResults.risk_score)}</div>
+                        <div className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Score</div>
                       </div>
                     </div>
                   </div>
                   <div className="space-y-6 text-center lg:text-left">
                     <div>
-                      <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Risk Level</p>
+                      <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Risk Level</p>
                       <div className={`inline-flex items-center px-8 py-4 rounded-2xl text-2xl font-bold shadow-lg border-2 transition-all ${
                         strokeResults.risk_level === "Low" 
                           ? "bg-green-500 text-white border-green-600 shadow-green-200 dark:shadow-green-900" 
@@ -672,53 +672,53 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
             </Card>
 
             {/* Clinical Measurements */}
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-blue-950 p-5">
-                <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Measurements</CardTitle>
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-indigo-500/10 to-blue-500/10 p-5">
+                <CardTitle className="text-xl font-bold text-white">Clinical Measurements</CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl border border-blue-100 dark:border-blue-900">
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">CIMT Value</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{strokeResults.cimt_value.toFixed(3)} mm</p>
+                  <div className="p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl border border-blue-500/20">
+                    <p className="text-xs text-slate-400 mb-1">CIMT Value</p>
+                    <p className="text-lg font-bold text-white">{strokeResults.cimt_value.toFixed(3)} mm</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 rounded-xl border border-purple-100 dark:border-purple-900">
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">ePWV</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{strokeResults.epwv_value.toFixed(2)} m/s</p>
+                  <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
+                    <p className="text-xs text-slate-400 mb-1">ePWV</p>
+                    <p className="text-lg font-bold text-white">{strokeResults.epwv_value.toFixed(2)} m/s</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950 dark:to-blue-950 rounded-xl border border-cyan-100 dark:border-cyan-900">
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Retinal Occlusion</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%</p>
+                  <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl border border-cyan-500/20">
+                    <p className="text-xs text-slate-400 mb-1">Retinal Occlusion</p>
+                    <p className="text-lg font-bold text-white">{(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-950 dark:to-emerald-950 rounded-xl border border-teal-100 dark:border-teal-900">
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Eye Risk</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{(strokeResults.eye_risk * 100).toFixed(1)}%</p>
+                  <div className="p-4 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 rounded-xl border border-teal-500/20">
+                    <p className="text-xs text-slate-400 mb-1">Eye Risk</p>
+                    <p className="text-lg font-bold text-white">{(strokeResults.eye_risk * 100).toFixed(1)}%</p>
                   </div>
-                  <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 rounded-xl border border-orange-100 dark:border-orange-900">
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Brain Risk</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{(strokeResults.brain_risk * 100).toFixed(1)}%</p>
+                  <div className="p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl border border-orange-500/20">
+                    <p className="text-xs text-slate-400 mb-1">Brain Risk</p>
+                    <p className="text-lg font-bold text-white">{(strokeResults.brain_risk * 100).toFixed(1)}%</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Recommendations */}
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-5">
-                <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Recommendations</CardTitle>
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
+                <CardTitle className="text-xl font-bold text-white">Clinical Recommendations</CardTitle>
               </CardHeader>
               <CardContent className="p-6">
                 <Alert className={
-                  strokeResults.risk_level === "High" ? "border-2 border-red-300 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950" :
-                  strokeResults.risk_level === "Medium" ? "border-2 border-yellow-300 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950 dark:to-amber-950" :
-                  "border-2 border-green-300 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950"
+                  strokeResults.risk_level === "High" ? "border-2 border-red-500/50 bg-gradient-to-br from-red-500/10 to-orange-500/10" :
+                  strokeResults.risk_level === "Medium" ? "border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-amber-500/10" :
+                  "border-2 border-green-500/50 bg-gradient-to-br from-emerald-500/10 to-teal-500/10"
                 }>
                   <AlertTriangle className={`h-5 w-5 ${
                     strokeResults.risk_level === "High" ? "text-red-500" :
                     strokeResults.risk_level === "Medium" ? "text-yellow-500" :
                     "text-green-500"
                   }`} />
-                  <AlertDescription className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 font-medium">
+                  <AlertDescription className="text-sm leading-relaxed text-slate-200 font-medium">
                     {strokeResults.recommendation}
                   </AlertDescription>
                 </Alert>
@@ -752,9 +752,9 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-background pb-12">
+    <div className="min-h-screen bg-slate-950 pb-12">
       {/* Top Navigation Bar */}
-      <div ref={headerRef} className="sticky top-0 z-50 bg-white dark:bg-card border-b border-gray-200 dark:border-border shadow-sm">
+      <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -762,14 +762,14 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={onBack}
-                className="rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="rounded-xl hover:bg-slate-800"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">New Visit</h1>
-                <p className="text-xs text-gray-600 dark:text-muted-foreground">Step {currentStep + 1} of 6</p>
+                <h1 className="text-xl font-bold text-white">New Visit</h1>
+                <p className="text-xs text-slate-400">Step {currentStep + 1} of 6</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -781,7 +781,7 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
                       ? "bg-blue-500 text-white shadow-md"
                       : step < currentStep
                       ? "bg-green-500 text-white"
-                      : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                      : "bg-slate-700 text-slate-400 border border-slate-600"
                   }`}
                 >
                   {step < currentStep ? <CheckCircle2 className="w-4 h-4" /> : step + 1}
@@ -800,7 +800,7 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
           <Button
             variant="outline"
             onClick={() => currentStep > 0 ? setCurrentStep(currentStep - 1) : onBack()}
-            className="rounded-xl border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 px-6"
+            className="rounded-xl bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white px-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             {currentStep === 0 ? "Cancel" : "Previous"}

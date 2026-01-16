@@ -215,77 +215,78 @@ export const Dashboard = () => {
 
   if (activeView === "patientList") {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="min-h-screen bg-slate-950 p-6">
         <div className="max-w-6xl mx-auto space-y-6">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => setActiveView("dashboard")} className="p-2">
+            <Button variant="ghost" onClick={() => setActiveView("dashboard")} className="p-2 text-slate-400 hover:text-white hover:bg-slate-800">
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Patient Directory</h1>
-              <p className="text-muted-foreground">Browse and search all patients</p>
+              <h1 className="text-2xl font-bold text-white">Patient Directory</h1>
+              <p className="text-slate-400">Browse and search all patients</p>
             </div>
           </div>
 
           <div className="flex gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
               <Input
                 placeholder="Search patients by name, MRN, or phone..."
                 value={searchTerm}
                 onChange={(e) => handleSearchPatients(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-slate-900 border-slate-800 text-white placeholder:text-slate-500 focus:border-cyan-500"
               />
             </div>
-            <Button onClick={() => setActiveView("newPatient")}>
+            <Button onClick={() => setActiveView("newPatient")} className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500">
               <UserPlus className="w-4 h-4 mr-2" />
               New Patient
             </Button>
           </div>
 
-          <Card>
+          <Card className="bg-slate-900 border-slate-800">
             <CardHeader>
-              <CardTitle>All Patients ({filteredPatients.length})</CardTitle>
+              <CardTitle className="text-white">All Patients ({filteredPatients.length})</CardTitle>
             </CardHeader>
             <CardContent>
               {loading ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                  <p className="text-muted-foreground">Loading patients...</p>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+                  <p className="text-slate-400">Loading patients...</p>
                 </div>
               ) : filteredPatients.length === 0 ? (
                 <div className="text-center py-8">
-                  <Users className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
-                  <p className="text-muted-foreground">
+                  <Users className="w-12 h-12 mx-auto text-slate-600 mb-3" />
+                  <p className="text-slate-400">
                     {searchTerm ? `No patients found matching "${searchTerm}"` : "No patients registered yet"}
                   </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredPatients.map((patient) => (
-                    <Card key={patient.id} className="cursor-pointer hover:bg-accent/5 transition-colors">
+                    <Card key={patient.id} className="cursor-pointer bg-slate-800 border-slate-700 hover:bg-slate-700 hover:border-cyan-500/30 transition-all">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                            <Users className="w-5 h-5 text-primary" />
+                          <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30">
+                            <Users className="w-5 h-5 text-cyan-400" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium">{patient.name}</h4>
-                            <p className="text-sm text-muted-foreground">MRN: {patient.mrn}</p>
+                            <h4 className="font-medium text-white">{patient.name}</h4>
+                            <p className="text-sm text-slate-400">MRN: {patient.mrn}</p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex gap-2">
                             {getAge(patient) && (
-                              <Badge variant="outline">{getAge(patient)} years</Badge>
+                              <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30">{getAge(patient)} years</Badge>
                             )}
                             {patient.gender && (
-                              <Badge variant="outline">{patient.gender}</Badge>
+                              <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/30">{patient.gender}</Badge>
                             )}
                           </div>
                           <Button 
                             size="sm" 
                             onClick={() => handlePatientSelect(patient.id)}
+                            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white"
                           >
                             View
                           </Button>
@@ -303,23 +304,23 @@ export const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-background">
+    <div className="min-h-screen bg-slate-950">
       {/* Top Navigation Bar */}
-      <div className="bg-white dark:bg-card border-b border-gray-200 dark:border-border px-6 py-3">
+      <div className="bg-slate-900 border-b border-slate-800 px-6 py-3 shadow-lg">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
               <Brain className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="font-bold text-lg">NeuroLens</h2>
+              <h2 className="font-bold text-lg text-white">NeuroLens</h2>
               
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200 dark:bg-green-950 dark:border-green-900">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full mr-2"></div>
               System Online
             </Badge>
             <Button variant="ghost" size="icon" className="rounded-full">
@@ -359,10 +360,10 @@ export const Dashboard = () => {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Welcome Header */}
         <div ref={headerRef} className="space-y-1">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-foreground">
+          <h1 className="text-3xl font-bold text-white">
             Welcome back, Doctor 👋
           </h1>
-          <p className="text-gray-600 dark:text-muted-foreground">
+          <p className="text-slate-400">
             Here's what's happening with your practice today.
           </p>
         </div>
@@ -372,10 +373,10 @@ export const Dashboard = () => {
           <Button 
             ref={el => quickActionsRef.current[0] = el}
             onClick={() => setActiveView("newPatient")} 
-            className="h-20 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-8 group"
+            className="h-20 bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-300 rounded-2xl justify-start px-8 group border border-cyan-400/20"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform backdrop-blur-sm">
                 <Plus className="w-6 h-6" />
               </div>
               <span className="font-semibold text-lg">New Patient</span>
@@ -385,10 +386,10 @@ export const Dashboard = () => {
           <Button 
             ref={el => quickActionsRef.current[1] = el}
             onClick={() => setActiveView("newVisit")} 
-            className="h-20 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-8 group"
+            className="h-20 bg-gradient-to-br from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 transition-all duration-300 rounded-2xl justify-start px-8 group border border-purple-400/20"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform backdrop-blur-sm">
                 <Activity className="w-6 h-6" />
               </div>
               <span className="font-semibold text-lg">New Visit</span>
@@ -398,10 +399,10 @@ export const Dashboard = () => {
           <Button 
             ref={el => quickActionsRef.current[2] = el}
             onClick={() => setActiveView("patientList")} 
-            className="h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-8 group"
+            className="h-20 bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-300 rounded-2xl justify-start px-8 group border border-emerald-400/20"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform backdrop-blur-sm">
                 <Users className="w-6 h-6" />
               </div>
               <span className="font-semibold text-lg">Patient Records</span>
@@ -413,20 +414,20 @@ export const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card 
             ref={el => statsRef.current[0] = el}
-            className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
+            className="bg-slate-900 border border-slate-800 shadow-lg rounded-2xl overflow-hidden hover:shadow-cyan-500/10 hover:border-cyan-500/30 transition-all"
           >
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Today's Visits</p>
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <p className="text-sm font-medium text-slate-400">Today's Visits</p>
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+                  <TrendingUp className="w-5 h-5 text-cyan-400" />
                 </div>
               </div>
               <div className="space-y-1">
-                <div className="text-4xl font-bold text-gray-900 dark:text-foreground">
+                <div className="text-4xl font-bold text-white">
                   {getTodaysVisits().length}
                 </div>
-                <p className="text-xs text-green-600 dark:text-green-400">
+                <p className="text-xs text-emerald-400">
                   ↑ 12% from yesterday
                 </p>
               </div>
@@ -435,20 +436,20 @@ export const Dashboard = () => {
 
           <Card 
             ref={el => statsRef.current[1] = el}
-            className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
+            className="bg-slate-900 border border-slate-800 shadow-lg rounded-2xl overflow-hidden hover:shadow-red-500/10 hover:border-red-500/30 transition-all"
           >
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">High-Risk Alerts</p>
-                <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                <p className="text-sm font-medium text-slate-400">High-Risk Alerts</p>
+                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
                 </div>
               </div>
               <div className="space-y-1">
-                <div className="text-4xl font-bold text-gray-900 dark:text-foreground">
+                <div className="text-4xl font-bold text-white">
                   {getHighRiskVisits().length}
                 </div>
-                <p className="text-xs text-gray-600 dark:text-muted-foreground">
+                <p className="text-xs text-slate-400">
                   Require immediate review
                 </p>
               </div>
@@ -457,20 +458,20 @@ export const Dashboard = () => {
 
           <Card 
             ref={el => statsRef.current[2] = el}
-            className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow"
+            className="bg-slate-900 border border-slate-800 shadow-lg rounded-2xl overflow-hidden hover:shadow-emerald-500/10 hover:border-emerald-500/30 transition-all"
           >
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-muted-foreground">Total Patients</p>
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <p className="text-sm font-medium text-slate-400">Total Patients</p>
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                  <Users className="w-5 h-5 text-emerald-400" />
                 </div>
               </div>
               <div className="space-y-1">
-                <div className="text-4xl font-bold text-gray-900 dark:text-foreground">
+                <div className="text-4xl font-bold text-white">
                   {patients.length.toLocaleString()}
                 </div>
-                <p className="text-xs text-gray-600 dark:text-muted-foreground">
+                <p className="text-xs text-slate-400">
                   Registered in NeuroLens system
                 </p>
               </div>
@@ -479,23 +480,23 @@ export const Dashboard = () => {
         </div>
 
         {/* Recent Activity */}
-        <Card ref={activityRef} className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm rounded-2xl overflow-hidden">
-          <CardHeader className="border-b border-gray-100 dark:border-border bg-gray-50/50 dark:bg-card/50">
+        <Card ref={activityRef} className="bg-slate-900 border border-slate-800 shadow-lg rounded-2xl overflow-hidden">
+          <CardHeader className="border-b border-slate-800 bg-slate-900/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
-                  <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                  <Activity className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">Recent Activity</CardTitle>
-                  <CardDescription className="text-xs">Latest patient visits and assessments</CardDescription>
+                  <CardTitle className="text-lg font-bold text-white">Recent Activity</CardTitle>
+                  <CardDescription className="text-xs text-slate-400">Latest patient visits and assessments</CardDescription>
                 </div>
               </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={fetchDashboardData}
-                className="rounded-full hover:bg-gray-100 dark:hover:bg-accent"
+                className="rounded-full hover:bg-slate-800 text-slate-400 hover:text-white"
               >
                 <RefreshCw className="w-4 h-4" />
               </Button>
@@ -504,18 +505,18 @@ export const Dashboard = () => {
           <CardContent className="p-6">
             {loading ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-                <p className="text-muted-foreground text-sm">Loading recent activity...</p>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+                <p className="text-slate-400 text-sm">Loading recent activity...</p>
               </div>
             ) : visits.length === 0 ? (
               <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-muted flex items-center justify-center mx-auto mb-4">
-                  <Activity className="w-8 h-8 text-gray-400 dark:text-muted-foreground" />
+                <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4 border border-slate-700">
+                  <Activity className="w-8 h-8 text-slate-400" />
                 </div>
-                <p className="text-muted-foreground mb-4">No visits recorded yet</p>
+                <p className="text-slate-400 mb-4">No visits recorded yet</p>
                 <Button 
                   onClick={() => setActiveView("newVisit")} 
-                  className="rounded-xl"
+                  className="rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
                   size="sm"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -525,7 +526,7 @@ export const Dashboard = () => {
             ) : (
               <div className="space-y-1">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase tracking-wider">
+                <div className="grid grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
                   <div className="col-span-4">Patient</div>
                   <div className="col-span-3">Assessment</div>
                   <div className="col-span-2">Status</div>
@@ -541,28 +542,28 @@ export const Dashboard = () => {
                   return (
                     <div 
                       key={visit.id} 
-                      className="grid grid-cols-12 gap-4 px-4 py-4 border-t border-gray-100 dark:border-border hover:bg-gray-50 dark:hover:bg-accent/5 cursor-pointer transition-colors rounded-lg group"
+                      className="grid grid-cols-12 gap-4 px-4 py-4 border-t border-slate-800 hover:bg-slate-800/50 cursor-pointer transition-colors rounded-lg group"
                       onClick={() => patient && handlePatientSelect(patient.id)}
                     >
                       <div className="col-span-4 flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950/30 dark:to-blue-900/20 flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0 border border-cyan-500/20">
+                          <span className="text-sm font-semibold text-cyan-400">
                             {patient?.name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'UK'}
                           </span>
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-gray-900 dark:text-foreground truncate">
+                          <p className="font-semibold text-white truncate">
                             {patient?.name || 'Unknown Patient'}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-muted-foreground">
+                          <p className="text-xs text-slate-400">
                             ID: {patient?.mrn || 'N/A'}
                           </p>
                         </div>
                       </div>
                       
                       <div className="col-span-3 flex flex-col justify-center">
-                        <p className="font-medium text-sm text-gray-900 dark:text-foreground">{visit.reason}</p>
-                        <p className="text-xs text-gray-500 dark:text-muted-foreground">
+                        <p className="font-medium text-sm text-white">{visit.reason}</p>
+                        <p className="text-xs text-slate-400">
                           {visit.epwv_result ? `ePWV: ${visit.epwv_result} m/s` : 'Assessment pending'}
                         </p>
                       </div>
@@ -572,23 +573,23 @@ export const Dashboard = () => {
                           <Badge 
                             className={`rounded-lg px-3 py-1 text-xs font-medium ${
                               visit.epwv_risk_level === "High" 
-                                ? "bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-400 border border-red-200 dark:border-red-900" 
+                                ? "bg-red-500/10 text-red-400 border border-red-500/30" 
                                 : visit.epwv_risk_level === "Medium"
-                                ? "bg-orange-100 text-orange-700 dark:bg-orange-950/30 dark:text-orange-400 border border-orange-200 dark:border-orange-900"
-                                : "bg-green-100 text-green-700 dark:bg-green-950/30 dark:text-green-400 border border-green-200 dark:border-green-900"
+                                ? "bg-orange-500/10 text-orange-400 border border-orange-500/30"
+                                : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                             }`}
                           >
                             {visit.epwv_risk_level === "High" ? "COMPLETED" : visit.epwv_risk_level === "Medium" ? "PENDING" : "IN PROGRESS"}
                           </Badge>
                         ) : (
-                          <Badge className="bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1 text-xs">
+                          <Badge className="bg-slate-700 text-slate-300 border border-slate-600 rounded-lg px-3 py-1 text-xs">
                             PENDING
                           </Badge>
                         )}
                       </div>
                       
                       <div className="col-span-2 flex items-center">
-                        <p className="text-sm text-gray-600 dark:text-muted-foreground">
+                        <p className="text-sm text-slate-400">
                           {new Date(visit.visit_date).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric', 
@@ -604,7 +605,7 @@ export const Dashboard = () => {
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
                         >
                           View Report
                         </Button>
@@ -615,10 +616,10 @@ export const Dashboard = () => {
 
                 {/* View All Link */}
                 {visits.length > 5 && (
-                  <div className="text-center pt-4 border-t border-gray-100 dark:border-border mt-2">
+                  <div className="text-center pt-4 border-t border-slate-800 mt-2">
                     <Button 
                       variant="ghost" 
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                      className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 font-medium"
                       onClick={() => setActiveView("patientList")}
                     >
                       View All Activities →

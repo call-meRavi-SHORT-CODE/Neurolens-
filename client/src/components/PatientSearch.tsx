@@ -83,26 +83,28 @@ export const PatientSearch = ({ onPatientSelect, onNewPatient }: PatientSearchPr
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Search className="w-5 h-5" />
+    <Card className="bg-slate-900 border border-slate-800 shadow-sm rounded-2xl overflow-hidden">
+      <CardHeader className="border-b border-slate-800 bg-slate-900">
+        <CardTitle className="flex items-center gap-3 text-lg font-bold text-white">
+          <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
+            <Search className="w-5 h-5 text-white" />
+          </div>
           Patient Selection
         </CardTitle>
-        <CardDescription>Search for an existing patient or create a new one</CardDescription>
+        <CardDescription className="text-xs text-slate-400">Search for an existing patient or create a new one</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex gap-2">
+      <CardContent className="p-6 space-y-5">
+        <div className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 w-4 h-4" />
             <Input
               placeholder="Search by name, MRN, or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
             />
           </div>
-          <Button onClick={onNewPatient} variant="outline">
+          <Button onClick={onNewPatient} className="rounded-xl bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white px-4">
             <Plus className="w-4 h-4 mr-2" />
             New Patient
           </Button>
@@ -110,17 +112,17 @@ export const PatientSearch = ({ onPatientSelect, onNewPatient }: PatientSearchPr
 
         {loading && (
           <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading patients...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-slate-400">Loading patients...</p>
           </div>
         )}
 
         {!loading && patients.length === 0 && searchTerm.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No patients registered yet</p>
-            <p className="text-sm mt-2">Create your first patient to get started</p>
-            <Button onClick={onNewPatient} className="mt-4" size="sm">
+          <div className="text-center py-8 text-slate-400">
+            <User className="w-12 h-12 mx-auto mb-3 opacity-50 text-slate-500" />
+            <p className="text-white">No patients registered yet</p>
+            <p className="text-sm mt-2 text-slate-400">Create your first patient to get started</p>
+            <Button onClick={onNewPatient} className="mt-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white shadow-lg" size="sm">
               <Plus className="w-4 h-4 mr-2" />
               Create First Patient
             </Button>
@@ -128,30 +130,31 @@ export const PatientSearch = ({ onPatientSelect, onNewPatient }: PatientSearchPr
         )}
 
         {!loading && patients.length > 0 && (
-          <div className="space-y-2 max-h-96 overflow-y-auto">
+          <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
             {patients.map((patient) => (
-              <Card key={patient.id} className="cursor-pointer hover:bg-accent/5 transition-colors">
+              <Card key={patient.id} className="cursor-pointer bg-slate-800 border-slate-700 hover:bg-slate-750 hover:border-slate-600 transition-all">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <User className="w-5 h-5 text-primary" />
+                      <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                        <User className="w-5 h-5 text-blue-400" />
                       </div>
                       <div>
-                        <h4 className="font-medium">{patient.name}</h4>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <h4 className="font-medium text-white">{patient.name}</h4>
+                        <div className="flex items-center gap-2 text-sm text-slate-400">
                           <span>MRN: {patient.mrn}</span>
-                          {getAge(patient) && <Badge variant="outline">{getAge(patient)} years</Badge>}
-                          {patient.gender && <Badge variant="outline">{patient.gender}</Badge>}
+                          {getAge(patient) && <Badge variant="outline" className="bg-slate-700 border-slate-600 text-slate-300">{getAge(patient)} years</Badge>}
+                          {patient.gender && <Badge variant="outline" className="bg-slate-700 border-slate-600 text-slate-300">{patient.gender}</Badge>}
                         </div>
                         {patient.phone && (
-                          <p className="text-xs text-muted-foreground mt-1">{patient.phone}</p>
+                          <p className="text-xs text-slate-500 mt-1">{patient.phone}</p>
                         )}
                       </div>
                     </div>
                     <Button 
                       onClick={() => onPatientSelect(patient)}
                       size="sm"
+                      className="rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white shadow-lg"
                     >
                       Select
                     </Button>
@@ -163,11 +166,11 @@ export const PatientSearch = ({ onPatientSelect, onNewPatient }: PatientSearchPr
         )}
 
         {!loading && searchTerm.length > 0 && patients.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <User className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No patients found matching "{searchTerm}"</p>
-            <p className="text-sm mt-2">Try a different search or create a new patient</p>
-            <Button onClick={onNewPatient} className="mt-4" size="sm">
+          <div className="text-center py-8 text-slate-400">
+            <User className="w-12 h-12 mx-auto mb-3 opacity-50 text-slate-500" />
+            <p className="text-white">No patients found matching "{searchTerm}"</p>
+            <p className="text-sm mt-2 text-slate-400">Try a different search or create a new patient</p>
+            <Button onClick={onNewPatient} className="mt-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white shadow-lg" size="sm">
               <Plus className="w-4 h-4 mr-2" />
               Create New Patient
             </Button>

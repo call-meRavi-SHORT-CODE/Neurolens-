@@ -139,21 +139,21 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-background">
+    <div className="min-h-screen bg-slate-950">
       {/* Top Navigation Bar */}
-      <div className="bg-white dark:bg-card border-b border-gray-200 dark:border-border px-6 py-4">
+      <div className="bg-slate-900 border-b border-slate-800 px-6 py-4 shadow-lg">
         <div className="max-w-7xl mx-auto">
           <div ref={headerRef} className="flex items-center gap-4">
             <Button 
               variant="ghost" 
               onClick={onBack} 
-              className="rounded-full hover:bg-gray-100 dark:hover:bg-accent"
+              className="rounded-full hover:bg-slate-800 text-slate-400 hover:text-white"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-foreground">New Patient Registration</h1>
-              <p className="text-sm text-gray-600 dark:text-muted-foreground">Register a new patient in the system</p>
+              <h1 className="text-2xl font-bold text-white">New Patient Registration</h1>
+              <p className="text-sm text-slate-400">Register a new patient in the system</p>
             </div>
           </div>
         </div>
@@ -163,32 +163,32 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Patient Information */}
           <div ref={formRef} className="lg:col-span-2 space-y-6">
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-blue-50 dark:bg-blue-950/20">
+            <Card className="bg-slate-900 border border-slate-800 shadow-lg hover:shadow-cyan-500/10 transition-shadow rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-cyan-500/10 to-blue-500/10">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
                     <User className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">Patient Basic Details</CardTitle>
-                    <CardDescription className="text-xs">Required patient information</CardDescription>
+                    <CardTitle className="text-lg font-bold text-white">Patient Basic Details</CardTitle>
+                    <CardDescription className="text-xs text-slate-400">Required patient information</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6 space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm font-medium text-slate-300">Full Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Enter patient's full name"
-                      className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                      className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="age" className="text-sm font-medium text-gray-700 dark:text-gray-300">Age (years) *</Label>
+                    <Label htmlFor="age" className="text-sm font-medium text-slate-300">Age (years) *</Label>
                     <Input
                       id="age"
                       type="number"
@@ -197,14 +197,14 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                       value={formData.age}
                       onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                       placeholder="Enter age"
-                      className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                      className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="gender" className="text-sm font-medium text-gray-700 dark:text-gray-300">Gender *</Label>
+                    <Label htmlFor="gender" className="text-sm font-medium text-slate-300">Gender *</Label>
                     <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
-                      <SelectTrigger className="h-11 rounded-xl border-gray-300 dark:border-border">
-                        <SelectValue placeholder="Select gender" />
+                      <SelectTrigger className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20">
+                        <SelectValue placeholder="Select gender" className="text-slate-500" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Male">Male</SelectItem>
@@ -214,7 +214,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <Label htmlFor="phone" className="text-sm font-medium text-slate-300 flex items-center gap-2">
                       <Phone className="w-4 h-4" />
                       Phone Number *
                     </Label>
@@ -223,24 +223,24 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="Enter phone number"
-                      className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
+                      className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="mrn" className="text-sm font-medium text-gray-700 dark:text-gray-300">Patient ID</Label>
+                    <Label htmlFor="mrn" className="text-sm font-medium text-slate-300">Patient ID</Label>
                     <div className="relative">
                       <Input
                         id="mrn"
                         value={formData.mrn}
                         disabled
-                        className="h-11 rounded-xl bg-gray-100 dark:bg-muted border-gray-200 dark:border-border"
+                        className="h-11 rounded-xl bg-slate-700 border-slate-600 text-slate-300"
                       />
                       <CheckCircle2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-green-500" />
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-muted-foreground">Auto-generated</p>
+                    <p className="text-xs text-slate-400">Auto-generated</p>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="visitDate" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <Label htmlFor="visitDate" className="text-sm font-medium text-slate-300 flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       Date of Visit
                     </Label>
@@ -248,13 +248,13 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                       id="visitDate"
                       value={currentDate}
                       disabled
-                      className="h-11 rounded-xl bg-gray-100 dark:bg-muted border-gray-200 dark:border-border"
+                      className="h-11 rounded-xl bg-slate-700 border-slate-600 text-slate-300"
                     />
-                    <p className="text-xs text-gray-500 dark:text-muted-foreground">Auto-filled</p>
+                    <p className="text-xs text-slate-400">Auto-filled</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="address" className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <Label htmlFor="address" className="text-sm font-medium text-slate-300 flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
                     Address (optional)
                   </Label>
@@ -264,101 +264,101 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     placeholder="Enter patient address"
                     rows={2}
-                    className="rounded-xl border-gray-300 dark:border-border resize-none"
+                    className="rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 resize-none"
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* Medical History */}
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-purple-50 dark:bg-purple-950/20">
+            <Card className="bg-slate-900 border border-slate-800 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/20">
                     <Activity className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg font-bold text-gray-900 dark:text-foreground">Medical History</CardTitle>
-                    <CardDescription className="text-xs">Answer the following yes/no questions</CardDescription>
+                    <CardTitle className="text-lg font-bold text-white">Medical History</CardTitle>
+                    <CardDescription className="text-xs text-slate-400">Answer the following yes/no questions</CardDescription>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="p-6 space-y-5">
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-foreground">1. History of high blood pressure?</Label>
+                  <Label className="text-sm font-medium text-white">1. History of high blood pressure?</Label>
                   <RadioGroup value={formData.highBloodPressure} onValueChange={(value) => setFormData({ ...formData, highBloodPressure: value })}>
                     <div className="flex items-center space-x-6">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="yes" id="bp-yes" className="border-gray-300" />
-                        <Label htmlFor="bp-yes" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">Yes</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="yes" id="bp-yes" className="border-slate-600" />
+                        <Label htmlFor="bp-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
                       </div>
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="no" id="bp-no" className="border-gray-300" />
-                        <Label htmlFor="bp-no" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">No</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="no" id="bp-no" className="border-slate-600" />
+                        <Label htmlFor="bp-no" className="font-normal cursor-pointer text-slate-300">No</Label>
                       </div>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-foreground">2. History of diabetes?</Label>
+                  <Label className="text-sm font-medium text-white">2. History of diabetes?</Label>
                   <RadioGroup value={formData.diabetes} onValueChange={(value) => setFormData({ ...formData, diabetes: value })}>
                     <div className="flex items-center space-x-6">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="yes" id="diabetes-yes" className="border-gray-300" />
-                        <Label htmlFor="diabetes-yes" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">Yes</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="yes" id="diabetes-yes" className="border-slate-600" />
+                        <Label htmlFor="diabetes-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
                       </div>
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="no" id="diabetes-no" className="border-gray-300" />
-                        <Label htmlFor="diabetes-no" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">No</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="no" id="diabetes-no" className="border-slate-600" />
+                        <Label htmlFor="diabetes-no" className="font-normal cursor-pointer text-slate-300">No</Label>
                       </div>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-foreground">3. Any previous stroke or TIA?</Label>
+                  <Label className="text-sm font-medium text-white">3. Any previous stroke or TIA?</Label>
                   <RadioGroup value={formData.previousStroke} onValueChange={(value) => setFormData({ ...formData, previousStroke: value })}>
                     <div className="flex items-center space-x-6">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="yes" id="stroke-yes" className="border-gray-300" />
-                        <Label htmlFor="stroke-yes" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">Yes</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="yes" id="stroke-yes" className="border-slate-600" />
+                        <Label htmlFor="stroke-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
                       </div>
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="no" id="stroke-no" className="border-gray-300" />
-                        <Label htmlFor="stroke-no" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">No</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="no" id="stroke-no" className="border-slate-600" />
+                        <Label htmlFor="stroke-no" className="font-normal cursor-pointer text-slate-300">No</Label>
                       </div>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-foreground">4. Known heart disease?</Label>
+                  <Label className="text-sm font-medium text-white">4. Known heart disease?</Label>
                   <RadioGroup value={formData.heartDisease} onValueChange={(value) => setFormData({ ...formData, heartDisease: value })}>
                     <div className="flex items-center space-x-6">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="yes" id="heart-yes" className="border-gray-300" />
-                        <Label htmlFor="heart-yes" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">Yes</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="yes" id="heart-yes" className="border-slate-600" />
+                        <Label htmlFor="heart-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
                       </div>
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="no" id="heart-no" className="border-gray-300" />
-                        <Label htmlFor="heart-no" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">No</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="no" id="heart-no" className="border-slate-600" />
+                        <Label htmlFor="heart-no" className="font-normal cursor-pointer text-slate-300">No</Label>
                       </div>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-foreground">5. Smoking or alcohol use?</Label>
+                  <Label className="text-sm font-medium text-white">5. Smoking or alcohol use?</Label>
                   <RadioGroup value={formData.smokingAlcohol} onValueChange={(value) => setFormData({ ...formData, smokingAlcohol: value })}>
                     <div className="flex items-center space-x-6">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="yes" id="smoking-yes" className="border-gray-300" />
-                        <Label htmlFor="smoking-yes" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">Yes</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="yes" id="smoking-yes" className="border-slate-600" />
+                        <Label htmlFor="smoking-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
                       </div>
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                        <RadioGroupItem value="no" id="smoking-no" className="border-gray-300" />
-                        <Label htmlFor="smoking-no" className="font-normal cursor-pointer text-gray-700 dark:text-gray-300">No</Label>
+                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+                        <RadioGroupItem value="no" id="smoking-no" className="border-slate-600" />
+                        <Label htmlFor="smoking-no" className="font-normal cursor-pointer text-slate-300">No</Label>
                       </div>
                     </div>
                   </RadioGroup>
@@ -369,8 +369,8 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
 
           {/* Summary */}
           <div ref={summaryRef} className="space-y-6">
-            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden sticky top-6">
-              <CardHeader className="border-b border-gray-200 dark:border-border bg-indigo-500">
+            <Card className="bg-slate-900 border border-slate-800 shadow-sm hover:shadow-md transition-shadow rounded-2xl overflow-hidden sticky top-6">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-indigo-500 to-purple-600">
                 <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5" />
                   Patient Summary
@@ -378,29 +378,29 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
               </CardHeader>
               <CardContent className="p-6 space-y-4">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-border">
-                    <span className="text-sm text-gray-600 dark:text-muted-foreground">Name:</span>
-                    <span className="font-semibold text-sm text-gray-900 dark:text-foreground">{formData.name || "Not set"}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                    <span className="text-sm text-slate-400">Name:</span>
+                    <span className="font-semibold text-sm text-white">{formData.name || "Not set"}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-border">
-                    <span className="text-sm text-gray-600 dark:text-muted-foreground">Age:</span>
-                    <span className="font-semibold text-sm text-gray-900 dark:text-foreground">{formData.age ? `${formData.age} years` : "Not set"}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                    <span className="text-sm text-slate-400">Age:</span>
+                    <span className="font-semibold text-sm text-white">{formData.age ? `${formData.age} years` : "Not set"}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-border">
-                    <span className="text-sm text-gray-600 dark:text-muted-foreground">Gender:</span>
-                    <span className="font-semibold text-sm text-gray-900 dark:text-foreground">{formData.gender || "Not set"}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                    <span className="text-sm text-slate-400">Gender:</span>
+                    <span className="font-semibold text-sm text-white">{formData.gender || "Not set"}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-border">
-                    <span className="text-sm text-gray-600 dark:text-muted-foreground">Phone:</span>
-                    <span className="font-semibold text-sm text-gray-900 dark:text-foreground">{formData.phone || "Not set"}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                    <span className="text-sm text-slate-400">Phone:</span>
+                    <span className="font-semibold text-sm text-white">{formData.phone || "Not set"}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-border">
-                    <span className="text-sm text-gray-600 dark:text-muted-foreground">Patient ID:</span>
-                    <span className="font-mono text-xs text-gray-900 dark:text-foreground bg-gray-100 dark:bg-muted px-2 py-1 rounded">{formData.mrn}</span>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                    <span className="text-sm text-slate-400">Patient ID:</span>
+                    <span className="font-mono text-xs text-white bg-slate-700 px-3 py-1.5 rounded-lg">{formData.mrn}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-sm text-gray-600 dark:text-muted-foreground">Visit Date:</span>
-                    <span className="font-medium text-xs text-gray-900 dark:text-foreground">{currentDate}</span>
+                    <span className="text-sm text-slate-400">Visit Date:</span>
+                    <span className="font-medium text-xs text-white">{currentDate}</span>
                   </div>
                 </div>
 
@@ -408,7 +408,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                 <div className="pt-4 space-y-3">
                   <Button 
                     onClick={handleSave} 
-                    className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all"
+                    className="w-full h-11 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all font-semibold"
                   >
                     <Save className="w-4 h-4 mr-2" />
                     Save Patient
@@ -416,7 +416,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                   <Button 
                     variant="outline" 
                     onClick={onBack}
-                    className="w-full h-11 rounded-xl border-gray-300 dark:border-border hover:bg-gray-50 dark:hover:bg-accent"
+                    className="w-full h-11 rounded-xl bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition-all"
                   >
                     Cancel
                   </Button>
