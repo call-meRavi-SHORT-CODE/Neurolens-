@@ -6,7 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ArrowRight, Calculator, Heart, Activity, User, CheckCircle2, Stethoscope, ClipboardList } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RiskGauge } from "@/components/ui/risk-gauge";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, ArrowRight, Calculator, Heart, Activity, User, CheckCircle2, Stethoscope, ClipboardList, Upload, RotateCcw, AlertTriangle, Download, FileText, TrendingUp, Camera } from "lucide-react";
 import { EpwvCalculator } from "./EpwvCalculator";
 import { PatientSearch } from "./PatientSearch";
 import { Patient, createVisit, getDiseasesList, formatDiseases } from "@/lib/database";
@@ -16,6 +20,18 @@ import gsap from "gsap";
 
 interface NewVisitProps {
   onBack: () => void;
+}
+
+interface StrokeRiskResults {
+  success: boolean;
+  risk_score: number;
+  risk_level: "Low" | "Medium" | "High";
+  cimt_value: number;
+  epwv_value: number;
+  retinal_occlusion_prob: number;
+  eye_risk: number;
+  brain_risk: number;
+  recommendation: string;
 }
 
 export const NewVisit = ({ onBack }: NewVisitProps) => {
@@ -41,6 +57,11 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
     riskLevel: "",
     recommendations: ""
   });
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [strokeResults, setStrokeResults] = useState<StrokeRiskResults | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Refs for GSAP animations
   const headerRef = useRef(null);
@@ -76,8 +97,9 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
     { title: "Patient Selection", icon: User },
     { title: "Visit Information", icon: Activity },
     { title: "Vital Signs", icon: Heart },
-    { title: "Medical History", icon: Activity },
-    { title: "ePWV Analysis", icon: Calculator }
+    { title: "Medical History", icon: Stethoscope },
+    { title: "Retinal Analysis", icon: Camera },
+    { title: "Risk Assessment", icon: Activity }
   ];
 
   const handlePatientSelect = (patient: Patient) => {
@@ -94,6 +116,79 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
       setSelectedDiseases(prev => [...prev, disease]);
     } else {
       setSelectedDiseases(prev => prev.filter(d => d !== disease));
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
+    setCapturedImage(objectUrl);
+    setError(null);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    const objectUrl = URL.createObjectURL(file);
+    setCapturedImage(objectUrl);
+    setError(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleRetake = () => {
+    setCapturedImage(null);
+    setStrokeResults(null);
+    setError(null);
+  };
+
+  const calculateStrokeRisk = async () => {
+    if (!capturedImage || !visitData.age || !visitData.systolic || !visitData.diastolic) {
+      setError("Please fill in all required fields and upload an image");
+      return;
+    }
+
+    try {
+      setError(null);
+      setIsCalculating(true);
+      
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const file = new File([blob], "retinal_image.jpg", { type: "image/jpeg" });
+
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("age", visitData.age);
+      formData.append("systolic_bp", visitData.systolic);
+      formData.append("diastolic_bp", visitData.diastolic);
+
+      const apiResponse = await fetch("http://localhost:8000/predict-risk", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!apiResponse.ok) {
+        const errorData = await apiResponse.json();
+        throw new Error(errorData.detail || "Failed to calculate risk score");
+      }
+
+      const result = await apiResponse.json();
+      
+      if (result.success) {
+        setStrokeResults(result);
+        setCurrentStep(5); // Move to results step
+      } else {
+        throw new Error("Failed to get risk assessment result");
+      }
+    } catch (error) {
+      console.error("Error calculating risk score:", error);
+      setError(error instanceof Error ? error.message : "Failed to calculate risk score. Please try again.");
+    } finally {
+      setIsCalculating(false);
     }
   };
 
@@ -373,10 +468,263 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
         );
 
       case 4:
+        return (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 p-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                    <Camera className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Image Upload</CardTitle>
+                    <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Upload fundus image for stroke risk analysis</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="relative">
+                  <div
+                    className="aspect-square bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-950 rounded-2xl flex items-center justify-center relative overflow-hidden border-3 border-dashed border-blue-300 dark:border-blue-700 cursor-pointer hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-900 dark:hover:to-cyan-950 transition-all duration-300 shadow-inner"
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onClick={() => !capturedImage && fileInputRef.current?.click()}
+                  >
+                    {capturedImage ? (
+                      <div className="relative w-full h-full group">
+                        <img 
+                          src={capturedImage} 
+                          alt="Captured retinal image" 
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      </div>
+                    ) : (
+                      <div className="text-center p-8">
+                        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center shadow-lg">
+                          <Upload className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <p className="text-gray-900 dark:text-gray-100 mb-2 font-bold text-lg">
+                          Upload Fundus Image
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          Click or drag to upload
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 bg-white/50 dark:bg-gray-900/50 rounded-lg px-4 py-2 inline-block">
+                          JPG, PNG formats supported
+                        </p>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-center gap-4 mt-4">
+                    {capturedImage && (
+                      <Button onClick={handleRetake} variant="outline" className="rounded-xl border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <RotateCcw className="w-4 h-4 mr-2" />
+                        Change Image
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {error && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                    <Activity className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Visit Summary</CardTitle>
+                    <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Review before analysis</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                {selectedPatient && (
+                  <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border border-blue-200 dark:border-blue-800 rounded-xl">
+                    <h4 className="text-sm font-bold mb-2 text-gray-900 dark:text-foreground">Patient</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">{selectedPatient.name}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">MRN: {selectedPatient.mrn}</p>
+                  </div>
+                )}
+
+                <div className="p-4 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 border border-red-200 dark:border-red-800 rounded-xl">
+                  <h4 className="text-sm font-bold mb-2 text-gray-900 dark:text-foreground">Vital Signs</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Age:</span>
+                      <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{visitData.age} yrs</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">BP:</span>
+                      <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{visitData.systolic}/{visitData.diastolic}</span>
+                    </div>
+                    {visitData.heartRate && (
+                      <div>
+                        <span className="text-gray-600 dark:text-gray-400">HR:</span>
+                        <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{visitData.heartRate} bpm</span>
+                      </div>
+                    )}
+                    {getMeanBP() && (
+                      <div>
+                        <span className="text-gray-600 dark:text-gray-400">MBP:</span>
+                        <span className="ml-2 font-semibold text-gray-900 dark:text-foreground">{getMeanBP()} mmHg</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {selectedDiseases.length > 0 && (
+                  <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border border-purple-200 dark:border-purple-800 rounded-xl">
+                    <h4 className="text-sm font-bold mb-2 text-gray-900 dark:text-foreground">Medical History</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedDiseases.map((disease) => (
+                        <Badge key={disease} className="bg-purple-500 text-white rounded-lg text-xs">
+                          {disease}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <Button
+                  onClick={calculateStrokeRisk}
+                  disabled={!capturedImage || isCalculating}
+                  className="w-full mt-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-lg py-6"
+                >
+                  {isCalculating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Calculator className="w-5 h-5 mr-2" />
+                      Analyze Stroke Risk
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 5:
+        if (!strokeResults) return null;
         const age = parseFloat(visitData.age);
         const mbp = parseFloat(getMeanBP() || "0");
+        
         return (
-          <EpwvCalculator age={age} mbp={mbp} />
+          <div className="space-y-6">
+            {/* Risk Assessment Card */}
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-card p-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
+                    <Activity className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-2xl font-bold text-gray-900 dark:text-foreground">Stroke Risk Assessment</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="p-10">
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
+                  <div className="relative">
+                    <RiskGauge value={strokeResults.risk_score} size={220} strokeWidth={18} />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-5xl font-black text-gray-900 dark:text-foreground">{Math.round(strokeResults.risk_score)}</div>
+                        <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-6 text-center lg:text-left">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Risk Level</p>
+                      <div className={`inline-flex items-center px-8 py-4 rounded-2xl text-2xl font-bold shadow-lg border-2 transition-all ${
+                        strokeResults.risk_level === "Low" 
+                          ? "bg-green-500 text-white border-green-600 shadow-green-200 dark:shadow-green-900" 
+                          : strokeResults.risk_level === "Medium"
+                          ? "bg-yellow-500 text-white border-yellow-600 shadow-yellow-200 dark:shadow-yellow-900"
+                          : "bg-red-500 text-white border-red-600 shadow-red-200 dark:shadow-red-900"
+                      }`}>
+                        {strokeResults.risk_level} Risk
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Clinical Measurements */}
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-blue-950 p-5">
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Measurements</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl border border-blue-100 dark:border-blue-900">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">CIMT Value</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{strokeResults.cimt_value.toFixed(3)} mm</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 rounded-xl border border-purple-100 dark:border-purple-900">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">ePWV</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{strokeResults.epwv_value.toFixed(2)} m/s</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950 dark:to-blue-950 rounded-xl border border-cyan-100 dark:border-cyan-900">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Retinal Occlusion</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-950 dark:to-emerald-950 rounded-xl border border-teal-100 dark:border-teal-900">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Eye Risk</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{(strokeResults.eye_risk * 100).toFixed(1)}%</p>
+                  </div>
+                  <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 rounded-xl border border-orange-100 dark:border-orange-900">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Brain Risk</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-foreground">{(strokeResults.brain_risk * 100).toFixed(1)}%</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recommendations */}
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-5">
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Recommendations</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <Alert className={
+                  strokeResults.risk_level === "High" ? "border-2 border-red-300 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950" :
+                  strokeResults.risk_level === "Medium" ? "border-2 border-yellow-300 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950 dark:to-amber-950" :
+                  "border-2 border-green-300 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950"
+                }>
+                  <AlertTriangle className={`h-5 w-5 ${
+                    strokeResults.risk_level === "High" ? "text-red-500" :
+                    strokeResults.risk_level === "Medium" ? "text-yellow-500" :
+                    "text-green-500"
+                  }`} />
+                  <AlertDescription className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 font-medium">
+                    {strokeResults.recommendation}
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+          </div>
         );
 
       default:
@@ -395,7 +743,9 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
       case 3:
         return true;
       case 4:
-        return true;
+        return capturedImage !== null;
+      case 5:
+        return strokeResults !== null;
       default:
         return false;
     }
@@ -419,11 +769,11 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
               </Button>
               <div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">New Visit</h1>
-                <p className="text-xs text-gray-600 dark:text-muted-foreground">Step {currentStep + 1} of 5</p>
+                <p className="text-xs text-gray-600 dark:text-muted-foreground">Step {currentStep + 1} of 6</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {[0, 1, 2, 3, 4].map((step) => (
+              {[0, 1, 2, 3, 4, 5].map((step) => (
                 <div
                   key={step}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
@@ -456,12 +806,12 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
             {currentStep === 0 ? "Cancel" : "Previous"}
           </Button>
           <Button
-            onClick={() => currentStep < 4 ? setCurrentStep(currentStep + 1) : handleCompleteVisit()}
+            onClick={() => currentStep < 5 ? setCurrentStep(currentStep + 1) : handleCompleteVisit()}
             disabled={!canProceed()}
             className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-6 shadow-sm disabled:opacity-50"
           >
-            {currentStep === 4 ? "Complete Visit" : "Next Step"}
-            {currentStep < 4 && <ArrowRight className="w-4 h-4 ml-2" />}
+            {currentStep === 5 ? "Complete Visit" : currentStep === 4 ? "Continue" : "Next Step"}
+            {currentStep < 5 && <ArrowRight className="w-4 h-4 ml-2" />}
           </Button>
         </div>
       </div>

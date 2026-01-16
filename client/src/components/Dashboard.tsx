@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Activity, Camera, Plus, RefreshCw, Users, AlertTriangle, TrendingUp, LogOut, Settings, Search, UserPlus, ArrowLeft, Brain, Heart, Eye, Sparkles } from "lucide-react";
 import { PatientRegistration } from "./PatientRegistration";
 import { NewVisit } from "./NewVisit";
-import { CameraInterface } from "./CameraInterface";
 import { PatientDetails } from "./PatientDetails";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +22,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import gsap from "gsap";
 
 export const Dashboard = () => {
-  const [activeView, setActiveView] = useState<"dashboard" | "newPatient" | "newVisit" | "camera" | "patientDetails" | "patientList">("dashboard");
+  const [activeView, setActiveView] = useState<"dashboard" | "newPatient" | "newVisit" | "patientDetails" | "patientList">("dashboard");
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [visits, setVisits] = useState<VisitWithPatient[]>([]);
@@ -202,10 +201,6 @@ export const Dashboard = () => {
     }} />;
   }
 
-  if (activeView === "camera") {
-    return <CameraInterface onBack={() => setActiveView("dashboard")} />;
-  }
-
   if (activeView === "patientDetails" && selectedPatientId) {
     return (
       <PatientDetails 
@@ -318,7 +313,7 @@ export const Dashboard = () => {
             </div>
             <div>
               <h2 className="font-bold text-lg">NeuroLens</h2>
-              <p className="text-xs text-muted-foreground">MEDICAL CENTER</p>
+              
             </div>
           </div>
           
@@ -373,56 +368,43 @@ export const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <Button 
             ref={el => quickActionsRef.current[0] = el}
             onClick={() => setActiveView("newPatient")} 
-            className="h-16 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-6 group"
+            className="h-20 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-8 group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Plus className="w-5 h-5" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Plus className="w-6 h-6" />
               </div>
-              <span className="font-semibold">New Patient</span>
+              <span className="font-semibold text-lg">New Patient</span>
             </div>
           </Button>
           
           <Button 
             ref={el => quickActionsRef.current[1] = el}
             onClick={() => setActiveView("newVisit")} 
-            className="h-16 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-6 group"
+            className="h-20 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-8 group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Activity className="w-5 h-5" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Activity className="w-6 h-6" />
               </div>
-              <span className="font-semibold">New Visit</span>
+              <span className="font-semibold text-lg">New Visit</span>
             </div>
           </Button>
           
           <Button 
             ref={el => quickActionsRef.current[2] = el}
-            onClick={() => setActiveView("camera")} 
-            className="h-16 bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-6 group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Eye className="w-5 h-5" />
-              </div>
-              <span className="font-semibold">Stroke Analysis</span>
-            </div>
-          </Button>
-          
-          <Button 
-            ref={el => quickActionsRef.current[3] = el}
             onClick={() => setActiveView("patientList")} 
-            className="h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-6 group"
+            className="h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-2xl justify-start px-8 group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Users className="w-5 h-5" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Users className="w-6 h-6" />
               </div>
-              <span className="font-semibold">Patient Records</span>
+              <span className="font-semibold text-lg">Patient Records</span>
             </div>
           </Button>
         </div>
