@@ -1,5 +1,6 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import gsap from "gsap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,6 +46,27 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Refs for GSAP animations
+  const headerRef = useRef(null);
+  const contentRef = useRef(null);
+
+  // GSAP Animation on mount and step change
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(headerRef.current,
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }
+      );
+
+      gsap.fromTo(contentRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.6, delay: 0.2, ease: "power3.out" }
+      );
+    });
+
+    return () => ctx.revert();
+  }, [currentStep]);
 
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
@@ -105,8 +127,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
   const handleRetake = () => {
     setCapturedImage(null);
-    setRiskScore(null);
-    setRiskLevel(null);
+    setResults(null);
     setError(null);
   };
 
@@ -239,18 +260,29 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   // Patient Selection Step
   if (currentStep === "patient") {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={onBack} className="p-2">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Stroke Risk Analysis</h1>
-              <p className="text-muted-foreground">Select a patient to begin analysis</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-background pb-12">
+        {/* Top Navigation Bar */}
+        <div ref={headerRef} className="sticky top-0 z-50 bg-white dark:bg-card border-b border-gray-200 dark:border-border shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onBack}
+                className="rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">Stroke Risk Analysis</h1>
+                <p className="text-xs text-gray-600 dark:text-muted-foreground">Select a patient to begin analysis</p>
+              </div>
             </div>
           </div>
-          
+        </div>
+
+        <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
           <PatientSearch 
             onPatientSelect={handlePatientSelect}
             onNewPatient={handleNewPatient}
@@ -263,45 +295,71 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   // Results Step
   if (currentStep === "results" && results && selectedPatient) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-6xl mx-auto space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => setCurrentStep("capture")} className="p-2">
-                <ArrowLeft className="w-4 h-4" />
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold">Stroke Risk Analysis Results</h1>
-                <p className="text-muted-foreground">{selectedPatient.name} • {getAge(selectedPatient)}y • {new Date().toLocaleDateString()}</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-background pb-12">
+        {/* Top Navigation Bar */}
+        <div ref={headerRef} className="sticky top-0 z-50 bg-white dark:bg-card border-b border-gray-200 dark:border-border shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCurrentStep("capture")}
+                  className="rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back
+                </Button>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">Stroke Risk Analysis Results</h1>
+                  <p className="text-xs text-gray-600 dark:text-muted-foreground">{selectedPatient.name} • {getAge(selectedPatient)}y • {new Date().toLocaleDateString()}</p>
+                </div>
               </div>
+              <Button onClick={downloadPDFReport} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF Report
+              </Button>
             </div>
-            <Button onClick={downloadPDFReport} className="gap-2">
-              <Download className="w-4 h-4" />
-              Download PDF Report
-            </Button>
           </div>
+        </div>
 
+        <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-6">
           {/* Risk Category Card */}
-          <Card className="border-2">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-              <CardTitle className="text-2xl">Risk Category</CardTitle>
+          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+            <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-gray-50 to-white dark:from-gray-900 dark:to-card p-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
+                  <Activity className="w-6 h-6 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-foreground">Risk Assessment</CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="p-8">
-              <div className="flex items-center justify-center gap-8">
-                <RiskGauge value={results.risk_score} size={200} strokeWidth={16} />
-                <div className="space-y-4">
-                  <div>
-                    <div className="text-6xl font-bold text-gray-900">{Math.round(results.risk_score)}%</div>
-                    <p className="text-lg text-muted-foreground mt-2">Final Stroke Risk Score</p>
+            <CardContent className="p-10">
+              <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
+                <div className="relative">
+                  <RiskGauge value={results.risk_score} size={220} strokeWidth={18} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-5xl font-black text-gray-900 dark:text-foreground">{Math.round(results.risk_score)}</div>
+                      <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</div>
+                    </div>
                   </div>
-                  <div className={`inline-flex items-center px-6 py-3 rounded-full text-xl font-semibold ${
-                    results.risk_level === "Low" 
-                      ? "bg-green-100 text-green-800 border-2 border-green-200" 
-                      : results.risk_level === "Medium"
-                      ? "bg-yellow-100 text-yellow-800 border-2 border-yellow-200"
-                      : "bg-red-100 text-red-800 border-2 border-red-200"
-                  }`}>
-                    {results.risk_level} Risk
+                </div>
+                <div className="space-y-6 text-center lg:text-left">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Risk Level</p>
+                    <div className={`inline-flex items-center px-8 py-4 rounded-2xl text-2xl font-bold shadow-lg border-2 transition-all ${
+                      results.risk_level === "Low" 
+                        ? "bg-green-500 text-white border-green-600 shadow-green-200 dark:shadow-green-900" 
+                        : results.risk_level === "Medium"
+                        ? "bg-yellow-500 text-white border-yellow-600 shadow-yellow-200 dark:shadow-yellow-900"
+                        : "bg-red-500 text-white border-red-600 shadow-red-200 dark:shadow-red-900"
+                    }`}>
+                      {results.risk_level} Risk
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 max-w-md">
+                    <p className="leading-relaxed">This assessment is based on comprehensive analysis of retinal imaging, vital signs, and cardiovascular markers.</p>
                   </div>
                 </div>
               </div>
@@ -310,49 +368,51 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Detailed Results */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
-                  Detailed Results
-                </CardTitle>
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950 dark:to-blue-950 p-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
+                    <Activity className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Measurements</CardTitle>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-6 space-y-4">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">CIMT Value</span>
-                    <Badge variant="outline">{results.cimt_value.toFixed(3)} mm</Badge>
+                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl border border-blue-100 dark:border-blue-900 hover:shadow-md transition-all">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">CIMT Value</span>
+                    <Badge className="bg-indigo-500 text-white rounded-lg px-4 py-1.5 text-sm font-bold shadow-md">{results.cimt_value.toFixed(3)} mm</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">ePWV</span>
-                    <Badge variant="outline">{results.epwv_value.toFixed(2)} m/s</Badge>
+                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 rounded-xl border border-purple-100 dark:border-purple-900 hover:shadow-md transition-all">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">ePWV</span>
+                    <Badge className="bg-purple-500 text-white rounded-lg px-4 py-1.5 text-sm font-bold shadow-md">{results.epwv_value.toFixed(2)} m/s</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">Retinal Occlusion Probability</span>
-                    <Badge variant="outline">{(results.retinal_occlusion_prob * 100).toFixed(1)}%</Badge>
+                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950 dark:to-blue-950 rounded-xl border border-cyan-100 dark:border-cyan-900 hover:shadow-md transition-all">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">Retinal Occlusion</span>
+                    <Badge className="bg-cyan-500 text-white rounded-lg px-4 py-1.5 text-sm font-bold shadow-md">{(results.retinal_occlusion_prob * 100).toFixed(1)}%</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">Eye Risk Score</span>
-                    <Badge variant="outline">{(results.eye_risk * 100).toFixed(1)}%</Badge>
+                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-950 dark:to-emerald-950 rounded-xl border border-teal-100 dark:border-teal-900 hover:shadow-md transition-all">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">Eye Risk Score</span>
+                    <Badge className="bg-teal-500 text-white rounded-lg px-4 py-1.5 text-sm font-bold shadow-md">{(results.eye_risk * 100).toFixed(1)}%</Badge>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-accent/5 rounded-lg">
-                    <span className="font-medium">Brain Risk Score</span>
-                    <Badge variant="outline">{(results.brain_risk * 100).toFixed(1)}%</Badge>
+                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 rounded-xl border border-orange-100 dark:border-orange-900 hover:shadow-md transition-all">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">Brain Risk Score</span>
+                    <Badge className="bg-orange-500 text-white rounded-lg px-4 py-1.5 text-sm font-bold shadow-md">{(results.brain_risk * 100).toFixed(1)}%</Badge>
                   </div>
                 </div>
                 
-                <Separator />
+                <Separator className="my-5" />
                 
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm text-muted-foreground">Patient Vitals</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="flex justify-between p-2 bg-muted/50 rounded">
-                      <span>Age:</span>
-                      <span className="font-medium">{patientData.age} years</span>
+                <div className="space-y-3">
+                  <h4 className="font-bold text-sm text-gray-700 dark:text-gray-300 uppercase tracking-wider">Patient Vitals</h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex flex-col p-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl border border-blue-100 dark:border-blue-900">
+                      <span className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Age</span>
+                      <span className="font-bold text-lg text-gray-900 dark:text-foreground">{patientData.age} <span className="text-xs font-normal">years</span></span>
                     </div>
-                    <div className="flex justify-between p-2 bg-muted/50 rounded">
-                      <span>BP:</span>
-                      <span className="font-medium">{patientData.systolicBP}/{patientData.diastolicBP} mmHg</span>
+                    <div className="flex flex-col p-3 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 rounded-xl border border-red-100 dark:border-red-900">
+                      <span className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Blood Pressure</span>
+                      <span className="font-bold text-lg text-gray-900 dark:text-foreground">{patientData.systolicBP}/{patientData.diastolicBP} <span className="text-xs font-normal">mmHg</span></span>
                     </div>
                   </div>
                 </div>
@@ -361,36 +421,52 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
             {/* Fundus Image and Recommendations */}
             <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Fundus Image</CardTitle>
+              <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950 dark:to-blue-950 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-cyan-500 flex items-center justify-center shadow-lg">
+                      <Activity className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Analysis</CardTitle>
+                  </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   {capturedImage && (
-                    <img 
-                      src={capturedImage} 
-                      alt="Retinal fundus" 
-                      className="w-full rounded-lg border"
-                    />
+                    <div className="relative group">
+                      <img 
+                        src={capturedImage} 
+                        alt="Retinal fundus" 
+                        className="w-full rounded-2xl border-2 border-gray-200 dark:border-border shadow-lg transition-transform group-hover:scale-[1.02]"
+                      />
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
                   )}
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Recommendations
-                  </CardTitle>
+              <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-purple-500 flex items-center justify-center shadow-lg">
+                      <FileText className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Clinical Recommendations</CardTitle>
+                  </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <Alert className={
-                    results.risk_level === "High" ? "border-red-200 bg-red-50" :
-                    results.risk_level === "Medium" ? "border-yellow-200 bg-yellow-50" :
-                    "border-green-200 bg-green-50"
+                    results.risk_level === "High" ? "border-2 border-red-300 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950 shadow-lg" :
+                    results.risk_level === "Medium" ? "border-2 border-yellow-300 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950 dark:to-amber-950 shadow-lg" :
+                    "border-2 border-green-300 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 shadow-lg"
                   }>
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription className="text-sm">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${
+                      results.risk_level === "High" ? "bg-red-500" :
+                      results.risk_level === "Medium" ? "bg-yellow-500" :
+                      "bg-green-500"
+                    }`}>
+                      <AlertTriangle className="h-5 w-5 text-white" />
+                    </div>
+                    <AlertDescription className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 font-medium">
                       {results.recommendation}
                     </AlertDescription>
                   </Alert>
@@ -400,42 +476,44 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
           </div>
 
           {/* Risk Breakdown Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Risk Components Breakdown
-              </CardTitle>
+          <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+            <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950 p-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Risk Components Analysis</CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between mb-2 text-sm">
-                    <span>Eye Retinal Risk (22%)</span>
-                    <span className="font-medium">{(results.eye_risk * 100).toFixed(1)}%</span>
+            <CardContent className="p-8 space-y-5">
+              <div className="space-y-6">
+                <div className="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950 dark:to-cyan-950 rounded-xl border border-teal-100 dark:border-teal-900">
+                  <div className="flex justify-between mb-3 text-sm">
+                    <span className="text-gray-900 dark:text-gray-100 font-bold">Eye Retinal Risk <span className="text-teal-600 dark:text-teal-400">(22% weight)</span></span>
+                    <span className="font-bold text-teal-600 dark:text-teal-400 text-lg">{(results.eye_risk * 100).toFixed(1)}%</span>
                   </div>
-                  <Progress value={results.eye_risk * 100} className="h-3" />
+                  <Progress value={results.eye_risk * 100} className="h-4 bg-teal-100 dark:bg-teal-900" />
                 </div>
-                <div>
-                  <div className="flex justify-between mb-2 text-sm">
-                    <span>Carotid Risk (35%)</span>
-                    <span className="font-medium">{(results.cimt_value * 10).toFixed(1)}%</span>
+                <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950 rounded-xl border border-indigo-100 dark:border-indigo-900">
+                  <div className="flex justify-between mb-3 text-sm">
+                    <span className="text-gray-900 dark:text-gray-100 font-bold">Carotid Risk <span className="text-indigo-600 dark:text-indigo-400">(35% weight)</span></span>
+                    <span className="font-bold text-indigo-600 dark:text-indigo-400 text-lg">{(results.cimt_value * 10).toFixed(1)}%</span>
                   </div>
-                  <Progress value={results.cimt_value * 10} className="h-3" />
+                  <Progress value={results.cimt_value * 10} className="h-4 bg-indigo-100 dark:bg-indigo-900" />
                 </div>
-                <div>
-                  <div className="flex justify-between mb-2 text-sm">
-                    <span>Brain Risk (10%)</span>
-                    <span className="font-medium">{(results.brain_risk * 100).toFixed(1)}%</span>
+                <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 rounded-xl border border-orange-100 dark:border-orange-900">
+                  <div className="flex justify-between mb-3 text-sm">
+                    <span className="text-gray-900 dark:text-gray-100 font-bold">Brain Risk <span className="text-orange-600 dark:text-orange-400">(10% weight)</span></span>
+                    <span className="font-bold text-orange-600 dark:text-orange-400 text-lg">{(results.brain_risk * 100).toFixed(1)}%</span>
                   </div>
-                  <Progress value={results.brain_risk * 100} className="h-3" />
+                  <Progress value={results.brain_risk * 100} className="h-4 bg-orange-100 dark:bg-orange-900" />
                 </div>
-                <div>
-                  <div className="flex justify-between mb-2 text-sm">
-                    <span>Pulse Wave Velocity (33%)</span>
-                    <span className="font-medium">{results.epwv_value.toFixed(1)} m/s</span>
+                <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 rounded-xl border border-blue-100 dark:border-blue-900">
+                  <div className="flex justify-between mb-3 text-sm">
+                    <span className="text-gray-900 dark:text-gray-100 font-bold">Pulse Wave Velocity <span className="text-blue-600 dark:text-blue-400">(33% weight)</span></span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400 text-lg">{results.epwv_value.toFixed(1)} m/s</span>
                   </div>
-                  <Progress value={Math.min(results.epwv_value * 10, 100)} className="h-3" />
+                  <Progress value={Math.min(results.epwv_value * 10, 100)} className="h-4 bg-blue-100 dark:bg-blue-900" />
                 </div>
               </div>
             </CardContent>
@@ -449,36 +527,49 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
   // Capture Step (default view)
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => setCurrentStep("patient")} className="p-2">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Retinal Image Analysis</h1>
-            <p className="text-muted-foreground">
-              Patient: {selectedPatient?.name} • MRN: {selectedPatient?.mrn}
-            </p>
+    <div className="min-h-screen bg-gray-50 dark:bg-background pb-12">
+      {/* Top Navigation Bar */}
+      <div ref={headerRef} className="sticky top-0 z-50 bg-white dark:bg-card border-b border-gray-200 dark:border-border shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentStep("patient")}
+              className="rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Image Analysis</h1>
+              <p className="text-xs text-gray-600 dark:text-muted-foreground">
+                Patient: {selectedPatient?.name} • MRN: {selectedPatient?.mrn}
+              </p>
+            </div>
           </div>
         </div>
+      </div>
 
+      <div ref={contentRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Patient Data Input */}
           <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Heart className="w-5 h-5" />
-                  Patient Vitals
-                </CardTitle>
-                <CardDescription>
-                  Enter current vital signs for analysis
-                </CardDescription>
+            <Card className="bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-950 dark:to-pink-950 p-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center shadow-lg">
+                    <Heart className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Patient Vitals</CardTitle>
+                    <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Enter current vital signs for analysis</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-6 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="age">Age (years)</Label>
+                  <Label htmlFor="age" className="text-sm font-medium text-gray-700 dark:text-gray-300">Age (years)</Label>
                   <Input
                     id="age"
                     type="number"
@@ -487,11 +578,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     onChange={(e) => handleInputChange("age", e.target.value)}
                     min="0"
                     max="120"
+                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="systolicBP">Systolic Blood Pressure (mmHg)</Label>
+                  <Label htmlFor="systolicBP" className="text-sm font-medium text-gray-700 dark:text-gray-300">Systolic Blood Pressure (mmHg)</Label>
                   <Input
                     id="systolicBP"
                     type="number"
@@ -502,11 +594,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     max="300"
                     step="1"
                     required
+                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="diastolicBP">Diastolic Blood Pressure (mmHg)</Label>
+                  <Label htmlFor="diastolicBP" className="text-sm font-medium text-gray-700 dark:text-gray-300">Diastolic Blood Pressure (mmHg)</Label>
                   <Input
                     id="diastolicBP"
                     type="number"
@@ -517,17 +610,33 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     max="200"
                     step="1"
                     required
+                    className="h-11 rounded-xl border-gray-300 dark:border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all"
                   />
                 </div>
 
                 {selectedPatient && (
-                  <div className="mt-4 p-3 bg-accent/10 rounded-lg border">
-                    <h4 className="text-sm font-semibold mb-2">Patient Information</h4>
-                    <div className="text-sm space-y-1 text-muted-foreground">
-                      <p>Name: {selectedPatient.name}</p>
-                      <p>Age: {getAge(selectedPatient)} years</p>
-                      <p>Gender: {selectedPatient.gender || "Not specified"}</p>
-                      <p>MRN: {selectedPatient.mrn}</p>
+                  <div className="mt-5 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">
+                    <h4 className="text-sm font-bold mb-3 text-gray-900 dark:text-foreground uppercase tracking-wider flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                      Patient Information
+                    </h4>
+                    <div className="text-sm space-y-2.5">
+                      <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
+                        <span className="font-semibold text-gray-600 dark:text-gray-400">Name:</span>
+                        <span className="font-bold text-gray-900 dark:text-foreground">{selectedPatient.name}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
+                        <span className="font-semibold text-gray-600 dark:text-gray-400">Age:</span>
+                        <span className="font-bold text-gray-900 dark:text-foreground">{getAge(selectedPatient)} years</span>
+                      </div>
+                      <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
+                        <span className="font-semibold text-gray-600 dark:text-gray-400">Gender:</span>
+                        <span className="font-bold text-gray-900 dark:text-foreground">{selectedPatient.gender || "Not specified"}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-2 bg-white/50 dark:bg-gray-900/50 rounded-lg">
+                        <span className="font-semibold text-gray-600 dark:text-gray-400">MRN:</span>
+                        <span className="font-bold text-gray-900 dark:text-foreground">{selectedPatient.mrn}</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -537,39 +646,49 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
           {/* Image Upload */}
           <div>
-            <Card className="h-full">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Upload className="w-5 h-5" />
-                  Upload Fundus Image
-                </CardTitle>
-                <CardDescription>
-                  Upload a high-quality retinal fundus image
-                </CardDescription>
+            <Card className="h-full bg-white dark:bg-card border border-gray-200 dark:border-border shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-gray-200 dark:border-border bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950 p-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
+                    <Upload className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-foreground">Retinal Image</CardTitle>
+                    <CardDescription className="text-xs text-gray-600 dark:text-gray-400">Upload a high-quality fundus photograph</CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="relative">
                   {/* Upload Area */}
                   <div
-                    className="aspect-square bg-muted rounded-lg flex items-center justify-center relative overflow-hidden border-2 border-dashed cursor-pointer hover:bg-accent/5 transition-colors"
+                    className="aspect-square bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-950 rounded-2xl flex items-center justify-center relative overflow-hidden border-3 border-dashed border-blue-300 dark:border-blue-700 cursor-pointer hover:border-blue-400 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 dark:hover:from-blue-900 dark:hover:to-cyan-950 transition-all duration-300 shadow-inner"
                     onDrop={handleDrop}
                     onDragOver={handleDragOver}
                     onClick={() => !capturedImage && fileInputRef.current?.click()}
                   >
                     {capturedImage ? (
-                      <img 
-                        src={capturedImage} 
-                        alt="Captured retinal image" 
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="relative w-full h-full group">
+                        <img 
+                          src={capturedImage} 
+                          alt="Captured retinal image" 
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      </div>
                     ) : (
                       <div className="text-center p-8">
-                        <Upload className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-muted-foreground mb-2 font-medium">
-                          Click or drag an image to upload
+                        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-blue-100 dark:bg-blue-900 flex items-center justify-center shadow-lg">
+                          <Upload className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <p className="text-gray-900 dark:text-gray-100 mb-2 font-bold text-lg">
+                          Upload Fundus Image
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          Supports JPG, PNG formats
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          Click or drag to upload
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 bg-white/50 dark:bg-gray-900/50 rounded-lg px-4 py-2 inline-block">
+                          JPG, PNG formats supported
                         </p>
                         <input
                           ref={fileInputRef}
@@ -585,7 +704,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                   {/* Controls */}
                   <div className="flex justify-center gap-4 mt-4">
                     {capturedImage && (
-                      <Button onClick={handleRetake} variant="outline">
+                      <Button onClick={handleRetake} variant="outline" className="rounded-xl border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Change Image
                       </Button>
@@ -606,12 +725,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
         )}
 
         {/* Analyze Button */}
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-10">
           <Button 
             onClick={calculateRiskScore}
             disabled={!isFormValid || isCalculating}
             size="lg"
-            className="w-full md:w-auto px-12"
+            className="w-full md:w-auto px-16 py-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100"
           >
             {isCalculating ? (
               <>
