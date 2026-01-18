@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RiskGauge } from "@/components/ui/risk-gauge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ArrowRight, Calculator, Heart, Activity, User, CheckCircle2, Stethoscope, ClipboardList, Upload, RotateCcw, AlertTriangle, Download, FileText, TrendingUp, Camera } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calculator, Heart, Activity, User, CheckCircle2, Stethoscope, ClipboardList, Upload, RotateCcw, AlertTriangle, Download, FileText, TrendingUp, Camera, Loader2 } from "lucide-react";
 import { EpwvCalculator } from "./EpwvCalculator";
 import { PatientSearch } from "./PatientSearch";
 import { Patient, createVisit, getDiseasesList, formatDiseases } from "@/lib/database";
@@ -18,6 +18,8 @@ import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import { Client } from "@gradio/client";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import jsPDF from "jspdf";
 
 interface NewVisitProps {
   onBack: () => void;
@@ -62,7 +64,11 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
   const [strokeResults, setStrokeResults] = useState<StrokeRiskResults | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [clinicalRecommendations, setClinicalRecommendations] = useState<string[]>([]);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const reportRef = useRef<HTMLDivElement | null>(null);
 
   // Refs for GSAP animations
   const headerRef = useRef(null);
@@ -102,6 +108,306 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
     { title: "Retinal Analysis", icon: Camera },
     { title: "Risk Assessment", icon: Activity }
   ];
+
+  // Gemini API for clinical recommendations
+  const generateClinicalRecommendations = async () => {
+    if (!strokeResults || !selectedPatient) return;
+
+    try {
+      setIsLoadingRecommendations(true);
+      
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("Gemini API key not configured");
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `You are a medical AI assistant helping clinicians with stroke risk assessment. Based on the following patient data and stroke risk analysis results, provide exactly 3 specific, actionable clinical recommendations.
+
+Patient Information:
+- Name: ${selectedPatient.name}
+- Age: ${visitData.age} years
+- Gender: ${selectedPatient.gender || "Not specified"}
+- Blood Pressure: ${visitData.systolic}/${visitData.diastolic} mmHg
+- Medical History: ${selectedDiseases.length > 0 ? selectedDiseases.join(", ") : "None reported"}
+
+Stroke Risk Analysis Results:
+- Final Stroke Risk Score: ${strokeResults.risk_score.toFixed(1)}%
+- Risk Level: ${strokeResults.risk_level === "Medium" ? "Moderate" : strokeResults.risk_level}
+- CIMT Value: ${strokeResults.cimt_value.toFixed(3)} mm
+- ePWV (estimated Pulse Wave Velocity): ${strokeResults.epwv_value.toFixed(2)} m/s
+- Retinal Occlusion Probability: ${(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%
+
+Please provide exactly 3 clinical recommendations in the following JSON format:
+{
+  "recommendations": [
+    "First recommendation here",
+    "Second recommendation here", 
+    "Third recommendation here"
+  ]
+}
+
+Each recommendation should be:
+1. Specific and actionable
+2. Based on the risk level and clinical measurements
+3. Appropriate for a clinical setting
+4. Between 1-2 sentences each`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      // Parse the JSON response
+      const jsonMatch = text.match(/\{[\s\S]*"recommendations"[\s\S]*\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        if (parsed.recommendations && Array.isArray(parsed.recommendations)) {
+          setClinicalRecommendations(parsed.recommendations.slice(0, 3));
+        }
+      } else {
+        // Fallback: try to extract recommendations from text
+        const lines = text.split('\n').filter(line => line.trim().length > 0);
+        const recs = lines.slice(0, 3).map(line => line.replace(/^[\d\.\-\*]+\s*/, '').trim());
+        setClinicalRecommendations(recs);
+      }
+    } catch (error) {
+      console.error("Error generating recommendations:", error);
+      // Fallback recommendations based on risk level
+      const fallbackRecs = strokeResults.risk_level === "High" 
+        ? [
+            "Urgent referral to a neurologist or stroke specialist for comprehensive evaluation.",
+            "Immediate lifestyle modifications including smoking cessation, dietary changes, and regular physical activity.",
+            "Consider initiating or optimizing antihypertensive and lipid-lowering therapy as per clinical guidelines."
+          ]
+        : strokeResults.risk_level === "Medium"
+        ? [
+            "Schedule follow-up appointment within 3-6 months for repeat risk assessment.",
+            "Encourage lifestyle modifications including regular exercise and heart-healthy diet.",
+            "Monitor blood pressure regularly and consider medication adjustment if needed."
+          ]
+        : [
+            "Continue current healthy lifestyle practices and regular health check-ups.",
+            "Maintain blood pressure within normal range through diet and exercise.",
+            "Annual follow-up recommended for continued stroke risk monitoring."
+          ];
+      setClinicalRecommendations(fallbackRecs);
+    } finally {
+      setIsLoadingRecommendations(false);
+    }
+  };
+
+  // Generate PDF Report
+  const generatePDFReport = async () => {
+    if (!strokeResults || !selectedPatient) return;
+
+    try {
+      setIsGeneratingPDF(true);
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      let yPos = margin;
+
+      // Helper function to add text with word wrap
+      const addWrappedText = (text: string, x: number, y: number, maxWidth: number, lineHeight: number = 7) => {
+        const lines = pdf.splitTextToSize(text, maxWidth);
+        pdf.text(lines, x, y);
+        return y + (lines.length * lineHeight);
+      };
+
+      // Header
+      pdf.setFillColor(30, 41, 59); // slate-800
+      pdf.rect(0, 0, pageWidth, 40, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(24);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('NeuroLens', margin, 20);
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Stroke Risk Assessment Report', margin, 30);
+      
+      // Date on right side
+      pdf.setFontSize(10);
+      const currentDate = new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      pdf.text(currentDate, pageWidth - margin - pdf.getTextWidth(currentDate), 30);
+
+      yPos = 55;
+      pdf.setTextColor(0, 0, 0);
+
+      // Patient Information Section
+      pdf.setFillColor(241, 245, 249); // slate-100
+      pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 35, 'F');
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Patient Information', margin + 5, yPos + 5);
+      
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      yPos += 15;
+      pdf.text(`Name: ${selectedPatient.name}`, margin + 5, yPos);
+      pdf.text(`Age: ${visitData.age} years`, margin + 80, yPos);
+      pdf.text(`Gender: ${selectedPatient.gender || 'Not specified'}`, margin + 130, yPos);
+      yPos += 8;
+      pdf.text(`Blood Pressure: ${visitData.systolic}/${visitData.diastolic} mmHg`, margin + 5, yPos);
+      pdf.text(`Mean BP: ${getMeanBP() || 'N/A'} mmHg`, margin + 80, yPos);
+      yPos += 20;
+
+      // Risk Assessment Section
+      pdf.setFillColor(strokeResults.risk_level === "High" ? 254 : strokeResults.risk_level === "Medium" ? 254 : 220, 
+                       strokeResults.risk_level === "High" ? 226 : strokeResults.risk_level === "Medium" ? 249 : 252,
+                       strokeResults.risk_level === "High" ? 226 : strokeResults.risk_level === "Medium" ? 195 : 231);
+      pdf.rect(margin, yPos - 5, pageWidth - 2 * margin, 30, 'F');
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Risk Assessment Summary', margin + 5, yPos + 5);
+      
+      pdf.setFontSize(20);
+      const riskText = `${strokeResults.risk_score.toFixed(1)}% - ${strokeResults.risk_level === "Medium" ? "Moderate" : strokeResults.risk_level} Risk`;
+      pdf.setTextColor(strokeResults.risk_level === "High" ? 220 : strokeResults.risk_level === "Medium" ? 180 : 34,
+                       strokeResults.risk_level === "High" ? 38 : strokeResults.risk_level === "Medium" ? 130 : 197,
+                       strokeResults.risk_level === "High" ? 38 : strokeResults.risk_level === "Medium" ? 0 : 94);
+      pdf.text(riskText, margin + 5, yPos + 20);
+      pdf.setTextColor(0, 0, 0);
+      yPos += 40;
+
+      // Clinical Measurements
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Clinical Measurements', margin, yPos);
+      yPos += 10;
+      
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      
+      const measurements = [
+        { label: 'CIMT Value', value: `${strokeResults.cimt_value.toFixed(3)} mm` },
+        { label: 'ePWV (Pulse Wave Velocity)', value: `${strokeResults.epwv_value.toFixed(2)} m/s` },
+        { label: 'Retinal Occlusion Probability', value: `${(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%` },
+        { label: 'Final Stroke Risk Probability', value: `${strokeResults.risk_score.toFixed(1)}%` }
+      ];
+
+      measurements.forEach((m, i) => {
+        pdf.setFillColor(i % 2 === 0 ? 248 : 241, i % 2 === 0 ? 250 : 245, i % 2 === 0 ? 252 : 249);
+        pdf.rect(margin, yPos - 4, pageWidth - 2 * margin, 10, 'F');
+        pdf.text(m.label, margin + 5, yPos + 2);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(m.value, pageWidth - margin - pdf.getTextWidth(m.value) - 5, yPos + 2);
+        pdf.setFont('helvetica', 'normal');
+        yPos += 10;
+      });
+
+      yPos += 10;
+
+      // Medical History
+      if (selectedDiseases.length > 0) {
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Medical History', margin, yPos);
+        yPos += 8;
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(selectedDiseases.join(', '), margin + 5, yPos);
+        yPos += 15;
+      }
+
+      // Clinical Recommendations
+      if (clinicalRecommendations.length > 0) {
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Clinical Recommendations', margin, yPos);
+        yPos += 10;
+        
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'normal');
+        clinicalRecommendations.forEach((rec, index) => {
+          pdf.setFillColor(241, 245, 249);
+          const recHeight = Math.ceil(pdf.splitTextToSize(rec, pageWidth - 2 * margin - 20).length * 5) + 6;
+          pdf.rect(margin, yPos - 4, pageWidth - 2 * margin, recHeight, 'F');
+          pdf.text(`${index + 1}.`, margin + 5, yPos + 2);
+          yPos = addWrappedText(rec, margin + 15, yPos + 2, pageWidth - 2 * margin - 25, 5);
+          yPos += 5;
+        });
+      }
+
+      // Add fundus image if available
+      if (capturedImage) {
+        // Check if we need a new page
+        if (yPos > pageHeight - 80) {
+          pdf.addPage();
+          yPos = margin;
+        }
+
+        pdf.setFontSize(14);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Fundus Image', margin, yPos + 10);
+        yPos += 15;
+
+        try {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = capturedImage;
+          });
+
+          const imgWidth = 80;
+          const imgHeight = (img.height / img.width) * imgWidth;
+          pdf.addImage(img, 'JPEG', margin, yPos, imgWidth, imgHeight);
+          yPos += imgHeight + 10;
+        } catch (imgError) {
+          console.error('Error adding image to PDF:', imgError);
+          pdf.setFontSize(10);
+          pdf.text('Fundus image could not be embedded', margin, yPos + 5);
+        }
+      }
+
+      // Footer
+      const footerY = pageHeight - 15;
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, footerY - 5, pageWidth - margin, footerY - 5);
+      pdf.setFontSize(8);
+      pdf.setTextColor(128, 128, 128);
+      pdf.text('This report is generated by NeuroLens AI-powered stroke risk assessment system.', margin, footerY);
+      pdf.text('For clinical use only. Please consult with a healthcare professional.', margin, footerY + 4);
+
+      // Save the PDF
+      const fileName = `NeuroLens_Report_${selectedPatient.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+      pdf.save(fileName);
+
+      toast({
+        title: "Report Downloaded",
+        description: `PDF report saved as ${fileName}`,
+        variant: "default"
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "PDF Generation Failed",
+        description: "Failed to generate PDF report. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  // Auto-generate recommendations when stroke results are available
+  useEffect(() => {
+    if (strokeResults && currentStep === 5 && clinicalRecommendations.length === 0) {
+      generateClinicalRecommendations();
+    }
+  }, [strokeResults, currentStep]);
 
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);
@@ -177,10 +483,11 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
       const predictionResult = typeof data[0] === 'string' ? JSON.parse(data[0]) : data[0];
       
       // Map the Gradio response to our StrokeRiskResults interface
+      // Note: Backend returns "risk_score_%" as the key
       const strokeResult: StrokeRiskResults = {
         success: true,
-        risk_score: predictionResult.risk_score ?? predictionResult.combined_risk_score ?? 0,
-        risk_level: predictionResult.risk_level ?? (predictionResult.risk_score > 66 ? "High" : predictionResult.risk_score > 33 ? "Medium" : "Low"),
+        risk_score: predictionResult["risk_score_%"] ?? predictionResult.risk_score ?? predictionResult.combined_risk_score ?? 0,
+        risk_level: predictionResult.risk_level ?? (predictionResult["risk_score_%"] > 60 ? "High" : predictionResult["risk_score_%"] > 30 ? "Medium" : "Low"),
         cimt_value: predictionResult.cimt_value ?? predictionResult.cimt ?? 0,
         epwv_value: predictionResult.epwv_value ?? predictionResult.epwv ?? 0,
         retinal_occlusion_prob: predictionResult.retinal_occlusion_prob ?? predictionResult.retinal_occlusion ?? 0,
@@ -637,23 +944,39 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
         const age = parseFloat(visitData.age);
         const mbp = parseFloat(getMeanBP() || "0");
         
-        // Determine risk bar position and color
-        const getRiskBarColor = () => {
-          if (strokeResults.risk_level === "Low") return "from-green-500 to-green-400";
-          if (strokeResults.risk_level === "Medium") return "from-yellow-500 to-yellow-400";
-          return "from-red-500 to-red-400";
-        };
+        // Calculate arrow position percentage
+        const arrowPosition = Math.min(Math.max(strokeResults.risk_score, 0), 100);
         
         return (
-          <div className="space-y-6">
+          <div className="space-y-6" ref={reportRef}>
             {/* Risk Category Card */}
             <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
               <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-slate-800 to-slate-900 p-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
-                    <Activity className="w-6 h-6 text-white" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
+                      <Activity className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-white">Stroke Risk Assessment</CardTitle>
                   </div>
-                  <CardTitle className="text-2xl font-bold text-white">Stroke Risk Assessment</CardTitle>
+                  {/* Download Report Button */}
+                  <Button
+                    onClick={generatePDFReport}
+                    disabled={isGeneratingPDF}
+                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold shadow-lg"
+                  >
+                    {isGeneratingPDF ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download Report
+                      </>
+                    )}
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-8">
@@ -671,24 +994,45 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
                   </div>
                 </div>
 
-                {/* Risk Bar/Gauge */}
-                <div className="mb-8">
-                  <div className="relative h-8 rounded-full overflow-hidden bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 shadow-inner">
-                    {/* Indicator */}
+                {/* Risk Bar/Gauge with Arrow */}
+                <div className="mb-8 px-4">
+                  {/* Arrow indicator above the bar */}
+                  <div className="relative h-10 mb-1">
                     <div 
-                      className="absolute top-0 h-full w-1.5 bg-white shadow-lg transition-all duration-500 rounded-full"
-                      style={{ left: `calc(${Math.min(Math.max(strokeResults.risk_score, 0), 100)}% - 3px)` }}
-                    />
-                    {/* Pointer triangle */}
+                      className="absolute transition-all duration-700 ease-out flex flex-col items-center"
+                      style={{ left: `${arrowPosition}%`, transform: 'translateX(-50%)' }}
+                    >
+                      {/* Score label */}
+                      <span className={`text-sm font-bold mb-1 ${
+                        arrowPosition < 33 ? 'text-green-400' : arrowPosition < 66 ? 'text-yellow-400' : 'text-red-400'
+                      }`}>
+                        {strokeResults.risk_score.toFixed(1)}%
+                      </span>
+                      {/* Down arrow */}
+                      <svg width="20" height="12" viewBox="0 0 20 12" className={`${
+                        arrowPosition < 33 ? 'fill-green-400' : arrowPosition < 66 ? 'fill-yellow-400' : 'fill-red-400'
+                      }`}>
+                        <path d="M10 12L0 0h20L10 12z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* Gradient bar */}
+                  <div className="relative h-8 rounded-full overflow-hidden shadow-lg" style={{
+                    background: 'linear-gradient(to right, #22c55e 0%, #22c55e 30%, #eab308 50%, #ef4444 70%, #ef4444 100%)'
+                  }}>
+                    {/* Indicator line */}
                     <div 
-                      className="absolute -bottom-2 w-0 h-0 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent border-t-white transition-all duration-500"
-                      style={{ left: `calc(${Math.min(Math.max(strokeResults.risk_score, 0), 100)}% - 8px)` }}
+                      className="absolute top-0 h-full w-1 bg-white shadow-xl transition-all duration-700 ease-out"
+                      style={{ left: `calc(${arrowPosition}% - 2px)` }}
                     />
                   </div>
-                  <div className="flex justify-between mt-3 text-sm font-medium">
-                    <span className="text-green-400">Low</span>
-                    <span className="text-yellow-400">Moderate</span>
-                    <span className="text-red-400">High</span>
+                  
+                  {/* Labels below bar */}
+                  <div className="flex justify-between mt-3 text-sm font-semibold px-2">
+                    <span className="text-green-400">Low (0-30%)</span>
+                    <span className="text-yellow-400">Moderate (30-60%)</span>
+                    <span className="text-red-400">High (60-100%)</span>
                   </div>
                 </div>
 
@@ -748,30 +1092,79 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
               </Card>
             </div>
 
-            {/* Recommendations */}
-            {strokeResults.recommendation && (
-              <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
-                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
+            {/* Clinical Recommendations - Gemini AI */}
+            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
+                <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-bold text-white">Clinical Recommendations</CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <Alert className={
-                    strokeResults.risk_level === "High" ? "border-2 border-red-500/50 bg-gradient-to-br from-red-500/10 to-orange-500/10" :
-                    strokeResults.risk_level === "Medium" ? "border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-amber-500/10" :
-                    "border-2 border-green-500/50 bg-gradient-to-br from-emerald-500/10 to-teal-500/10"
-                  }>
-                    <AlertTriangle className={`h-5 w-5 ${
-                      strokeResults.risk_level === "High" ? "text-red-500" :
-                      strokeResults.risk_level === "Medium" ? "text-yellow-500" :
-                      "text-green-500"
-                    }`} />
-                    <AlertDescription className="text-sm leading-relaxed text-slate-200 font-medium">
-                      {strokeResults.recommendation}
-                    </AlertDescription>
-                  </Alert>
-                </CardContent>
-              </Card>
-            )}
+                  <Button
+                    onClick={generateClinicalRecommendations}
+                    disabled={isLoadingRecommendations}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-lg border-purple-500/50 text-purple-400 hover:bg-purple-500/10"
+                  >
+                    {isLoadingRecommendations ? (
+                      <>
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="w-3 h-3 mr-1" />
+                        Regenerate
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {isLoadingRecommendations ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-center">
+                      <Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto mb-3" />
+                      <p className="text-slate-400 text-sm">Generating AI-powered recommendations...</p>
+                    </div>
+                  </div>
+                ) : clinicalRecommendations.length > 0 ? (
+                  <div className="space-y-4">
+                    {clinicalRecommendations.map((rec, index) => (
+                      <Alert 
+                        key={index}
+                        className={`border-l-4 px-3 py-2 ${
+                          strokeResults.risk_level === "High" 
+                            ? "border-l-red-500 bg-red-700/90" 
+                            : strokeResults.risk_level === "Medium"
+                            ? "border-l-yellow-500 bg-yellow-300/90"
+                            : "border-l-green-500 bg-green-600/90"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+                            strokeResults.risk_level === "High" 
+                              ? "bg-red-500 text-white" 
+                              : strokeResults.risk_level === "Medium"
+                              ? "bg-yellow-500 text-slate-900"
+                              : "bg-green-500 text-white"
+                          }`}>
+                            {index + 1}
+                          </div>
+                          <AlertDescription className={`text-base leading-relaxed font-medium pt-0.5 ${
+                            strokeResults.risk_level === "Medium" ? "text-slate-900" : "text-white"
+                          }`}>
+                            {rec}
+                          </AlertDescription>
+                        </div>
+                      </Alert>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="text-slate-400 text-sm">No recommendations available. Click "Regenerate" to get AI-powered recommendations.</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         );
 
