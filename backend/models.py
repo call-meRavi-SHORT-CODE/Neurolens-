@@ -17,7 +17,7 @@ import timm
 
 
 
-def predict_eye_stroke(img_path, model_path="C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//eye_stroke.h5", class_names=["NORMAL", "RAO", "CRVO", "BRVO"]):
+def predict_eye_stroke(img_path, model_path="models/eye_stroke.h5", class_names=["NORMAL", "RAO", "CRVO", "BRVO"]):
     """
     Load an image, preprocess, predict class using the given model,
     and return the scaled value.
@@ -59,9 +59,8 @@ def predict_eye_stroke(img_path, model_path="C://Users//USER//Downloads//NEUROLE
 
 # MODEL 2
 
-model_path = "C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//cimt_model.pth"
 
-def predict_cimt(eye_image_path, model_path="C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//cimt_model.pth", eye_side='left', output_type='regression'):
+def predict_cimt(eye_image_path, model_path="models/cimt_model.pth", eye_side='left', output_type='regression'):
     # ---------------------------
     # Define device
     # ---------------------------
@@ -159,78 +158,6 @@ def predict_cimt(eye_image_path, model_path="C://Users//USER//Downloads//NEUROLE
 
 
 # MODEL 3
-
-
-def predict_brain_stroke(img_path: str, pth_path: str = "C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//models//brain_stroke.pth", size: int = 512) -> float:
-    """
-    Predict C class (normal/abnormal) from image and return scaled value.
-    Normal → 0.2, Abnormal → 0.9
-    """
-    MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-    STD  = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-    C_CLASSES = ["normal", "abnormal"]
-
-    # --------- Image preprocessing ----------
-    bgr = cv2.imread(img_path)
-    if bgr is None:
-        raise FileNotFoundError(f"Cannot read image: {img_path}")
-    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
-    h, w = rgb.shape[:2]
-    scale = size / max(h, w)
-    nh, nw = int(round(h * scale)), int(round(w * scale))
-    resized = cv2.resize(rgb, (nw, nh), interpolation=cv2.INTER_AREA)
-    canvas = np.zeros((size, size, 3), dtype=np.float32)
-    top, left = (size - nh) // 2, (size - nw) // 2
-    canvas[top:top+nh, left:left+nw, :] = resized
-    norm = (canvas - MEAN) / STD
-    chw = np.transpose(norm, (2, 0, 1))  # HWC->CHW
-    arr = np.expand_dims(chw, axis=0).astype(np.float32)  # NCHW
-
-    # --------- Build model ----------
-    def make_backbone(name_primary="tf_efficientnet_b0.ns_jft_in1k", name_fallback="efficientnet_b0"):
-        try:
-            m = timm.create_model(name_primary, pretrained=True, num_classes=0, global_pool="avg")
-        except Exception:
-            m = timm.create_model(name_fallback, pretrained=True, num_classes=0, global_pool="avg")
-        return m, m.num_features
-
-    class HeadCls(nn.Module):
-        def __init__(self, in_features, n_classes):
-            super().__init__()
-            self.fc = nn.Linear(in_features, n_classes)
-        def forward(self, x): return self.fc(x)
-
-    bb, feat = make_backbone()
-    model = nn.Sequential(bb, HeadCls(feat, len(C_CLASSES)))
-
-    # --------- Load weights ----------
-    state = torch.load(pth_path, map_location="cpu")
-    try:
-        model.load_state_dict(state, strict=True)
-    except Exception:
-        model.load_state_dict(state, strict=False)
-
-    model.eval()
-
-    # --------- Predict ----------
-    t = torch.from_numpy(arr)
-    with torch.no_grad():
-        logits = model(t).numpy()
-    e = np.exp(logits - np.max(logits, axis=-1, keepdims=True))
-    probs = e / np.clip(e.sum(axis=-1, keepdims=True), 1e-9, None)
-    idx = int(np.argmax(probs))
-    pred_class = C_CLASSES[idx]
-
-    # --------- Map to scaled value ----------
-    if pred_class == "normal":
-        return 0.2
-    elif pred_class == "abnormal":
-        return 0.9
-
-
-
-
-# MODEL 4
 
 def calculate_ePWV_scale(age, SBP, DBP):
     MBP = DBP + 0.4 * (SBP - DBP)
