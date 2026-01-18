@@ -10,9 +10,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RiskGauge } from "@/components/ui/risk-gauge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, ArrowRight, Calculator, Heart, Activity, User, CheckCircle2, Stethoscope, ClipboardList, Upload, RotateCcw, AlertTriangle, Download, FileText, TrendingUp, Camera, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calculator, Heart, Activity, User, CheckCircle2, Stethoscope, ClipboardList, Upload, RotateCcw, AlertTriangle, Download, FileText, TrendingUp, Camera, Loader2, Video } from "lucide-react";
 import { EpwvCalculator } from "./EpwvCalculator";
 import { PatientSearch } from "./PatientSearch";
+import { FundusVideoExtractor } from "./FundusVideoExtractor";
 import { Patient, createVisit, getDiseasesList, formatDiseases } from "@/lib/database";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -67,8 +68,20 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
   const [clinicalRecommendations, setClinicalRecommendations] = useState<string[]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [showVideoExtractor, setShowVideoExtractor] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const reportRef = useRef<HTMLDivElement | null>(null);
+
+  // Handler for video extractor
+  const handleVideoImageExtracted = (imageDataUrl: string) => {
+    setCapturedImage(imageDataUrl);
+    setError(null);
+    toast({
+      title: "Image Extracted",
+      description: "Fundus image has been extracted from video successfully.",
+      variant: "default"
+    });
+  };
 
   // Refs for GSAP animations
   const headerRef = useRef(null);
@@ -797,6 +810,15 @@ Each recommendation should be:
                 </div>
               </CardHeader>
               <CardContent className="p-6">
+                {/* Video Extractor Button */}
+                <Button
+                  onClick={() => setShowVideoExtractor(true)}
+                  className="w-full mb-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold shadow-lg py-3"
+                >
+                  <Video className="w-5 h-5 mr-2" />
+                  Extract from Fundus Video
+                </Button>
+
                 <div className="relative">
                   <div
                     className="aspect-square bg-slate-800/50 rounded-2xl flex items-center justify-center relative overflow-hidden border-2 border-dashed border-blue-500/50 cursor-pointer hover:border-blue-400 hover:bg-slate-700/50 transition-all duration-300 shadow-inner"
@@ -1256,6 +1278,13 @@ Each recommendation should be:
           </Button>
         </div>
       </div>
+
+      {/* Fundus Video Extractor Modal */}
+      <FundusVideoExtractor
+        open={showVideoExtractor}
+        onClose={() => setShowVideoExtractor(false)}
+        onImageExtracted={handleVideoImageExtracted}
+      />
     </div>
   );
 };
