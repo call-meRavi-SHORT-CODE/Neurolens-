@@ -21,16 +21,15 @@ def predict_stroke_risk(img_path: str, age: int, SBP: float, DBP: float, brain_m
     # Get predictions from all models
     ER = predict_eye_stroke(img_path)  # Eye Retinal
     CR = predict_cimt(img_path)  # Carotid Intima-Media Thickness
-    BR = predict_brain_stroke(img_path)  # Brain Retinal
     PR = calculate_ePWV_scale(age, SBP, DBP)  # Pulse Wave Velocity
 
     # Calculate weighted stroke risk score
-    StrokeRiskScore = 0.22*ER + 0.35*CR + 0.10 *BR +  0.33*PR
+    StrokeRiskScore = 0.33*ER + 0.33*CR + 0.33*PR
     
     return StrokeRiskScore
 
-
+"""
 # Example usage
 if __name__ == "__main__":
     result = predict_stroke_risk("C://Users//USER//Downloads//NEUROLENS//Neurolens-//backend//test.jpg", 20, 120, 80)
-    print(f"Stroke Risk Score: {result:.3f}")
+    print(f"Stroke Risk Score: {result:.3f}") """
