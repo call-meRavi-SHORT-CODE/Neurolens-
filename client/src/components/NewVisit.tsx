@@ -1203,7 +1203,7 @@ Each recommendation should be:
                 variant="ghost"
                 size="sm"
                 onClick={onBack}
-                className="rounded-xl hover:bg-slate-800"
+                className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white border border-blue-700 font-semibold shadow-md px-4"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
