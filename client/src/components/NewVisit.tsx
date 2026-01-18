@@ -135,7 +135,7 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
       const prompt = `You are a medical AI assistant helping clinicians with stroke risk assessment. Based on the following patient data and stroke risk analysis results, provide exactly 3 specific, actionable clinical recommendations.
 
