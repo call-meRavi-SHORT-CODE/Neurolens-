@@ -637,9 +637,16 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
         const age = parseFloat(visitData.age);
         const mbp = parseFloat(getMeanBP() || "0");
         
+        // Determine risk bar position and color
+        const getRiskBarColor = () => {
+          if (strokeResults.risk_level === "Low") return "from-green-500 to-green-400";
+          if (strokeResults.risk_level === "Medium") return "from-yellow-500 to-yellow-400";
+          return "from-red-500 to-red-400";
+        };
+        
         return (
           <div className="space-y-6">
-            {/* Risk Assessment Card */}
+            {/* Risk Category Card */}
             <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
               <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-slate-800 to-slate-900 p-6">
                 <div className="flex items-center gap-3">
@@ -649,88 +656,122 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
                   <CardTitle className="text-2xl font-bold text-white">Stroke Risk Assessment</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-10">
-                <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
-                  <div className="relative">
-                    <RiskGauge value={strokeResults.risk_score} size={220} strokeWidth={18} />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="text-5xl font-black text-white">{Math.round(strokeResults.risk_score)}</div>
-                        <div className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Score</div>
-                      </div>
-                    </div>
+              <CardContent className="p-8">
+                {/* Risk Category Display */}
+                <div className="text-center mb-8">
+                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Risk Category</p>
+                  <div className={`inline-flex items-center px-10 py-5 rounded-2xl text-3xl font-bold shadow-lg border-2 transition-all ${
+                    strokeResults.risk_level === "Low" 
+                      ? "bg-green-500 text-white border-green-600 shadow-green-900/50" 
+                      : strokeResults.risk_level === "Medium"
+                      ? "bg-yellow-500 text-white border-yellow-600 shadow-yellow-900/50"
+                      : "bg-red-500 text-white border-red-600 shadow-red-900/50"
+                  }`}>
+                    {strokeResults.risk_level === "Medium" ? "Moderate" : strokeResults.risk_level} Risk
                   </div>
-                  <div className="space-y-6 text-center lg:text-left">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Risk Level</p>
-                      <div className={`inline-flex items-center px-8 py-4 rounded-2xl text-2xl font-bold shadow-lg border-2 transition-all ${
-                        strokeResults.risk_level === "Low" 
-                          ? "bg-green-500 text-white border-green-600 shadow-green-200 dark:shadow-green-900" 
-                          : strokeResults.risk_level === "Medium"
-                          ? "bg-yellow-500 text-white border-yellow-600 shadow-yellow-200 dark:shadow-yellow-900"
-                          : "bg-red-500 text-white border-red-600 shadow-red-200 dark:shadow-red-900"
-                      }`}>
-                        {strokeResults.risk_level} Risk
-                      </div>
-                    </div>
+                </div>
+
+                {/* Risk Bar/Gauge */}
+                <div className="mb-8">
+                  <div className="relative h-8 rounded-full overflow-hidden bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 shadow-inner">
+                    {/* Indicator */}
+                    <div 
+                      className="absolute top-0 h-full w-1.5 bg-white shadow-lg transition-all duration-500 rounded-full"
+                      style={{ left: `calc(${Math.min(Math.max(strokeResults.risk_score, 0), 100)}% - 3px)` }}
+                    />
+                    {/* Pointer triangle */}
+                    <div 
+                      className="absolute -bottom-2 w-0 h-0 border-l-[8px] border-r-[8px] border-t-[10px] border-l-transparent border-r-transparent border-t-white transition-all duration-500"
+                      style={{ left: `calc(${Math.min(Math.max(strokeResults.risk_score, 0), 100)}% - 8px)` }}
+                    />
                   </div>
+                  <div className="flex justify-between mt-3 text-sm font-medium">
+                    <span className="text-green-400">Low</span>
+                    <span className="text-yellow-400">Moderate</span>
+                    <span className="text-red-400">High</span>
+                  </div>
+                </div>
+
+                {/* Final Stroke Risk Probability */}
+                <div className="text-center p-6 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl border border-indigo-500/30">
+                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Final Stroke Risk Probability</p>
+                  <p className="text-5xl font-black text-white">{strokeResults.risk_score.toFixed(1)}%</p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Clinical Measurements */}
-            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-indigo-500/10 to-blue-500/10 p-5">
-                <CardTitle className="text-xl font-bold text-white">Clinical Measurements</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl border border-blue-500/20">
-                    <p className="text-xs text-slate-400 mb-1">CIMT Value</p>
-                    <p className="text-lg font-bold text-white">{strokeResults.cimt_value.toFixed(3)} mm</p>
+            {/* Detailed Results & Fundus Image */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Detailed Results */}
+              <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-indigo-500/10 to-blue-500/10 p-5">
+                  <CardTitle className="text-xl font-bold text-white">Detailed Results</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl border border-blue-500/20 flex justify-between items-center">
+                      <p className="text-sm text-slate-400">CIMT Value</p>
+                      <p className="text-xl font-bold text-white">{strokeResults.cimt_value.toFixed(3)} mm</p>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 flex justify-between items-center">
+                      <p className="text-sm text-slate-400">ePWV</p>
+                      <p className="text-xl font-bold text-white">{strokeResults.epwv_value.toFixed(2)} m/s</p>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl border border-cyan-500/20 flex justify-between items-center">
+                      <p className="text-sm text-slate-400">Retinal Occlusion Probability</p>
+                      <p className="text-xl font-bold text-white">{(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%</p>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 rounded-xl border border-indigo-500/20 flex justify-between items-center">
+                      <p className="text-sm text-slate-400">Final Stroke Risk Probability</p>
+                      <p className="text-xl font-bold text-white">{strokeResults.risk_score.toFixed(1)}%</p>
+                    </div>
                   </div>
-                  <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20">
-                    <p className="text-xs text-slate-400 mb-1">ePWV</p>
-                    <p className="text-lg font-bold text-white">{strokeResults.epwv_value.toFixed(2)} m/s</p>
-                  </div>
-                  <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl border border-cyan-500/20">
-                    <p className="text-xs text-slate-400 mb-1">Retinal Occlusion</p>
-                    <p className="text-lg font-bold text-white">{(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%</p>
-                  </div>
-                  <div className="p-4 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 rounded-xl border border-teal-500/20">
-                    <p className="text-xs text-slate-400 mb-1">Eye Risk</p>
-                    <p className="text-lg font-bold text-white">{(strokeResults.eye_risk * 100).toFixed(1)}%</p>
-                  </div>
-                  <div className="p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl border border-orange-500/20">
-                    <p className="text-xs text-slate-400 mb-1">Brain Risk</p>
-                    <p className="text-lg font-bold text-white">{(strokeResults.brain_risk * 100).toFixed(1)}%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+
+              {/* Fundus Image */}
+              <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 p-5">
+                  <CardTitle className="text-xl font-bold text-white">Fundus Image</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  {capturedImage && (
+                    <div className="relative rounded-xl overflow-hidden border-2 border-slate-700">
+                      <img 
+                        src={capturedImage} 
+                        alt="Retinal Fundus Image" 
+                        className="w-full h-auto object-contain"
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Recommendations */}
-            <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
-                <CardTitle className="text-xl font-bold text-white">Clinical Recommendations</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <Alert className={
-                  strokeResults.risk_level === "High" ? "border-2 border-red-500/50 bg-gradient-to-br from-red-500/10 to-orange-500/10" :
-                  strokeResults.risk_level === "Medium" ? "border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-amber-500/10" :
-                  "border-2 border-green-500/50 bg-gradient-to-br from-emerald-500/10 to-teal-500/10"
-                }>
-                  <AlertTriangle className={`h-5 w-5 ${
-                    strokeResults.risk_level === "High" ? "text-red-500" :
-                    strokeResults.risk_level === "Medium" ? "text-yellow-500" :
-                    "text-green-500"
-                  }`} />
-                  <AlertDescription className="text-sm leading-relaxed text-slate-200 font-medium">
-                    {strokeResults.recommendation}
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
+            {strokeResults.recommendation && (
+              <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
+                  <CardTitle className="text-xl font-bold text-white">Clinical Recommendations</CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <Alert className={
+                    strokeResults.risk_level === "High" ? "border-2 border-red-500/50 bg-gradient-to-br from-red-500/10 to-orange-500/10" :
+                    strokeResults.risk_level === "Medium" ? "border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-amber-500/10" :
+                    "border-2 border-green-500/50 bg-gradient-to-br from-emerald-500/10 to-teal-500/10"
+                  }>
+                    <AlertTriangle className={`h-5 w-5 ${
+                      strokeResults.risk_level === "High" ? "text-red-500" :
+                      strokeResults.risk_level === "Medium" ? "text-yellow-500" :
+                      "text-green-500"
+                    }`} />
+                    <AlertDescription className="text-sm leading-relaxed text-slate-200 font-medium">
+                      {strokeResults.recommendation}
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            )}
           </div>
         );
 
