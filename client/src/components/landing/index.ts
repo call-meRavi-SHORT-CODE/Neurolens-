@@ -1,0 +1,9 @@
+export { default as Navbar } from './Navbar';
+export { default as HeroSection } from './HeroSection';
+export { default as ProblemSection } from './ProblemSection';
+export { default as SolutionSection } from './SolutionSection';
+export { default as HowItWorksSection } from './HowItWorksSection';
+export { default as ImpactSection } from './ImpactSection';
+export { default as Footer } from './Footer';
+export { default as AmbientBackground } from './AmbientBackground';
+export { default as EyeVisualization } from './EyeVisualization';
