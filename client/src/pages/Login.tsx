@@ -62,7 +62,7 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate('/dashboard');
     }
   }, [user, navigate]);
 
@@ -91,7 +91,7 @@ const Login = () => {
           title: 'Success',
           description: 'Welcome back!',
         });
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (error) {
       toast({
