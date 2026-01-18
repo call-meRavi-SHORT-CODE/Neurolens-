@@ -17,6 +17,7 @@ import { Patient, createVisit, getDiseasesList, formatDiseases } from "@/lib/dat
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import gsap from "gsap";
+import { Client } from "@gradio/client";
 
 interface NewVisitProps {
   onBack: () => void;
@@ -156,34 +157,40 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
       setError(null);
       setIsCalculating(true);
       
+      // Fetch the image and convert to blob
       const response = await fetch(capturedImage);
       const blob = await response.blob();
-      const file = new File([blob], "retinal_image.jpg", { type: "image/jpeg" });
 
-      const formData = new FormData();
-      formData.append("image", file);
-      formData.append("age", visitData.age);
-      formData.append("systolic_bp", visitData.systolic);
-      formData.append("diastolic_bp", visitData.diastolic);
-
-      const apiResponse = await fetch("http://localhost:8000/predict-risk", {
-        method: "POST",
-        body: formData,
+      // Connect to Gradio API
+      const client = await Client.connect("Ravikrishna-25/neurolens-O");
+      const result = await client.predict("/gradio_predict", { 
+        image: blob, 
+        age: parseInt(visitData.age), 
+        systolic_bp: parseInt(visitData.systolic), 
+        diastolic_bp: parseInt(visitData.diastolic), 
       });
 
-      if (!apiResponse.ok) {
-        const errorData = await apiResponse.json();
-        throw new Error(errorData.detail || "Failed to calculate risk score");
-      }
-
-      const result = await apiResponse.json();
+      // Parse the result - Gradio returns data in result.data array
+      const data = result.data as any;
       
-      if (result.success) {
-        setStrokeResults(result);
-        setCurrentStep(5); // Move to results step
-      } else {
-        throw new Error("Failed to get risk assessment result");
-      }
+      // The API returns a JSON object with the prediction results
+      const predictionResult = typeof data[0] === 'string' ? JSON.parse(data[0]) : data[0];
+      
+      // Map the Gradio response to our StrokeRiskResults interface
+      const strokeResult: StrokeRiskResults = {
+        success: true,
+        risk_score: predictionResult.risk_score ?? predictionResult.combined_risk_score ?? 0,
+        risk_level: predictionResult.risk_level ?? (predictionResult.risk_score > 66 ? "High" : predictionResult.risk_score > 33 ? "Medium" : "Low"),
+        cimt_value: predictionResult.cimt_value ?? predictionResult.cimt ?? 0,
+        epwv_value: predictionResult.epwv_value ?? predictionResult.epwv ?? 0,
+        retinal_occlusion_prob: predictionResult.retinal_occlusion_prob ?? predictionResult.retinal_occlusion ?? 0,
+        eye_risk: predictionResult.eye_risk ?? predictionResult.eye_stroke_risk ?? 0,
+        brain_risk: predictionResult.brain_risk ?? predictionResult.brain_stroke_risk ?? 0,
+        recommendation: predictionResult.recommendation ?? predictionResult.recommendations ?? ""
+      };
+      
+      setStrokeResults(strokeResult);
+      setCurrentStep(5); // Move to results step
     } catch (error) {
       console.error("Error calculating risk score:", error);
       setError(error instanceof Error ? error.message : "Failed to calculate risk score. Please try again.");
