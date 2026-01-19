@@ -4,21 +4,21 @@ const Footer = () => {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-center md:text-left">
-            <h3 className="text-2xl font-bold text-gradient-primary mb-2">NeuroLens</h3>
-            <p className="text-sm text-gray-400">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-cyan-500 bg-clip-text text-transparent mb-2">NeuroLens</h3>
+            <p className="text-sm text-sky-200">
               AI-powered retinal imaging for stroke risk prediction
             </p>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-            <a href="#problem" className="hover:text-primary transition-colors">Problem</a>
-            <a href="#solution" className="hover:text-primary transition-colors">Solution</a>
-            <a href="#how-it-works" className="hover:text-primary transition-colors">How It Works</a>
-            <a href="#impact" className="hover:text-primary transition-colors">Impact</a>
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-sky-200">
+            <a href="#problem" className="hover:text-sky-400 transition-colors">Problem</a>
+            <a href="#solution" className="hover:text-sky-400 transition-colors">Solution</a>
+            <a href="#how-it-works" className="hover:text-sky-400 transition-colors">How It Works</a>
+            <a href="#impact" className="hover:text-sky-400 transition-colors">Impact</a>
           </div>
         </div>
         
-        <div className="mt-8 pt-8 border-t border-border/30 text-center text-sm text-gray-400">
+        <div className="mt-8 pt-8 border-t border-border/30 text-center text-sm text-sky-200">
           <p>© 2024 NeuroLens Research Project. All rights reserved.</p>
           <p className="mt-2">
             Built for advancing healthcare through AI innovation

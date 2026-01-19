@@ -146,11 +146,11 @@ export const EpwvCalculator = ({ age, mbp }: EpwvCalculatorProps) => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div className="p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground">Patient Age</p>
+              <p className="text-sm text-sky-200">Patient Age</p>
               <p className="text-2xl font-bold">{age} years</p>
             </div>
             <div className="p-3 bg-muted/50 rounded-lg">
-              <p className="text-sm text-muted-foreground">Mean Blood Pressure</p>
+              <p className="text-sm text-sky-200">Mean Blood Pressure</p>
               <p className="text-2xl font-bold">{mbp} mmHg</p>
             </div>
           </div>
@@ -159,7 +159,7 @@ export const EpwvCalculator = ({ age, mbp }: EpwvCalculatorProps) => {
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center gap-3">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                <span className="text-muted-foreground">Calculating ePWV...</span>
+                <span className="text-sky-200">Calculating ePWV...</span>
               </div>
             </div>
           )}
@@ -170,7 +170,7 @@ export const EpwvCalculator = ({ age, mbp }: EpwvCalculatorProps) => {
               <div className="text-center p-6 bg-gradient-to-br from-card to-muted/30 rounded-lg border">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <TrendingUp className="w-5 h-5 text-primary" />
-                  <span className="text-sm font-medium text-muted-foreground">ePWV Result</span>
+                  <span className="text-sm font-medium text-sky-200">ePWV Result</span>
                 </div>
                 <div className="text-4xl font-bold text-primary mb-2">
                   {result.epwv.toFixed(2)} m/s
@@ -198,11 +198,11 @@ export const EpwvCalculator = ({ age, mbp }: EpwvCalculatorProps) => {
                     <div>
                       <p className="font-medium mb-2">{result.interpretation}</p>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Confidence Level:</span>
+                        <span className="text-sm text-sky-200">Confidence Level:</span>
                         <Badge variant="outline" className={
                           result.confidence === "High" ? "border-success text-success" :
                           result.confidence === "Moderate" ? "border-warning text-warning" :
-                          "border-muted-foreground text-muted-foreground"
+                          "border-muted-foreground text-sky-200"
                         }>
                           {result.confidence}
                         </Badge>

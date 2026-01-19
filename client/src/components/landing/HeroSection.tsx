@@ -41,7 +41,7 @@ const HeroSection = () => {
             animationDelay: '200ms',
             animationFillMode: 'forwards'
           }}>
-            <span className="text-gradient-primary">NeuroLens</span>
+            <span className="bg-gradient-to-r from-white via-sky-300 to-cyan-400 bg-clip-text text-transparent">NeuroLens</span>
           </h1>
 
           {/* Subtitle */}
@@ -50,11 +50,11 @@ const HeroSection = () => {
             animationFillMode: 'forwards'
           }}>
             AI-powered retinal imaging for{" "}
-            <span className="font-medium text-primary">early stroke risk prediction</span>
+            <span className="font-medium text-sky-400">early stroke risk prediction</span>
           </p>
 
           {/* Punch Line */}
-          <p className="animate-fade-up opacity-0 text-lg md:text-xl text-gray-400 italic" style={{
+          <p className="animate-fade-up opacity-0 text-lg md:text-xl text-sky-200 italic" style={{
             animationDelay: '500ms',
             animationFillMode: 'forwards'
           }}>
@@ -66,11 +66,11 @@ const HeroSection = () => {
             animationDelay: '600ms',
             animationFillMode: 'forwards'
           }}>
-            <Button size="lg" onClick={scrollToContent} className="text-lg px-8 py-6 font-semibold glow-primary bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300">
+            <Button size="lg" onClick={scrollToContent} className="text-lg px-8 py-6 font-semibold bg-gradient-to-r from-sky-500 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white transition-all duration-300">
               Explore Platform
             </Button>
             <Link to="/login">
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6 font-medium border-primary/30 hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 text-white">
+              <Button variant="outline" size="lg" className="text-lg px-8 py-6 font-medium border-sky-400 hover:bg-sky-500/10 hover:border-sky-500 transition-all duration-300 text-white">
                 Access Platform
               </Button>
             </Link>
@@ -81,7 +81,7 @@ const HeroSection = () => {
             animationDelay: '800ms',
             animationFillMode: 'forwards'
           }}>
-            <button onClick={scrollToContent} className="flex flex-col items-center gap-2 text-gray-400 hover:text-primary transition-colors mx-auto">
+            <button onClick={scrollToContent} className="flex flex-col items-center gap-2 text-sky-300 hover:text-sky-400 transition-colors mx-auto">
               <span className="text-sm font-medium">Scroll to explore</span>
               <ChevronDown className="w-6 h-6 animate-bounce" />
             </button>

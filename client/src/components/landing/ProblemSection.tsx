@@ -31,13 +31,13 @@ const ProblemSection = () => {
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
+          <span className="text-sky-400 font-semibold text-sm uppercase tracking-wider mb-4 block">
             The Challenge
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Why This <span className="text-gradient-cyan">Matters</span>
+            Why This <span className="bg-gradient-to-r from-sky-300 to-cyan-400 bg-clip-text text-transparent">Matters</span>
           </h2>
-          <p className="text-lg text-gray-400">
+          <p className="text-lg text-sky-100">
             Stroke is a leading cause of death and disability worldwide. 
             Early detection can save lives, but current methods are expensive and inaccessible.
           </p>
@@ -50,11 +50,11 @@ const ProblemSection = () => {
               className="group p-6 rounded-2xl bg-gradient-card border-glow hover:glow-primary transition-all duration-500"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
-                <problem.icon className="w-7 h-7 text-primary" />
+              <div className="w-14 h-14 rounded-xl bg-sky-500/10 flex items-center justify-center mb-5 group-hover:bg-sky-500/20 transition-colors">
+                <problem.icon className="w-7 h-7 text-sky-400" />
               </div>
               <h3 className="text-xl font-semibold mb-3 text-white">{problem.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
+              <p className="text-sky-100 text-sm leading-relaxed">
                 {problem.description}
               </p>
             </div>

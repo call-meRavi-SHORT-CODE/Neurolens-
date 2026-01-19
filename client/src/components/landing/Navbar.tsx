@@ -31,7 +31,7 @@ const Navbar = () => {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <a href="#" className="text-2xl font-bold text-gradient-primary">
+          <a href="#" className="text-2xl font-bold bg-gradient-to-r from-sky-400 to-cyan-500 bg-clip-text text-transparent">
             NeuroLens
           </a>
 
@@ -41,13 +41,13 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-white hover:text-primary transition-colors"
+                className="text-sm font-medium text-white hover:text-sky-400 transition-colors"
               >
                 {link.label}
               </a>
             ))}
             <Link to="/login">
-              <Button size="sm" variant="outline" className="ml-4 border-primary/50 hover:bg-primary/10 text-white">
+              <Button size="sm" variant="outline" className="ml-4 border-sky-400 hover:bg-sky-500/10 text-white hover:text-sky-400">
                 Login
               </Button>
             </Link>
@@ -70,14 +70,14 @@ const Navbar = () => {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="text-sm font-medium text-white hover:text-primary transition-colors"
+                  className="text-sm font-medium text-white hover:text-sky-400 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.label}
                 </a>
               ))}
               <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                <Button size="sm" variant="outline" className="w-full mt-2 border-primary/50 hover:bg-primary/10 text-white">
+                <Button size="sm" variant="outline" className="w-full mt-2 border-sky-400 hover:bg-sky-500/10 text-white hover:text-sky-400">
                   Login
                 </Button>
               </Link>

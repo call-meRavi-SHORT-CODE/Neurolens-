@@ -82,10 +82,10 @@ const Profile = () => {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card>
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Card className="bg-slate-900 border-slate-800">
           <CardContent className="p-6">
-            <p className="text-muted-foreground">Loading profile...</p>
+            <p className="text-sky-200">Loading profile...</p>
           </CardContent>
         </Card>
       </div>
@@ -93,7 +93,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-8">
+    <div className="min-h-screen bg-black px-4 py-8">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/">
@@ -211,7 +211,7 @@ const Profile = () => {
 
               <div className="space-y-2">
                 <Label>Account Created</Label>
-                <p className="px-3 py-2 bg-muted rounded-md text-muted-foreground">
+                <p className="px-3 py-2 bg-muted rounded-md text-sky-200">
                   {new Date(profile.created_at).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',

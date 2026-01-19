@@ -831,7 +831,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             🔬 Fundus Video Frame Extractor
           </DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogDescription className="text-sky-200">
             Extract and enhance high-quality fundus images from video recordings
           </DialogDescription>
         </DialogHeader>
@@ -848,7 +848,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
               <Video className="w-10 h-10 text-indigo-400" />
             </div>
             <p className="text-xl font-bold text-white mb-2">Upload Fundus Video</p>
-            <p className="text-slate-400 mb-4">Supports MP4, MOV formats</p>
+            <p className="text-sky-200 mb-4">Supports MP4, MOV formats</p>
             <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold">
               <Upload className="w-4 h-4 mr-2" />
               Select Video File
@@ -895,7 +895,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
             {processingMode === 'manual' && (
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <span className="text-slate-300 text-sm w-20 font-medium">Frame:</span>
+                  <span className="text-sky-100 text-sm w-20 font-medium">Frame:</span>
                   <Slider
                     value={[currentFrameIndex]}
                     max={totalFrames - 1}
@@ -958,19 +958,19 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
                   <div className="grid grid-cols-4 gap-4 mt-4">
                     <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
                       <div className="text-2xl font-bold text-indigo-400">{qualityMetrics.sharpness.toFixed(0)}</div>
-                      <div className="text-xs text-slate-300">Sharpness</div>
+                      <div className="text-xs text-sky-100">Sharpness</div>
                     </div>
                     <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
                       <div className="text-2xl font-bold text-green-400">{qualityMetrics.contrast.toFixed(0)}</div>
-                      <div className="text-xs text-slate-300">Contrast</div>
+                      <div className="text-xs text-sky-100">Contrast</div>
                     </div>
                     <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
                       <div className="text-2xl font-bold text-yellow-400">{qualityMetrics.brightness.toFixed(0)}</div>
-                      <div className="text-xs text-slate-300">Brightness</div>
+                      <div className="text-xs text-sky-100">Brightness</div>
                     </div>
                     <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
                       <div className="text-2xl font-bold text-red-400">{qualityMetrics.glare.toFixed(0)}</div>
-                      <div className="text-xs text-slate-300">Glare</div>
+                      <div className="text-xs text-sky-100">Glare</div>
                     </div>
                   </div>
                 )}
@@ -982,7 +982,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
         {/* Step: Crop Adjustment */}
         {step === 'crop' && currentFrame && (
           <div className="space-y-6">
-            <p className="text-center text-slate-300 font-medium">
+            <p className="text-center text-sky-100 font-medium">
               Adjust the circular crop area. Drag to move, drag the edge to resize.
             </p>
 
@@ -1005,7 +1005,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
 
             <div className="flex justify-center gap-4">
               <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                <p className="text-xs text-slate-300 mb-2 font-medium">Cropped Preview</p>
+                <p className="text-xs text-sky-100 mb-2 font-medium">Cropped Preview</p>
                 <canvas ref={previewCroppedRef} className="rounded-lg border border-slate-600" />
               </div>
             </div>
@@ -1032,7 +1032,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
             <div className="text-center">
               <Loader2 className="w-16 h-16 animate-spin text-indigo-500 mx-auto mb-4" />
               <p className="text-xl font-bold text-white mb-2">{processingStage}</p>
-              <p className="text-slate-300">Enhancing your fundus image...</p>
+              <p className="text-sky-100">Enhancing your fundus image...</p>
             </div>
             <Progress value={processingProgress} className="w-full h-2 bg-slate-700 [&>div]:bg-indigo-500" />
           </div>

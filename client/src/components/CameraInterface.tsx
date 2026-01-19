@@ -260,7 +260,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   // Patient Selection Step
   if (currentStep === "patient") {
     return (
-      <div className="min-h-screen bg-slate-950 pb-12">
+      <div className="min-h-screen bg-black pb-12">
         {/* Top Navigation Bar */}
         <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -276,7 +276,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
               </Button>
               <div>
                 <h1 className="text-xl font-bold text-white">Stroke Risk Analysis</h1>
-                <p className="text-xs text-slate-400">Select a patient to begin analysis</p>
+                <p className="text-xs text-sky-200">Select a patient to begin analysis</p>
               </div>
             </div>
           </div>
@@ -295,7 +295,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
   // Results Step
   if (currentStep === "results" && results && selectedPatient) {
     return (
-      <div className="min-h-screen bg-slate-950 pb-12">
+      <div className="min-h-screen bg-black pb-12">
         {/* Top Navigation Bar */}
         <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -312,7 +312,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                 </Button>
                 <div>
                   <h1 className="text-xl font-bold text-white">Stroke Risk Analysis Results</h1>
-                  <p className="text-xs text-slate-400">{selectedPatient.name} • {getAge(selectedPatient)}y • {new Date().toLocaleDateString()}</p>
+                  <p className="text-xs text-sky-200">{selectedPatient.name} • {getAge(selectedPatient)}y • {new Date().toLocaleDateString()}</p>
                 </div>
               </div>
               <Button onClick={downloadPDFReport} className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
@@ -404,7 +404,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                 <Separator className="my-5" />
                 
                 <div className="space-y-3">
-                  <h4 className="font-bold text-sm text-slate-300 uppercase tracking-wider">Patient Vitals</h4>
+                  <h4 className="font-bold text-sm text-sky-100 uppercase tracking-wider">Patient Vitals</h4>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="flex flex-col p-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl border border-blue-100 dark:border-blue-900">
                       <span className="text-xs text-gray-600 dark:text-gray-400 font-semibold mb-1">Age</span>
@@ -527,7 +527,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
 
   // Capture Step (default view)
   return (
-    <div className="min-h-screen bg-slate-950 pb-12">
+    <div className="min-h-screen bg-black pb-12">
       {/* Top Navigation Bar */}
       <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -543,7 +543,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
             </Button>
             <div>
               <h1 className="text-xl font-bold text-white">Retinal Image Analysis</h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-sky-200">
                 Patient: {selectedPatient?.name} • MRN: {selectedPatient?.mrn}
               </p>
             </div>
@@ -569,7 +569,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
               </CardHeader>
               <CardContent className="p-6 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="age" className="text-sm font-medium text-slate-300">Age (years)</Label>
+                  <Label htmlFor="age" className="text-sm font-medium text-sky-100">Age (years)</Label>
                   <Input
                     id="age"
                     type="number"
@@ -578,12 +578,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     onChange={(e) => handleInputChange("age", e.target.value)}
                     min="0"
                     max="120"
-                    className="h-11 rounded-xl border-slate-700 focus:border-cyan-500 focus:border-blue-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl border-slate-700 focus:border-sky-500 focus:border-blue-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="systolicBP" className="text-sm font-medium text-slate-300">Systolic Blood Pressure (mmHg)</Label>
+                  <Label htmlFor="systolicBP" className="text-sm font-medium text-sky-100">Systolic Blood Pressure (mmHg)</Label>
                   <Input
                     id="systolicBP"
                     type="number"
@@ -594,12 +594,12 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     max="300"
                     step="1"
                     required
-                    className="h-11 rounded-xl border-slate-700 focus:border-cyan-500 focus:border-blue-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl border-slate-700 focus:border-sky-500 focus:border-blue-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="diastolicBP" className="text-sm font-medium text-slate-300">Diastolic Blood Pressure (mmHg)</Label>
+                  <Label htmlFor="diastolicBP" className="text-sm font-medium text-sky-100">Diastolic Blood Pressure (mmHg)</Label>
                   <Input
                     id="diastolicBP"
                     type="number"
@@ -610,7 +610,7 @@ export const CameraInterface = ({ onBack }: CameraInterfaceProps) => {
                     max="200"
                     step="1"
                     required
-                    className="h-11 rounded-xl border-slate-700 focus:border-cyan-500 focus:border-blue-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl border-slate-700 focus:border-sky-500 focus:border-blue-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
 

@@ -29,13 +29,13 @@ const ImpactSection = () => {
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
+          <span className="text-sky-400 font-semibold text-sm uppercase tracking-wider mb-4 block">
             Our Impact
           </span>
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-            Transforming <span className="text-gradient-primary">Healthcare</span>
+            Transforming <span className="bg-gradient-to-r from-white via-sky-300 to-cyan-400 bg-clip-text text-transparent">Healthcare</span>
           </h2>
-          <p className="text-lg text-gray-400">
+          <p className="text-lg text-sky-100">
             Making stroke prevention accessible, affordable, and accurate for everyone
           </p>
         </div>
@@ -47,16 +47,16 @@ const ImpactSection = () => {
               className="group relative p-8 rounded-2xl bg-gradient-card border-glow hover:glow-primary transition-all duration-500 text-center overflow-hidden"
             >
               {/* Background Number */}
-              <div className="absolute -top-4 -right-4 text-8xl font-bold text-primary/5 select-none">
+              <div className="absolute -top-4 -right-4 text-8xl font-bold text-sky-400/5 select-none">
                 {stat.value}
               </div>
               
               <div className="relative z-10">
-                <div className="text-5xl md:text-6xl font-bold text-gradient-cyan mb-3">
+                <div className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-sky-300 to-cyan-400 bg-clip-text text-transparent mb-3">
                   {stat.value}
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-white">{stat.label}</h3>
-                <p className="text-sm text-gray-400">{stat.description}</p>
+                <p className="text-sm text-sky-100">{stat.description}</p>
               </div>
             </div>
           ))}
@@ -71,9 +71,9 @@ const ImpactSection = () => {
               { title: "Life-Saving", desc: "Reduce stroke mortality through timely action" },
             ].map((benefit) => (
               <div key={benefit.title} className="text-center p-6">
-                <div className="w-3 h-3 rounded-full bg-primary mx-auto mb-4" />
+                <div className="w-3 h-3 rounded-full bg-sky-400 mx-auto mb-4" />
                 <h4 className="font-semibold mb-2 text-white">{benefit.title}</h4>
-                <p className="text-sm text-gray-400">{benefit.desc}</p>
+                <p className="text-sm text-sky-100">{benefit.desc}</p>
               </div>
             ))}
           </div>

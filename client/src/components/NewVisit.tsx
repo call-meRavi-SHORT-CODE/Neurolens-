@@ -590,34 +590,34 @@ Each recommendation should be:
               {selectedPatient && (
                 <div className="p-4 bg-slate-800 border border-blue-500/30 rounded-xl">
                   <p className="text-sm font-semibold text-white">Selected Patient: {selectedPatient.name}</p>
-                  <p className="text-xs text-slate-400">MRN: {selectedPatient.mrn}</p>
+                  <p className="text-xs text-sky-200">MRN: {selectedPatient.mrn}</p>
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="reason" className="text-sm font-medium text-slate-300">Reason for Visit *</Label>
+                <Label htmlFor="reason" className="text-sm font-medium text-sky-100">Reason for Visit *</Label>
                 <Input
                   id="reason"
                   value={visitData.reason}
                   onChange={(e) => setVisitData({ ...visitData, reason: e.target.value })}
                   placeholder="e.g., Routine screening, Follow-up"
-                  className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="technician" className="text-sm font-medium text-slate-300">Technician</Label>
+                  <Label htmlFor="technician" className="text-sm font-medium text-sky-100">Technician</Label>
                   <Input
                     id="technician"
                     value={visitData.technician}
                     onChange={(e) => setVisitData({ ...visitData, technician: e.target.value })}
                     placeholder="Technician name"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="location" className="text-sm font-medium text-slate-300">Location</Label>
+                  <Label htmlFor="location" className="text-sm font-medium text-sky-100">Location</Label>
                   <Select onValueChange={(value) => setVisitData({ ...visitData, location: value })}>
-                    <SelectTrigger className="h-11 rounded-xl border-slate-700 focus:border-cyan-500">
+                    <SelectTrigger className="h-11 rounded-xl border-slate-700 focus:border-sky-500">
                       <SelectValue placeholder="Select location" />
                     </SelectTrigger>
                     <SelectContent>
@@ -649,73 +649,73 @@ Each recommendation should be:
             <CardContent className="p-6 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="age" className="text-sm font-medium text-slate-300">Age (years) *</Label>
+                  <Label htmlFor="age" className="text-sm font-medium text-sky-100">Age (years) *</Label>
                   <Input
                     id="age"
                     type="number"
                     value={visitData.age}
                     onChange={(e) => setVisitData({ ...visitData, age: e.target.value })}
                     placeholder="Enter age"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="heartRate" className="text-sm font-medium text-slate-300">Heart Rate (bpm)</Label>
+                  <Label htmlFor="heartRate" className="text-sm font-medium text-sky-100">Heart Rate (bpm)</Label>
                   <Input
                     id="heartRate"
                     type="number"
                     value={visitData.heartRate}
                     onChange={(e) => setVisitData({ ...visitData, heartRate: e.target.value })}
                     placeholder="Enter heart rate"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="systolic" className="text-sm font-medium text-slate-300">Systolic BP (mmHg) *</Label>
+                  <Label htmlFor="systolic" className="text-sm font-medium text-sky-100">Systolic BP (mmHg) *</Label>
                   <Input
                     id="systolic"
                     type="number"
                     value={visitData.systolic}
                     onChange={(e) => setVisitData({ ...visitData, systolic: e.target.value })}
                     placeholder="Enter systolic BP"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="diastolic" className="text-sm font-medium text-slate-300">Diastolic BP (mmHg) *</Label>
+                  <Label htmlFor="diastolic" className="text-sm font-medium text-sky-100">Diastolic BP (mmHg) *</Label>
                   <Input
                     id="diastolic"
                     type="number"
                     value={visitData.diastolic}
                     onChange={(e) => setVisitData({ ...visitData, diastolic: e.target.value })}
                     placeholder="Enter diastolic BP"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="height" className="text-sm font-medium text-slate-300">Height (cm)</Label>
+                  <Label htmlFor="height" className="text-sm font-medium text-sky-100">Height (cm)</Label>
                   <Input
                     id="height"
                     type="number"
                     value={visitData.height}
                     onChange={(e) => setVisitData({ ...visitData, height: e.target.value })}
                     placeholder="Enter height"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="weight" className="text-sm font-medium text-slate-300">Weight (kg)</Label>
+                  <Label htmlFor="weight" className="text-sm font-medium text-sky-100">Weight (kg)</Label>
                   <Input
                     id="weight"
                     type="number"
                     value={visitData.weight}
                     onChange={(e) => setVisitData({ ...visitData, weight: e.target.value })}
                     placeholder="Enter weight"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="temperature" className="text-sm font-medium text-slate-300">Temperature (°C)</Label>
+                  <Label htmlFor="temperature" className="text-sm font-medium text-sky-100">Temperature (°C)</Label>
                   <Input
                     id="temperature"
                     type="number"
@@ -723,18 +723,18 @@ Each recommendation should be:
                     value={visitData.temperature}
                     onChange={(e) => setVisitData({ ...visitData, temperature: e.target.value })}
                     placeholder="Enter temperature"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="spO2" className="text-sm font-medium text-slate-300">SpO₂ (%)</Label>
+                  <Label htmlFor="spO2" className="text-sm font-medium text-sky-100">SpO₂ (%)</Label>
                   <Input
                     id="spO2"
                     type="number"
                     value={visitData.spO2}
                     onChange={(e) => setVisitData({ ...visitData, spO2: e.target.value })}
                     placeholder="Enter oxygen saturation"
-                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    className="h-11 rounded-xl bg-slate-800 border-slate-700 text-white placeholder:text-sky-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
                   />
                 </div>
               </div>
@@ -774,7 +774,7 @@ Each recommendation should be:
                       onCheckedChange={(checked) => handleDiseaseChange(disease, checked as boolean)}
                       className="border-slate-600"
                     />
-                    <Label htmlFor={disease} className="text-sm text-slate-300 cursor-pointer">{disease}</Label>
+                    <Label htmlFor={disease} className="text-sm text-sky-100 cursor-pointer">{disease}</Label>
                   </div>
                 ))}
               </div>
@@ -798,14 +798,14 @@ Each recommendation should be:
         return (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="bg-slate-900 border border-slate-800 shadow-md rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-5">
+              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-sky-500/10 to-blue-500/10 p-5">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
                     <Camera className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <CardTitle className="text-xl font-bold text-white">Retinal Image Upload</CardTitle>
-                    <CardDescription className="text-xs text-slate-400">Upload fundus image for stroke risk analysis</CardDescription>
+                    <CardDescription className="text-xs text-sky-200">Upload fundus image for stroke risk analysis</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -843,10 +843,10 @@ Each recommendation should be:
                         <p className="text-gray-900 text-white mb-2 font-bold text-lg">
                           Upload Fundus Image
                         </p>
-                        <p className="text-sm text-slate-400 mb-3">
+                        <p className="text-sm text-sky-200 mb-3">
                           Click or drag to upload
                         </p>
-                        <p className="text-xs text-slate-400 bg-slate-700/50 rounded-lg px-4 py-2 inline-block">
+                        <p className="text-xs text-sky-200 bg-slate-700/50 rounded-lg px-4 py-2 inline-block">
                           JPG, PNG formats supported
                         </p>
                         <input
@@ -887,7 +887,7 @@ Each recommendation should be:
                   </div>
                   <div>
                     <CardTitle className="text-xl font-bold text-white">Visit Summary</CardTitle>
-                    <CardDescription className="text-xs text-slate-400">Review before analysis</CardDescription>
+                    <CardDescription className="text-xs text-sky-200">Review before analysis</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -895,8 +895,8 @@ Each recommendation should be:
                 {selectedPatient && (
                   <div className="p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-blue-500/30 rounded-xl">
                     <h4 className="text-sm font-bold mb-2 text-white">Patient</h4>
-                    <p className="text-sm text-slate-300">{selectedPatient.name}</p>
-                    <p className="text-xs text-slate-400">MRN: {selectedPatient.mrn}</p>
+                    <p className="text-sm text-sky-100">{selectedPatient.name}</p>
+                    <p className="text-xs text-sky-200">MRN: {selectedPatient.mrn}</p>
                   </div>
                 )}
 
@@ -904,22 +904,22 @@ Each recommendation should be:
                   <h4 className="text-sm font-bold mb-2 text-white">Vital Signs</h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <span className="text-slate-400">Age:</span>
+                      <span className="text-sky-200">Age:</span>
                       <span className="ml-2 font-semibold text-white">{visitData.age} yrs</span>
                     </div>
                     <div>
-                      <span className="text-slate-400">BP:</span>
+                      <span className="text-sky-200">BP:</span>
                       <span className="ml-2 font-semibold text-white">{visitData.systolic}/{visitData.diastolic}</span>
                     </div>
                     {visitData.heartRate && (
                       <div>
-                        <span className="text-slate-400">HR:</span>
+                        <span className="text-sky-200">HR:</span>
                         <span className="ml-2 font-semibold text-white">{visitData.heartRate} bpm</span>
                       </div>
                     )}
                     {getMeanBP() && (
                       <div>
-                        <span className="text-slate-400">MBP:</span>
+                        <span className="text-sky-200">MBP:</span>
                         <span className="ml-2 font-semibold text-white">{getMeanBP()} mmHg</span>
                       </div>
                     )}
@@ -1004,7 +1004,7 @@ Each recommendation should be:
               <CardContent className="p-8">
                 {/* Risk Category Display */}
                 <div className="text-center mb-8">
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Risk Category</p>
+                  <p className="text-sm font-semibold text-sky-200 uppercase tracking-wider mb-4">Risk Category</p>
                   <div className={`inline-flex items-center px-10 py-5 rounded-2xl text-3xl font-bold shadow-lg border-2 transition-all ${
                     strokeResults.risk_level === "Low" 
                       ? "bg-green-500 text-white border-green-600 shadow-green-900/50" 
@@ -1060,7 +1060,7 @@ Each recommendation should be:
 
                 {/* Final Stroke Risk Probability */}
                 <div className="text-center p-6 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl border border-indigo-500/30">
-                  <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Final Stroke Risk Probability</p>
+                  <p className="text-sm font-semibold text-sky-200 uppercase tracking-wider mb-2">Final Stroke Risk Probability</p>
                   <p className="text-5xl font-black text-white">{strokeResults.risk_score.toFixed(1)}%</p>
                 </div>
               </CardContent>
@@ -1076,19 +1076,19 @@ Each recommendation should be:
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl border border-blue-500/20 flex justify-between items-center">
-                      <p className="text-sm text-slate-400">CIMT Value</p>
+                      <p className="text-sm text-sky-200">CIMT Value</p>
                       <p className="text-xl font-bold text-white">{strokeResults.cimt_value.toFixed(3)} mm</p>
                     </div>
                     <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 flex justify-between items-center">
-                      <p className="text-sm text-slate-400">ePWV</p>
+                      <p className="text-sm text-sky-200">ePWV</p>
                       <p className="text-xl font-bold text-white">{strokeResults.epwv_value.toFixed(2)} m/s</p>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl border border-cyan-500/20 flex justify-between items-center">
-                      <p className="text-sm text-slate-400">Retinal Occlusion Probability</p>
+                    <div className="p-4 bg-gradient-to-r from-sky-500/10 to-blue-500/10 rounded-xl border border-sky-500/20 flex justify-between items-center">
+                      <p className="text-sm text-sky-200">Retinal Occlusion Probability</p>
                       <p className="text-xl font-bold text-white">{(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%</p>
                     </div>
                     <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 rounded-xl border border-indigo-500/20 flex justify-between items-center">
-                      <p className="text-sm text-slate-400">Final Stroke Risk Probability</p>
+                      <p className="text-sm text-sky-200">Final Stroke Risk Probability</p>
                       <p className="text-xl font-bold text-white">{strokeResults.risk_score.toFixed(1)}%</p>
                     </div>
                   </div>
@@ -1145,7 +1145,7 @@ Each recommendation should be:
                   <div className="flex items-center justify-center py-8">
                     <div className="text-center">
                       <Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto mb-3" />
-                      <p className="text-slate-400 text-sm">Generating AI-powered recommendations...</p>
+                      <p className="text-sky-200 text-sm">Generating AI-powered recommendations...</p>
                     </div>
                   </div>
                 ) : clinicalRecommendations.length > 0 ? (
@@ -1182,7 +1182,7 @@ Each recommendation should be:
                   </div>
                 ) : (
                   <div className="text-center py-6">
-                    <p className="text-slate-400 text-sm">No recommendations available. Click "Regenerate" to get AI-powered recommendations.</p>
+                    <p className="text-sky-200 text-sm">No recommendations available. Click "Regenerate" to get AI-powered recommendations.</p>
                   </div>
                 )}
               </CardContent>
@@ -1215,7 +1215,7 @@ Each recommendation should be:
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 pb-12">
+    <div className="min-h-screen bg-black pb-12">
       {/* Top Navigation Bar */}
       <div ref={headerRef} className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -1232,7 +1232,7 @@ Each recommendation should be:
               </Button>
               <div>
                 <h1 className="text-xl font-bold text-white">New Visit</h1>
-                <p className="text-xs text-slate-400">Step {currentStep + 1} of 6</p>
+                <p className="text-xs text-sky-200">Step {currentStep + 1} of 6</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -1244,7 +1244,7 @@ Each recommendation should be:
                       ? "bg-blue-500 text-white shadow-md"
                       : step < currentStep
                       ? "bg-green-500 text-white"
-                      : "bg-slate-700 text-slate-400 border border-slate-600"
+                      : "bg-slate-700 text-sky-200 border border-slate-600"
                   }`}
                 >
                   {step < currentStep ? <CheckCircle2 className="w-4 h-4" /> : step + 1}
@@ -1263,7 +1263,7 @@ Each recommendation should be:
           <Button
             variant="outline"
             onClick={() => currentStep > 0 ? setCurrentStep(currentStep - 1) : onBack()}
-            className="rounded-xl bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white px-6"
+            className="rounded-xl bg-slate-800 border-slate-700 text-sky-100 hover:bg-slate-700 hover:text-white px-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             {currentStep === 0 ? "Cancel" : "Previous"}

@@ -162,10 +162,10 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-black p-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading patients...</p>
+          <p className="text-sky-200">Loading patients...</p>
         </div>
       </div>
     );
@@ -173,7 +173,7 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
 
   // Main Patient List View
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-black p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -182,13 +182,13 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Patient Directory</h1>
-            <p className="text-muted-foreground">View and edit patient information</p>
+            <p className="text-sky-200">View and edit patient information</p>
           </div>
         </div>
 
         {/* Search Bar */}
         <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sky-200 w-4 h-4" />
           <Input
             placeholder="Search patients by name, MRN, or phone..."
             value={searchTerm}
@@ -201,8 +201,8 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredPatients.length === 0 ? (
             <div className="col-span-full text-center py-12">
-              <Users className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
-              <p className="text-muted-foreground">
+              <Users className="w-12 h-12 mx-auto text-sky-200/50 mb-3" />
+              <p className="text-sky-200">
                 {searchTerm ? `No patients found matching "${searchTerm}"` : "No patients registered yet"}
               </p>
             </div>
@@ -220,7 +220,7 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium truncate">{patient.name}</h4>
-                      <p className="text-sm text-muted-foreground truncate">MRN: {patient.mrn}</p>
+                      <p className="text-sm text-sky-200 truncate">MRN: {patient.mrn}</p>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2 mb-3">
@@ -232,7 +232,7 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
                     )}
                   </div>
                   {patient.phone && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-sm text-sky-200">
                       <Phone className="w-3 h-3" />
                       <span className="truncate">{patient.phone}</span>
                     </div>
@@ -345,24 +345,24 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
                       <h3 className="font-semibold mb-3">Patient Information</h3>
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div>
-                          <span className="text-muted-foreground">Age:</span>
+                          <span className="text-sky-200">Age:</span>
                           <p className="font-medium">{getAge(selectedPatient)} years</p>
                         </div>
                         {selectedPatient.gender && (
                           <div>
-                            <span className="text-muted-foreground">Gender:</span>
+                            <span className="text-sky-200">Gender:</span>
                             <p className="font-medium capitalize">{selectedPatient.gender}</p>
                           </div>
                         )}
                         {selectedPatient.phone && (
                           <div>
-                            <span className="text-muted-foreground">Phone:</span>
+                            <span className="text-sky-200">Phone:</span>
                             <p className="font-medium">{selectedPatient.phone}</p>
                           </div>
                         )}
                         {selectedPatient.address && (
                           <div className="col-span-2">
-                            <span className="text-muted-foreground">Address:</span>
+                            <span className="text-sky-200">Address:</span>
                             <p className="font-medium">{selectedPatient.address}</p>
                           </div>
                         )}
@@ -388,7 +388,7 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
                         Visit History ({visits.length})
                       </h3>
                       {visits.length === 0 ? (
-                        <p className="text-sm text-muted-foreground text-center py-4">No visits recorded</p>
+                        <p className="text-sm text-sky-200 text-center py-4">No visits recorded</p>
                       ) : (
                         <div className="space-y-3 max-h-96 overflow-y-auto">
                           {visits.map((visit) => (
@@ -397,7 +397,7 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
                                 <div className="flex justify-between items-start mb-2">
                                   <div>
                                     <p className="font-medium text-sm">{visit.reason}</p>
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-xs text-sky-200">
                                       {formatDate(visit.visit_date)}
                                     </p>
                                   </div>
@@ -415,12 +415,12 @@ export const PatientDetails = ({ patientId, onBack }: PatientDetailsProps) => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-2 text-xs">
                                   <div>
-                                    <span className="text-muted-foreground">BP:</span>
+                                    <span className="text-sky-200">BP:</span>
                                     <span className="ml-1 font-medium">{visit.systolic}/{visit.diastolic} mmHg</span>
                                   </div>
                                   {visit.epwv_result && (
                                     <div>
-                                      <span className="text-muted-foreground">ePWV:</span>
+                                      <span className="text-sky-200">ePWV:</span>
                                       <span className="ml-1 font-medium">{visit.epwv_result} m/s</span>
                                     </div>
                                   )}
