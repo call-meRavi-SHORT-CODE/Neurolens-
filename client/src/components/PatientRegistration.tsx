@@ -139,7 +139,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a]">
+    <div className="min-h-screen bg-[#0a0e1a] overflow-x-hidden">
       {/* Top Navigation Bar */}
       <div className="bg-[#0f1419] border-b border-slate-800/50 px-6 py-4">
         <div className="max-w-7xl mx-auto">
@@ -157,7 +157,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                   <User className="w-5 h-5 text-sky-400" />
                 </div>
                 <div>
-                  <h1 className="text-base font-semibold text-white">NeuroLens <span className="text-slate-400 font-normal">Pro</span></h1>
+                  <h1 className="text-base font-semibold text-white">NeuroLens</h1>
                   <p className="text-xs text-slate-400">New Patient Registration</p>
                 </div>
               </div>
@@ -166,7 +166,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Patient Information */}
           <div ref={formRef} className="lg:col-span-2 space-y-6">
@@ -275,7 +275,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
             </Card>
 
             {/* Medical History */}
-            <Card className="bg-[#0f1419] border border-slate-800/50">
+            <Card className="bg-[#0f1419] border border-slate-800/50 rounded-2xl">
               <CardHeader className="border-b border-slate-800/50 pb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-sky-500/10 flex items-center justify-center">
@@ -287,77 +287,92 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-6 space-y-5">
+              <CardContent className="p-6 space-y-6">
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-white">1. History of high blood pressure?</Label>
-                  <RadioGroup value={formData.highBloodPressure} onValueChange={(value) => setFormData({ ...formData, highBloodPressure: value })}>
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800/30 transition-colors">
-                        <RadioGroupItem value="yes" id="bp-yes" className="border-slate-600 text-sky-500" />
-                        <Label htmlFor="bp-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
-                      </div>
-                      <Button
-                        type="button"
-                        variant={formData.highBloodPressure === "no" ? "default" : "outline"}
-                        onClick={() => setFormData({ ...formData, highBloodPressure: "no" })}
-                        className={`rounded-full px-6 h-9 ${
-                          formData.highBloodPressure === "no" 
-                            ? "bg-sky-500 hover:bg-sky-600 text-white" 
-                            : "bg-slate-800/30 border-slate-700 text-slate-400 hover:bg-slate-800/50"
-                        }`}
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </RadioGroup>
+                  <Label className="text-sm font-normal text-white">1. History of high blood pressure?</Label>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setFormData({ ...formData, highBloodPressure: "yes" })}
+                      className={`rounded-full px-6 h-9 ${
+                        formData.highBloodPressure === "yes" 
+                          ? "bg-slate-700 border-slate-600 text-white" 
+                          : "bg-transparent border-slate-700 text-slate-400 hover:bg-slate-800/30"
+                      }`}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, highBloodPressure: "no" })}
+                      className={`rounded-full px-6 h-9 ${
+                        formData.highBloodPressure === "no" 
+                          ? "bg-sky-500 hover:bg-sky-600 text-white border-0" 
+                          : "bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800/30"
+                      }`}
+                    >
+                      No
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-white">2. History of diabetes?</Label>
-                  <RadioGroup value={formData.diabetes} onValueChange={(value) => setFormData({ ...formData, diabetes: value })}>
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800/30 transition-colors">
-                        <RadioGroupItem value="yes" id="diabetes-yes" className="border-slate-600 text-sky-500" />
-                        <Label htmlFor="diabetes-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
-                      </div>
-                      <Button
-                        type="button"
-                        variant={formData.diabetes === "no" ? "default" : "outline"}
-                        onClick={() => setFormData({ ...formData, diabetes: "no" })}
-                        className={`rounded-full px-6 h-9 ${
-                          formData.diabetes === "no" 
-                            ? "bg-sky-500 hover:bg-sky-600 text-white" 
-                            : "bg-slate-800/30 border-slate-700 text-slate-400 hover:bg-slate-800/50"
-                        }`}
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </RadioGroup>
+                  <Label className="text-sm font-normal text-white">2. History of diabetes?</Label>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setFormData({ ...formData, diabetes: "yes" })}
+                      className={`rounded-full px-6 h-9 ${
+                        formData.diabetes === "yes" 
+                          ? "bg-slate-700 border-slate-600 text-white" 
+                          : "bg-transparent border-slate-700 text-slate-400 hover:bg-slate-800/30"
+                      }`}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, diabetes: "no" })}
+                      className={`rounded-full px-6 h-9 ${
+                        formData.diabetes === "no" 
+                          ? "bg-sky-500 hover:bg-sky-600 text-white border-0" 
+                          : "bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800/30"
+                      }`}
+                    >
+                      No
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-white">3. Any previous stroke or TIA?</Label>
-                  <RadioGroup value={formData.previousStroke} onValueChange={(value) => setFormData({ ...formData, previousStroke: value })}>
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-slate-800/30 transition-colors">
-                        <RadioGroupItem value="yes" id="stroke-yes" className="border-slate-600 text-sky-500" />
-                        <Label htmlFor="stroke-yes" className="font-normal cursor-pointer text-slate-300">Yes</Label>
-                      </div>
-                      <Button
-                        type="button"
-                        variant={formData.previousStroke === "no" ? "default" : "outline"}
-                        onClick={() => setFormData({ ...formData, previousStroke: "no" })}
-                        className={`rounded-full px-6 h-9 ${
-                          formData.previousStroke === "no" 
-                            ? "bg-sky-500 hover:bg-sky-600 text-white" 
-                            : "bg-slate-800/30 border-slate-700 text-slate-400 hover:bg-slate-800/50"
-                        }`}
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </RadioGroup>
+                  <Label className="text-sm font-normal text-white">3. Any previous stroke or TIA?</Label>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setFormData({ ...formData, previousStroke: "yes" })}
+                      className={`rounded-full px-6 h-9 ${
+                        formData.previousStroke === "yes" 
+                          ? "bg-slate-700 border-slate-600 text-white" 
+                          : "bg-transparent border-slate-700 text-slate-400 hover:bg-slate-800/30"
+                      }`}
+                    >
+                      Yes
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, previousStroke: "no" })}
+                      className={`rounded-full px-6 h-9 ${
+                        formData.previousStroke === "no" 
+                          ? "bg-sky-500 hover:bg-sky-600 text-white border-0" 
+                          : "bg-transparent border border-slate-700 text-slate-400 hover:bg-slate-800/30"
+                      }`}
+                    >
+                      No
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -365,7 +380,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
 
           {/* Summary */}
           <div ref={summaryRef} className="space-y-4">
-            <Card className="bg-[#1a2332] border border-slate-800/50 sticky top-6">
+            <Card className="bg-[#1a2332] border border-slate-800/50 sticky top-6 rounded-2xl overflow-hidden">
               <CardHeader className="bg-sky-400 pb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded bg-white/20 flex items-center justify-center">
@@ -406,7 +421,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                 <div className="pt-4 space-y-3">
                   <Button 
                     onClick={handleSave} 
-                    className="w-full h-11 bg-sky-400 hover:bg-sky-500 text-white font-semibold"
+                    className="w-full h-11 bg-sky-400 hover:bg-sky-500 text-white font-semibold rounded-xl"
                   >
                     <Save className="w-4 h-4 mr-2" />
                     Save Patient
@@ -414,7 +429,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
                   <Button 
                     variant="outline" 
                     onClick={onBack}
-                    className="w-full h-11 bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800/50 hover:border-slate-600"
+                    className="w-full h-11 bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800/50 hover:border-slate-600 rounded-xl"
                   >
                     Cancel
                   </Button>
@@ -423,7 +438,7 @@ export const PatientRegistration = ({ onBack, onPatientCreated }: PatientRegistr
             </Card>
 
             {/* Quick Tip - Separate Card */}
-            <Card className="bg-[#1a2332] border border-sky-500/30">
+            <Card className="bg-[#1a2332] border border-sky-500/30 rounded-2xl">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-sky-400 flex items-center justify-center flex-shrink-0 mt-0.5">
