@@ -796,68 +796,86 @@ Each recommendation should be:
 
       case 4:
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-sky-500/10 to-blue-500/10 p-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg">
-                    <Camera className="w-6 h-6 text-white" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left: Retinal Image Upload */}
+            <div className="lg:col-span-2">
+              <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
+                <CardHeader className="border-b border-slate-800/50 p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-sky-400 flex items-center justify-center">
+                        <Camera className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg font-bold text-white">Retinal Image Upload</CardTitle>
+                        <CardDescription className="text-xs text-slate-400">High-resolution fundus image analysis engine</CardDescription>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-lg border-sky-500/50 text-sky-400 hover:bg-sky-500/10 text-xs"
+                    >
+                      <Camera className="w-3 h-3 mr-1" />
+                      Camera Setup
+                    </Button>
                   </div>
-                  <div>
-                    <CardTitle className="text-xl font-bold text-white">Retinal Image Upload</CardTitle>
-                    <CardDescription className="text-xs text-slate-400">Upload fundus image for stroke risk analysis</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6">
-                {/* Video Extractor Button */}
-                <Button
-                  onClick={() => setShowVideoExtractor(true)}
-                  className="w-full mb-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold shadow-lg py-3"
-                >
-                  <Video className="w-5 h-5 mr-2" />
-                  Extract from Fundus Video
-                </Button>
-
-                <div className="relative">
-                  <div
-                    className="aspect-square bg-slate-800/50 rounded-2xl flex items-center justify-center relative overflow-hidden border-2 border-dashed border-blue-500/50 cursor-pointer hover:border-blue-400 hover:bg-slate-700/50 transition-all duration-300 shadow-inner"
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                    onClick={() => !capturedImage && fileInputRef.current?.click()}
+                </CardHeader>
+                <CardContent className="p-6">
+                  {/* Video Extractor Button */}
+                  <Button
+                    onClick={() => setShowVideoExtractor(true)}
+                    className="w-full mb-6 rounded-xl bg-sky-400 hover:bg-sky-500 text-black font-semibold py-3 uppercase text-sm tracking-wide"
                   >
-                    {capturedImage ? (
-                      <div className="relative w-full h-full group">
-                        <img 
-                          src={capturedImage} 
-                          alt="Captured retinal image" 
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                      </div>
-                    ) : (
-                      <div className="text-center p-8">
-                        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-blue-500/20 flex items-center justify-center shadow-lg">
-                          <Upload className="w-10 h-10 text-blue-400" />
+                    <Video className="w-5 h-5 mr-2" />
+                    Extract from Fundus Video
+                  </Button>
+
+                  <div className="relative">
+                    <div
+                      className="aspect-square bg-[#0a0e1a] rounded-2xl flex items-center justify-center relative overflow-hidden border-2 border-dashed border-slate-700 cursor-pointer hover:border-sky-500/50 transition-all duration-300"
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                      onClick={() => !capturedImage && fileInputRef.current?.click()}
+                    >
+                      {capturedImage ? (
+                        <div className="relative w-full h-full group">
+                          <img 
+                            src={capturedImage} 
+                            alt="Captured retinal image" 
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         </div>
-                        <p className="text-gray-900 text-white mb-2 font-bold text-lg">
-                          Upload Fundus Image
-                        </p>
-                        <p className="text-sm text-slate-400 mb-3">
-                          Click or drag to upload
-                        </p>
-                        <p className="text-xs text-slate-400 bg-slate-700/50 rounded-lg px-4 py-2 inline-block">
-                          JPG, PNG formats supported
-                        </p>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleFileChange}
-                        />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="text-center p-8">
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-sky-400/20 flex items-center justify-center">
+                            <Upload className="w-8 h-8 text-sky-400" />
+                          </div>
+                          <p className="text-white mb-2 font-semibold text-base">
+                            Upload Fundus Image
+                          </p>
+                          <p className="text-sm text-slate-400 mb-4">
+                            Drag and drop patient retinal scans here
+                          </p>
+                          <p className="text-xs text-sky-400 underline cursor-pointer">
+                            or browse files
+                          </p>
+                          <div className="flex items-center justify-center gap-3 mt-6">
+                            <span className="text-xs text-slate-500 bg-slate-800 rounded px-3 py-1">JPG</span>
+                            <span className="text-xs text-slate-500 bg-slate-800 rounded px-3 py-1">PNG</span>
+                            <span className="text-xs text-slate-500 bg-slate-800 rounded px-3 py-1">DICOM</span>
+                          </div>
+                        </div>
+                      )}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                    </div>
                   </div>
 
                   <div className="flex justify-center gap-4 mt-4">
@@ -868,96 +886,103 @@ Each recommendation should be:
                       </Button>
                     )}
                   </div>
-                </div>
 
-                {error && (
-                  <Alert variant="destructive" className="mt-4">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                    <Activity className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl font-bold text-white">Visit Summary</CardTitle>
-                    <CardDescription className="text-xs text-slate-400">Review before analysis</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 space-y-4">
-                {selectedPatient && (
-                  <div className="p-4 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 border border-sky-500/30 rounded-xl">
-                    <h4 className="text-sm font-bold mb-2 text-white">Patient</h4>
-                    <p className="text-sm text-white">{selectedPatient.name}</p>
-                    <p className="text-xs text-slate-400">MRN: {selectedPatient.mrn}</p>
-                  </div>
-                )}
-
-                <div className="p-4 bg-gradient-to-br from-red-500/10 to-pink-500/10 border border-red-500/30 rounded-xl">
-                  <h4 className="text-sm font-bold mb-2 text-white">Vital Signs</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-slate-400">Age:</span>
-                      <span className="ml-2 font-semibold text-white">{visitData.age} yrs</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400">BP:</span>
-                      <span className="ml-2 font-semibold text-white">{visitData.systolic}/{visitData.diastolic}</span>
-                    </div>
-                    {visitData.heartRate && (
-                      <div>
-                        <span className="text-slate-400">HR:</span>
-                        <span className="ml-2 font-semibold text-white">{visitData.heartRate} bpm</span>
-                      </div>
-                    )}
-                    {getMeanBP() && (
-                      <div>
-                        <span className="text-slate-400">MBP:</span>
-                        <span className="ml-2 font-semibold text-white">{getMeanBP()} mmHg</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {selectedDiseases.length > 0 && (
-                  <div className="p-4 bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl">
-                    <h4 className="text-sm font-bold mb-2 text-white">Medical History</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedDiseases.map((disease) => (
-                        <Badge key={disease} className="bg-purple-500 text-white rounded-lg text-xs">
-                          {disease}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <Button
-                  onClick={calculateStrokeRisk}
-                  disabled={!capturedImage || isCalculating}
-                  className="w-full mt-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold shadow-lg py-6"
-                >
-                  {isCalculating ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>
-                      <Calculator className="w-5 h-5 mr-2" />
-                      Analyze Stroke Risk
-                    </>
+                  {error && (
+                    <Alert variant="destructive" className="mt-4">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
                   )}
-                </Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right: Visit Summary */}
+            <div>
+              <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden sticky top-24">
+                <CardHeader className="border-b border-slate-800/50 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-sky-400 flex items-center justify-center">
+                      <Activity className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base font-bold text-white">Visit Summary</CardTitle>
+                      <CardDescription className="text-xs text-slate-400">Pre-analysis verification</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-5 space-y-4">
+                  {/* Patient Identity */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-3">Patient Identity</h4>
+                    {selectedPatient && (
+                      <div className="bg-[#1a2332] rounded-xl p-4">
+                        <p className="text-base font-semibold text-white mb-1">{selectedPatient.name}</p>
+                        <p className="text-xs text-slate-400">MRN: {selectedPatient.mrn}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Biometric Indicators */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-3">Biometric Indicators</h4>
+                    <div className="bg-[#1a2332] rounded-xl p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-400 uppercase">Age</span>
+                        <span className="text-lg font-bold text-white">{visitData.age}<span className="text-xs text-slate-400 font-normal ml-1">yrs</span></span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-slate-400 uppercase">BP</span>
+                        <span className="text-lg font-bold text-white">{visitData.systolic}/{visitData.diastolic}<span className="text-xs text-slate-400 font-normal ml-1">mmHg</span></span>
+                      </div>
+                      {getMeanBP() && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-slate-400 uppercase">MBP</span>
+                          <span className="text-lg font-bold text-white">{getMeanBP()}<span className="text-xs text-slate-400 font-normal ml-1">mmHg</span></span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Clinical History */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-3">Clinical History</h4>
+                    {selectedDiseases.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedDiseases.map((disease) => (
+                          <Badge key={disease} className="bg-sky-400 text-black rounded-full text-xs px-3 py-1 font-medium">
+                            {disease}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-[#1a2332] rounded-xl p-4">
+                        <p className="text-sm text-slate-500">No smoking history</p>
+                        <p className="text-sm text-slate-500">No diabetes</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <Button
+                    onClick={calculateStrokeRisk}
+                    disabled={!capturedImage || isCalculating}
+                    className="w-full mt-4 rounded-xl bg-sky-400 hover:bg-sky-500 text-black font-bold py-3 uppercase text-sm tracking-wide disabled:opacity-50"
+                  >
+                    {isCalculating ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
+                        Analyzing...
+                      </>
+                    ) : (
+                      <>
+                        <Activity className="w-5 h-5 mr-2" />
+                        Analyze Stroke Risk
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         );
 
@@ -973,10 +998,10 @@ Each recommendation should be:
           <div className="space-y-6" ref={reportRef}>
             {/* Risk Category Card */}
             <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-slate-800 to-slate-900 p-6">
+              <CardHeader className="border-b border-slate-800/50 p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500 flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 rounded-xl bg-sky-400 flex items-center justify-center">
                       <Activity className="w-6 h-6 text-white" />
                     </div>
                     <CardTitle className="text-2xl font-bold text-white">Stroke Risk Assessment</CardTitle>
@@ -985,7 +1010,7 @@ Each recommendation should be:
                   <Button
                     onClick={generatePDFReport}
                     disabled={isGeneratingPDF}
-                    className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold shadow-lg"
+                    className="rounded-xl bg-sky-400 hover:bg-sky-500 text-black font-semibold"
                   >
                     {isGeneratingPDF ? (
                       <>
@@ -1070,24 +1095,24 @@ Each recommendation should be:
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Detailed Results */}
               <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-sky-500/10 to-blue-500/10 p-5">
+                <CardHeader className="border-b border-slate-800/50 p-5">
                   <CardTitle className="text-xl font-bold text-white">Detailed Results</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    <div className="p-4 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl border border-sky-500/20 flex justify-between items-center">
+                    <div className="p-4 bg-[#1a2332] rounded-xl border border-sky-500/30 flex justify-between items-center">
                       <p className="text-sm text-slate-400">CIMT Value</p>
                       <p className="text-xl font-bold text-white">{strokeResults.cimt_value.toFixed(3)} mm</p>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/20 flex justify-between items-center">
+                    <div className="p-4 bg-[#1a2332] rounded-xl border border-sky-500/30 flex justify-between items-center">
                       <p className="text-sm text-slate-400">ePWV</p>
                       <p className="text-xl font-bold text-white">{strokeResults.epwv_value.toFixed(2)} m/s</p>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-sky-500/10 to-blue-500/10 rounded-xl border border-sky-500/20 flex justify-between items-center">
+                    <div className="p-4 bg-[#1a2332] rounded-xl border border-sky-500/30 flex justify-between items-center">
                       <p className="text-sm text-slate-400">Retinal Occlusion Probability</p>
                       <p className="text-xl font-bold text-white">{(strokeResults.retinal_occlusion_prob * 100).toFixed(1)}%</p>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-indigo-500/10 to-violet-500/10 rounded-xl border border-indigo-500/20 flex justify-between items-center">
+                    <div className="p-4 bg-[#1a2332] rounded-xl border border-sky-500/30 flex justify-between items-center">
                       <p className="text-sm text-slate-400">Final Stroke Risk Probability</p>
                       <p className="text-xl font-bold text-white">{strokeResults.risk_score.toFixed(1)}%</p>
                     </div>
@@ -1097,7 +1122,7 @@ Each recommendation should be:
 
               {/* Fundus Image */}
               <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-                <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-teal-500/10 to-emerald-500/10 p-5">
+                <CardHeader className="border-b border-slate-800/50 p-5">
                   <CardTitle className="text-xl font-bold text-white">Fundus Image</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -1116,7 +1141,7 @@ Each recommendation should be:
 
             {/* Clinical Recommendations - Gemini AI */}
             <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800 bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-5">
+              <CardHeader className="border-b border-slate-800/50 p-5">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-xl font-bold text-white">Clinical Recommendations</CardTitle>
                   <Button
@@ -1144,7 +1169,7 @@ Each recommendation should be:
                 {isLoadingRecommendations ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="text-center">
-                      <Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto mb-3" />
+                      <Loader2 className="w-8 h-8 animate-spin text-sky-400 mx-auto mb-3" />
                       <p className="text-slate-400 text-sm">Generating AI-powered recommendations...</p>
                     </div>
                   </div>

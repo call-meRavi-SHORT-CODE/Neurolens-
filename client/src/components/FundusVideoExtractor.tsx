@@ -828,10 +828,10 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700 text-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <DialogTitle className="text-2xl font-bold text-white">
             🔬 Fundus Video Frame Extractor
           </DialogTitle>
-          <DialogDescription className="text-sky-200">
+          <DialogDescription className="text-slate-400">
             Extract and enhance high-quality fundus images from video recordings
           </DialogDescription>
         </DialogHeader>
@@ -839,17 +839,17 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
         {/* Step: Upload */}
         {step === 'upload' && (
           <div
-            className="border-2 border-dashed border-slate-600 rounded-xl p-12 text-center cursor-pointer hover:border-indigo-500 hover:bg-slate-800/50 transition-all"
+            className="border-2 border-dashed border-slate-600 rounded-xl p-12 text-center cursor-pointer hover:border-sky-500 hover:bg-slate-800/50 transition-all"
             onClick={() => fileInputRef.current?.click()}
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
           >
-            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
-              <Video className="w-10 h-10 text-indigo-400" />
+            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-sky-500/20 flex items-center justify-center">
+              <Video className="w-10 h-10 text-sky-400" />
             </div>
             <p className="text-xl font-bold text-white mb-2">Upload Fundus Video</p>
-            <p className="text-sky-200 mb-4">Supports MP4, MOV formats</p>
-            <Button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold">
+            <p className="text-slate-400 mb-4">Supports MP4, MOV formats</p>
+            <Button className="bg-sky-400 hover:bg-sky-500 text-black font-semibold">
               <Upload className="w-4 h-4 mr-2" />
               Select Video File
             </Button>
@@ -870,14 +870,14 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
               <Button
                 variant={processingMode === 'manual' ? 'default' : 'outline'}
                 onClick={() => setProcessingMode('manual')}
-                className={processingMode === 'manual' ? 'bg-indigo-600 text-white' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}
+                className={processingMode === 'manual' ? 'bg-sky-400 text-black font-semibold' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}
               >
                 Manual Selection
               </Button>
               <Button
                 variant={processingMode === 'auto' ? 'default' : 'outline'}
                 onClick={() => setProcessingMode('auto')}
-                className={processingMode === 'auto' ? 'bg-indigo-600 text-white' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}
+                className={processingMode === 'auto' ? 'bg-sky-400 text-black font-semibold' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}
               >
                 Auto Selection (AI)
               </Button>
@@ -901,7 +901,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
                     max={totalFrames - 1}
                     step={1}
                     onValueChange={(value) => seekToFrame(value[0])}
-                    className="flex-1 [&_[data-slot=track]]:bg-slate-600 [&_[data-slot=range]]:bg-indigo-500 [&_[data-slot=thumb]]:bg-white [&_[data-slot=thumb]]:border-indigo-500 [&>span:first-child]:bg-slate-600 [&>span:first-child>span]:bg-indigo-500 [&>span:last-child]:bg-white [&>span:last-child]:border-indigo-500"
+                    className="flex-1 [&_[data-slot=track]]:bg-slate-600 [&_[data-slot=range]]:bg-sky-400 [&_[data-slot=thumb]]:bg-white [&_[data-slot=thumb]]:border-sky-500 [&>span:first-child]:bg-slate-600 [&>span:first-child>span]:bg-sky-400 [&>span:last-child]:bg-white [&>span:last-child]:border-sky-500"
                   />
                   <span className="text-white text-sm w-24 text-right font-medium">
                     {currentFrameIndex}/{totalFrames}
@@ -916,7 +916,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
                     -1
                   </Button>
                   <Button 
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    className="bg-sky-400 hover:bg-sky-500 text-black font-semibold"
                     onClick={captureFrame}
                   >
                     <Camera className="w-4 h-4 mr-2" />
@@ -935,7 +935,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
             {processingMode === 'auto' && (
               <div className="text-center space-y-4">
                 <Button 
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                  className="bg-sky-400 hover:bg-sky-500 text-black font-semibold"
                   onClick={analyzeVideoForBestFrame}
                   disabled={!!processingStage}
                 >
@@ -952,12 +952,12 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
                   )}
                 </Button>
                 {processingProgress > 0 && (
-                  <Progress value={processingProgress} className="w-full h-2 bg-slate-700 [&>div]:bg-indigo-500" />
+                  <Progress value={processingProgress} className="w-full h-2 bg-slate-700 [&>div]:bg-sky-400" />
                 )}
                 {qualityMetrics && (
                   <div className="grid grid-cols-4 gap-4 mt-4">
                     <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
-                      <div className="text-2xl font-bold text-indigo-400">{qualityMetrics.sharpness.toFixed(0)}</div>
+                      <div className="text-2xl font-bold text-sky-400">{qualityMetrics.sharpness.toFixed(0)}</div>
                       <div className="text-xs text-sky-100">Sharpness</div>
                     </div>
                     <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
@@ -987,7 +987,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
             </p>
 
             <div className="flex justify-center">
-              <div className="relative inline-block border-2 border-indigo-500 rounded-lg overflow-hidden">
+              <div className="relative inline-block border-2 border-sky-500 rounded-lg overflow-hidden">
                 <canvas
                   ref={cropCanvasRef}
                   className="cursor-crosshair"
@@ -1016,7 +1016,7 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
                 Reset to Auto
               </Button>
               <Button 
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+                className="bg-sky-400 hover:bg-sky-500 text-black font-semibold"
                 onClick={processAndEnhance}
               >
                 <Check className="w-4 h-4 mr-2" />
@@ -1030,11 +1030,11 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
         {step === 'process' && (
           <div className="space-y-6 py-8">
             <div className="text-center">
-              <Loader2 className="w-16 h-16 animate-spin text-indigo-500 mx-auto mb-4" />
+              <Loader2 className="w-16 h-16 animate-spin text-sky-400 mx-auto mb-4" />
               <p className="text-xl font-bold text-white mb-2">{processingStage}</p>
               <p className="text-sky-100">Enhancing your fundus image...</p>
             </div>
-            <Progress value={processingProgress} className="w-full h-2 bg-slate-700 [&>div]:bg-indigo-500" />
+            <Progress value={processingProgress} className="w-full h-2 bg-slate-700 [&>div]:bg-sky-400" />
           </div>
         )}
 
