@@ -69,7 +69,6 @@ export const NewVisit = ({ onBack }: NewVisitProps) => {
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [showVideoExtractor, setShowVideoExtractor] = useState(false);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const reportRef = useRef<HTMLDivElement | null>(null);
 
@@ -458,7 +457,6 @@ Each recommendation should be:
     if (!file) return;
     const objectUrl = URL.createObjectURL(file);
     setCapturedImage(objectUrl);
-    setUploadedFileName(file.name.toLowerCase());
     setError(null);
   };
 
@@ -477,7 +475,6 @@ Each recommendation should be:
 
   const handleRetake = () => {
     setCapturedImage(null);
-    setUploadedFileName(null);
     setStrokeResults(null);
     setError(null);
   };
@@ -491,44 +488,6 @@ Each recommendation should be:
     try {
       setError(null);
       setIsCalculating(true);
-      
-      // Check if filename contains "krithika" - hardcode Normal result
-      if (uploadedFileName && uploadedFileName.includes("krithika")) {
-        const hardcodedResult: StrokeRiskResults = {
-          success: true,
-          risk_score: 15.2,
-          risk_level: "Low",
-          cimt_value: 0.45,
-          epwv_value: 6.8,
-          retinal_occlusion_prob: 0.1, // 0.1 = Normal
-          eye_risk: 0.1,
-          brain_risk: 0.15,
-          recommendation: "Patient shows normal retinal findings. Continue regular health monitoring."
-        };
-        
-        setStrokeResults(hardcodedResult);
-        setCurrentStep(5);
-        return;
-      }
-      
-      // Check if filename contains "ravi" - hardcode Medium risk result
-      if (uploadedFileName && uploadedFileName.includes("ravi")) {
-        const hardcodedResult: StrokeRiskResults = {
-          success: true,
-          risk_score: 52.8,
-          risk_level: "Medium",
-          cimt_value: 0.72,
-          epwv_value: 9.5,
-          retinal_occlusion_prob: 0.5, // 0.5 = BRVO
-          eye_risk: 0.55,
-          brain_risk: 0.48,
-          recommendation: "Patient shows moderate risk indicators. Lifestyle modifications and follow-up recommended."
-        };
-        
-        setStrokeResults(hardcodedResult);
-        setCurrentStep(5);
-        return;
-      }
       
       // Fetch the image and convert to blob
       const response = await fetch(capturedImage);
@@ -640,24 +599,24 @@ Each recommendation should be:
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-5">
+            <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-5">
               {selectedPatient && (
-                <div className="p-4 bg-[#1a2332] border border-sky-500/30 rounded-xl">
-                  <p className="text-sm font-semibold text-white">Selected Patient: {selectedPatient.name}</p>
+                <div className="p-3 sm:p-4 bg-[#1a2332] border border-sky-500/30 rounded-xl">
+                  <p className="text-xs sm:text-sm font-semibold text-white">Selected Patient: {selectedPatient.name}</p>
                   <p className="text-xs text-slate-400">MRN: {selectedPatient.mrn}</p>
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="reason" className="text-sm font-medium text-white">Reason for Visit *</Label>
+                <Label htmlFor="reason" className="text-xs sm:text-sm font-medium text-white">Reason for Visit *</Label>
                 <Input
                   id="reason"
                   value={visitData.reason}
                   onChange={(e) => setVisitData({ ...visitData, reason: e.target.value })}
                   placeholder="e.g., Routine screening, Follow-up"
-                  className="h-11 rounded-xl bg-[#1a2332] border-slate-700 text-white placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all"
+                  className="h-10 sm:h-11 rounded-xl bg-[#1a2332] border-slate-700 text-white placeholder:text-slate-500 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all text-sm"
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                 <div className="space-y-2">
                   <Label htmlFor="technician" className="text-sm font-medium text-white">Technician</Label>
                   <Input
@@ -689,13 +648,13 @@ Each recommendation should be:
       case 2:
         return (
           <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="border-b border-slate-800/50">
+            <CardHeader className="border-b border-slate-800/50 p-4 sm:p-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-sky-400 flex items-center justify-center">
                   <Heart className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg font-bold text-white">Vital Signs</CardTitle>
+                  <CardTitle className="text-base sm:text-lg font-bold text-white">Vital Signs</CardTitle>
                   <CardDescription className="text-xs">Record patient's current vital measurements</CardDescription>
                 </div>
               </div>
@@ -850,38 +809,39 @@ Each recommendation should be:
 
       case 4:
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
             {/* Left: Retinal Image Upload */}
             <div className="lg:col-span-2">
               <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-                <CardHeader className="border-b border-slate-800/50 p-6">
-                  <div className="flex items-center justify-between">
+                <CardHeader className="border-b border-slate-800/50 p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-sky-400 flex items-center justify-center">
-                        <Camera className="w-6 h-6 text-white" />
+                      <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-sky-400 flex items-center justify-center flex-shrink-0">
+                        <Camera className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                       </div>
-                      <div>
-                        <CardTitle className="text-lg font-bold text-white">Retinal Image Upload</CardTitle>
+                      <div className="min-w-0">
+                        <CardTitle className="text-base sm:text-lg font-bold text-white">Retinal Image Upload</CardTitle>
                         <CardDescription className="text-xs text-slate-400">High-resolution fundus image analysis engine</CardDescription>
                       </div>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="rounded-lg border-sky-500/50 text-sky-400 hover:bg-sky-500/10 text-xs"
+                      className="rounded-lg border-sky-500/50 text-sky-400 hover:bg-sky-500/10 text-xs w-full sm:w-auto"
                     >
                       <Camera className="w-3 h-3 mr-1" />
-                      Camera Setup
+                      <span className="hidden sm:inline\">Camera Setup</span>
+                      <span className="sm:hidden\">Setup</span>
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   {/* Video Extractor Button */}
                   <Button
                     onClick={() => setShowVideoExtractor(true)}
-                    className="w-full mb-6 rounded-xl bg-sky-400 hover:bg-sky-500 text-black font-semibold py-3 uppercase text-sm tracking-wide"
+                    className="w-full mb-4 sm:mb-6 rounded-xl bg-sky-400 hover:bg-sky-500 text-black font-semibold py-2 sm:py-3 uppercase text-xs sm:text-sm tracking-wide"
                   >
-                    <Video className="w-5 h-5 mr-2" />
+                    <Video className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
                     Extract from Fundus Video
                   </Button>
 
@@ -953,19 +913,19 @@ Each recommendation should be:
 
             {/* Right: Visit Summary */}
             <div>
-              <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden sticky top-24">
-                <CardHeader className="border-b border-slate-800/50 p-5">
+              <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden lg:sticky lg:top-24">
+                <CardHeader className="border-b border-slate-800/50 p-4 sm:p-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-sky-400 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-sky-400 flex items-center justify-center flex-shrink-0">
                       <Activity className="w-5 h-5 text-white" />
                     </div>
-                    <div>
-                      <CardTitle className="text-base font-bold text-white">Visit Summary</CardTitle>
+                    <div className="min-w-0">
+                      <CardTitle className="text-sm sm:text-base font-bold text-white">Visit Summary</CardTitle>
                       <CardDescription className="text-xs text-slate-400">Pre-analysis verification</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="p-5 space-y-4">
+                <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4">
                   {/* Patient Identity */}
                   <div>
                     <h4 className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-3">Patient Identity</h4>
@@ -1052,19 +1012,19 @@ Each recommendation should be:
           <div className="space-y-6" ref={reportRef}>
             {/* Risk Category Card */}
             <Card className="bg-[#0f1419] border-none shadow-sm rounded-2xl overflow-hidden">
-              <CardHeader className="border-b border-slate-800/50 p-6">
-                <div className="flex items-center justify-between">
+              <CardHeader className="border-b border-slate-800/50 p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-sky-400 flex items-center justify-center">
-                      <Activity className="w-6 h-6 text-white" />
+                    <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-sky-400 flex items-center justify-center flex-shrink-0">
+                      <Activity className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-white">Stroke Risk Assessment</CardTitle>
+                    <CardTitle className="text-base sm:text-2xl font-bold text-white">Stroke Risk Assessment</CardTitle>
                   </div>
                   {/* Download Report Button */}
                   <Button
                     onClick={generatePDFReport}
                     disabled={isGeneratingPDF}
-                    className="rounded-xl bg-sky-400 hover:bg-sky-500 text-black font-semibold"
+                    className="rounded-xl bg-sky-400 hover:bg-sky-500 text-black font-semibold text-xs sm:text-sm w-full sm:w-auto"
                   >
                     {isGeneratingPDF ? (
                       <>
@@ -1074,13 +1034,14 @@ Each recommendation should be:
                     ) : (
                       <>
                         <Download className="w-4 h-4 mr-2" />
-                        Download Report
+                        <span className="hidden sm:inline">Download Report</span>
+                        <span className="sm:hidden">Download</span>
                       </>
                     )}
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent className="p-8">
+              <CardContent className="p-4 sm:p-8">
                 {/* Risk Category Display */}
                 <div className="text-center mb-8">
                   <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Risk Category</p>
@@ -1297,8 +1258,46 @@ Each recommendation should be:
     <div className="min-h-screen bg-[#0a0e1a] pb-12 overflow-x-hidden">
       {/* Top Navigation Bar */}
       <div ref={headerRef} className="sticky top-0 z-50 bg-[#0f1419] border-b border-slate-800/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          {/* Mobile Layout */}
+          <div className="sm:hidden flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onBack}
+                className="rounded-lg hover:bg-[#1a2332]/50 text-slate-400 hover:text-white p-1"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div>
+                <h1 className="text-sm font-semibold text-white">New Visit</h1>
+                <p className="text-xs text-slate-400 uppercase tracking-wide">Step {currentStep + 1}/6</p>
+              </div>
+            </div>
+          </div>
+          {/* Mobile Steps - Horizontal Scroll */}
+          <div className="sm:hidden overflow-x-auto pb-2">
+            <div className="flex items-center gap-2 min-w-max">
+              {[0, 1, 2, 3, 4, 5].map((step) => (
+                <div
+                  key={step}
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-semibold transition-all flex-shrink-0 ${
+                    step === currentStep
+                      ? "bg-sky-400 text-white shadow-lg shadow-sky-500/20"
+                      : step < currentStep
+                      ? "bg-slate-600 text-white"
+                      : "bg-slate-800 text-slate-500 border border-slate-700"
+                  }`}
+                >
+                  {step < currentStep ? <CheckCircle2 className="w-3 h-3" /> : step + 1}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Desktop Layout */}
+          <div className="hidden sm:flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -1337,20 +1336,21 @@ Each recommendation should be:
         {renderStepContent()}
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
+        <div className="flex flex-col-reverse sm:flex-row justify-between gap-3 sm:gap-4 mt-6 sm:mt-8">
           <Button
             variant="ghost"
             onClick={() => currentStep > 0 ? setCurrentStep(currentStep - 1) : onBack()}
-            className="text-sm text-slate-400 hover:text-white hover:bg-[#1a2332]/50"
+            className="text-xs sm:text-sm text-slate-400 hover:text-white hover:bg-[#1a2332]/50 w-full sm:w-auto"
           >
             {currentStep === 0 ? (
               <>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Cancel Visit
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Cancel Visit</span>
+                <span className="sm:hidden">Cancel</span>
               </>
             ) : (
               <>
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Previous
               </>
             )}
@@ -1358,10 +1358,10 @@ Each recommendation should be:
           <Button
             onClick={() => currentStep < 5 ? setCurrentStep(currentStep + 1) : handleCompleteVisit()}
             disabled={!canProceed()}
-            className="rounded-xl bg-sky-400 hover:bg-sky-500 text-white px-6 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-xl bg-sky-400 hover:bg-sky-500 text-white px-4 sm:px-6 font-semibold text-xs sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
           >
             {currentStep === 5 ? "Complete Visit" : "Next Step"}
-            {currentStep < 5 && <ArrowRight className="w-4 h-4 ml-2" />}
+            {currentStep < 5 && <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2" />}
           </Button>
         </div>
       </div>

@@ -29,7 +29,7 @@ export const Dashboard = () => {
   // Refs for GSAP animations
   const headerRef = useRef(null);
   const statsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const quickActionsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const quickActionsRef = useRef<(HTMLDivElement | null)[]>([]);
   const activityRef = useRef(null);
 
   // GSAP Animation on mount
@@ -299,52 +299,72 @@ export const Dashboard = () => {
   return (
     <div className="min-h-screen bg-black">
       {/* Top Navigation Bar */}
-      <div className="bg-[#0a0a0a] border-b border-slate-800/50 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Left - Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg border border-cyan-500/50 flex items-center justify-center">
-              <Brain className="w-5 h-5 text-cyan-400" />
-            </div>
-            <h2 className="font-semibold text-base text-white tracking-widest">NEUROLENS</h2>
-          </div>
-          
-          {/* Right - User Profile and Logout */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-white">
-                  Dr. {profile?.name ? (profile.name.length > 10 ? profile.name.substring(0, 10) + '...' : profile.name) : 'Julian Vance'}
-                </p>
-                <p className="text-xs text-cyan-400 uppercase tracking-wider">Neurosurgeon</p>
+      <div className="bg-[#0a0a0a] border-b border-slate-800/50 px-4 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Mobile Layout - Stack */}
+          <div className="flex sm:hidden items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg border border-cyan-500/50 flex items-center justify-center">
+                <Brain className="w-4 h-4 text-cyan-400" />
               </div>
-              <Button variant="ghost" className="h-10 w-10 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-transparent text-cyan-400 font-semibold">
-                    {profile?.name ? getUserInitials(profile.name) : 'JV'}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
+              <h2 className="font-semibold text-sm text-white tracking-widest">NEUROLENS</h2>
             </div>
-            
             <Button 
               onClick={handleLogout}
               variant="outline" 
-              className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 uppercase tracking-wider text-xs font-medium px-6"
+              className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 text-xs font-medium px-3 py-1 h-auto"
             >
-              LOGOUT <LogOut className="ml-2 h-4 w-4" />
+              <LogOut className="h-3 w-3" />
             </Button>
+          </div>
+          
+          {/* Desktop Layout - Side by side */}
+          <div className="hidden sm:flex items-center justify-between">
+            {/* Left - Logo */}
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg border border-cyan-500/50 flex items-center justify-center">
+                <Brain className="w-5 h-5 text-cyan-400" />
+              </div>
+              <h2 className="font-semibold text-base text-white tracking-widest">NEUROLENS</h2>
+            </div>
+            
+            {/* Right - User Profile and Logout */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-white">
+                    Dr. {profile?.name ? (profile.name.length > 10 ? profile.name.substring(0, 10) + '...' : profile.name) : 'Julian Vance'}
+                  </p>
+                  <p className="text-xs text-cyan-400 uppercase tracking-wider">Neurosurgeon</p>
+                </div>
+                <Button variant="ghost" className="h-10 w-10 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback className="bg-transparent text-cyan-400 font-semibold">
+                      {profile?.name ? getUserInitials(profile.name) : 'JV'}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </div>
+              
+              <Button 
+                onClick={handleLogout}
+                variant="outline" 
+                className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 hover:text-cyan-300 uppercase tracking-wider text-xs font-medium px-6"
+              >
+                LOGOUT <LogOut className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-8 space-y-6 sm:space-y-8">
         {/* Welcome Header */}
         <div ref={headerRef} className="space-y-1">
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
             Welcome back, Doctor
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-400">
             Managing Excellence Together with NeuroLens
           </p>
         </div>
@@ -356,7 +376,7 @@ export const Dashboard = () => {
             <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Primary Operations</h2>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <Card 
               ref={el => quickActionsRef.current[0] = el}
               onClick={() => setActiveView("newPatient")} 
@@ -414,9 +434,9 @@ export const Dashboard = () => {
             <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Registry Metrics</h2>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Left Side - Stats Boxes */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <Card 
                 ref={el => statsRef.current[0] = el}
                 className="bg-slate-900/30 border-l-4 border-l-cyan-400 border-t border-r border-b border-slate-800 hover:bg-slate-900/50 transition-all"
@@ -617,7 +637,7 @@ export const Dashboard = () => {
             ) : (
               <div className="space-y-1">
                 {/* Table Header */}
-                <div className="grid grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-slate-800">
+                <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 text-xs font-medium text-slate-500 uppercase tracking-wider border-b border-slate-800">
                   <div className="col-span-3">Patient Name</div>
                   <div className="col-span-3">Current Procedure</div>
                   <div className="col-span-2">Status</div>
@@ -633,7 +653,7 @@ export const Dashboard = () => {
                   return (
                     <div 
                       key={visit.id} 
-                      className="grid grid-cols-12 gap-4 px-4 py-4 border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer transition-colors group"
+                      className="hidden md:grid grid-cols-12 gap-4 px-4 py-4 border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer transition-colors group"
                       onClick={() => patient && handlePatientSelect(patient.id)}
                     >
                       <div className="col-span-3 flex items-center gap-3">

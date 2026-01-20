@@ -101,13 +101,13 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
   // Handle video upload
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith('video/')) {
+    if (file && (file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.hevc') || file.name.toLowerCase().endsWith('.h265'))) {
       setVideoFile(file);
       setVideoUrl(URL.createObjectURL(file));
       setStep('select');
       setError(null);
     } else {
-      setError('Please upload a valid video file (MP4, MOV)');
+      setError('Please upload a valid video file (MP4, MOV, HEVC)');
     }
   };
 
@@ -115,13 +115,13 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('video/')) {
+    if (file && (file.type.startsWith('video/') || file.name.toLowerCase().endsWith('.hevc') || file.name.toLowerCase().endsWith('.h265'))) {
       setVideoFile(file);
       setVideoUrl(URL.createObjectURL(file));
       setStep('select');
       setError(null);
     } else {
-      setError('Please upload a valid video file (MP4, MOV)');
+      setError('Please upload a valid video file (MP4, MOV, HEVC)');
     }
   };
 
@@ -839,24 +839,25 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
         {/* Step: Upload */}
         {step === 'upload' && (
           <div
-            className="border-2 border-dashed border-slate-600 rounded-xl p-12 text-center cursor-pointer hover:border-sky-500 hover:bg-slate-800/50 transition-all"
+            className="border-2 border-dashed border-slate-600 rounded-xl p-6 sm:p-8 md:p-12 text-center cursor-pointer hover:border-sky-500 hover:bg-slate-800/50 transition-all"
             onClick={() => fileInputRef.current?.click()}
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
           >
-            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-sky-500/20 flex items-center justify-center">
-              <Video className="w-10 h-10 text-sky-400" />
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-2xl bg-sky-500/20 flex items-center justify-center">
+              <Video className="w-8 h-8 sm:w-10 sm:h-10 text-sky-400" />
             </div>
-            <p className="text-xl font-bold text-white mb-2">Upload Fundus Video</p>
-            <p className="text-slate-400 mb-4">Supports MP4, MOV formats</p>
-            <Button className="bg-sky-400 hover:bg-sky-500 text-black font-semibold">
+            <p className="text-lg sm:text-xl font-bold text-white mb-2">Upload Fundus Video</p>
+            <p className="text-sm sm:text-base text-slate-400 mb-4">Supports MP4, MOV, HEVC formats</p>
+            <Button className="w-full sm:w-auto bg-sky-400 hover:bg-sky-500 text-black font-semibold">
               <Upload className="w-4 h-4 mr-2" />
               Select Video File
             </Button>
             <input
               ref={fileInputRef}
               type="file"
-              accept="video/mp4,video/quicktime"
+              accept="video/mp4,video/quicktime,video/hevc,.mp4,.mov,.MOV,.MP4,.hevc,.h265,.HEVC,.H265"
+              capture="environment"
               className="hidden"
               onChange={handleVideoUpload}
             />
@@ -865,19 +866,19 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
 
         {/* Step: Select Frame */}
         {step === 'select' && videoUrl && (
-          <div className="space-y-6">
-            <div className="flex gap-4 justify-center">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button
                 variant={processingMode === 'manual' ? 'default' : 'outline'}
                 onClick={() => setProcessingMode('manual')}
-                className={processingMode === 'manual' ? 'bg-sky-400 text-black font-semibold' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}
+                className={`flex-1 sm:flex-none text-sm sm:text-base ${processingMode === 'manual' ? 'bg-sky-400 text-black font-semibold' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}`}
               >
                 Manual Selection
               </Button>
               <Button
                 variant={processingMode === 'auto' ? 'default' : 'outline'}
                 onClick={() => setProcessingMode('auto')}
-                className={processingMode === 'auto' ? 'bg-sky-400 text-black font-semibold' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}
+                className={`flex-1 sm:flex-none text-sm sm:text-base ${processingMode === 'auto' ? 'bg-sky-400 text-black font-semibold' : 'bg-transparent border-slate-500 text-white hover:bg-slate-700'}`}
               >
                 Auto Selection (AI)
               </Button>
@@ -887,15 +888,15 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
               <video
                 ref={videoRef}
                 src={videoUrl}
-                className="w-full max-h-[400px] object-contain"
+                className="w-full max-h-[300px] sm:max-h-[400px] md:max-h-[500px] object-contain"
                 onLoadedMetadata={handleVideoLoaded}
               />
             </div>
 
             {processingMode === 'manual' && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <span className="text-sky-100 text-sm w-20 font-medium">Frame:</span>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+                  <span className="text-sky-100 text-xs sm:text-sm font-medium w-full sm:w-20">Frame:</span>
                   <Slider
                     value={[currentFrameIndex]}
                     max={totalFrames - 1}
@@ -903,30 +904,30 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
                     onValueChange={(value) => seekToFrame(value[0])}
                     className="flex-1 [&_[data-slot=track]]:bg-slate-600 [&_[data-slot=range]]:bg-sky-400 [&_[data-slot=thumb]]:bg-white [&_[data-slot=thumb]]:border-sky-500 [&>span:first-child]:bg-slate-600 [&>span:first-child>span]:bg-sky-400 [&>span:last-child]:bg-white [&>span:last-child]:border-sky-500"
                   />
-                  <span className="text-white text-sm w-24 text-right font-medium">
+                  <span className="text-white text-xs sm:text-sm w-full sm:w-24 text-right font-medium">
                     {currentFrameIndex}/{totalFrames}
                   </span>
                 </div>
 
-                <div className="flex justify-center gap-4">
-                  <Button variant="outline" size="sm" className="bg-transparent border-slate-500 text-white hover:bg-slate-700" onClick={() => seekToFrame(Math.max(0, currentFrameIndex - 10))}>
-                    <SkipBack className="w-4 h-4" />
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none bg-transparent border-slate-500 text-white text-xs sm:text-sm hover:bg-slate-700" onClick={() => seekToFrame(Math.max(0, currentFrameIndex - 10))}>
+                    <SkipBack className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
-                  <Button variant="outline" size="sm" className="bg-transparent border-slate-500 text-white hover:bg-slate-700" onClick={() => seekToFrame(Math.max(0, currentFrameIndex - 1))}>
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none bg-transparent border-slate-500 text-white text-xs sm:text-sm hover:bg-slate-700" onClick={() => seekToFrame(Math.max(0, currentFrameIndex - 1))}>
                     -1
                   </Button>
                   <Button 
-                    className="bg-sky-400 hover:bg-sky-500 text-black font-semibold"
+                    className="flex-1 sm:flex-none bg-sky-400 hover:bg-sky-500 text-black font-semibold text-xs sm:text-sm"
                     onClick={captureFrame}
                   >
-                    <Camera className="w-4 h-4 mr-2" />
+                    <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     Capture Frame
                   </Button>
-                  <Button variant="outline" size="sm" className="bg-transparent border-slate-500 text-white hover:bg-slate-700" onClick={() => seekToFrame(Math.min(totalFrames - 1, currentFrameIndex + 1))}>
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none bg-transparent border-slate-500 text-white text-xs sm:text-sm hover:bg-slate-700" onClick={() => seekToFrame(Math.min(totalFrames - 1, currentFrameIndex + 1))}>
                     +1
                   </Button>
-                  <Button variant="outline" size="sm" className="bg-transparent border-slate-500 text-white hover:bg-slate-700" onClick={() => seekToFrame(Math.min(totalFrames - 1, currentFrameIndex + 10))}>
-                    <SkipForward className="w-4 h-4" />
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none bg-transparent border-slate-500 text-white text-xs sm:text-sm hover:bg-slate-700" onClick={() => seekToFrame(Math.min(totalFrames - 1, currentFrameIndex + 10))}>
+                    <SkipForward className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </div>
               </div>
@@ -955,21 +956,21 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
                   <Progress value={processingProgress} className="w-full h-2 bg-slate-700 [&>div]:bg-sky-400" />
                 )}
                 {qualityMetrics && (
-                  <div className="grid grid-cols-4 gap-4 mt-4">
-                    <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
-                      <div className="text-2xl font-bold text-sky-400">{qualityMetrics.sharpness.toFixed(0)}</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-4">
+                    <div className="bg-slate-800 p-2 sm:p-3 rounded-lg border border-slate-700">
+                      <div className="text-lg sm:text-2xl font-bold text-sky-400">{qualityMetrics.sharpness.toFixed(0)}</div>
                       <div className="text-xs text-sky-100">Sharpness</div>
                     </div>
-                    <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
-                      <div className="text-2xl font-bold text-green-400">{qualityMetrics.contrast.toFixed(0)}</div>
+                    <div className="bg-slate-800 p-2 sm:p-3 rounded-lg border border-slate-700">
+                      <div className="text-lg sm:text-2xl font-bold text-green-400">{qualityMetrics.contrast.toFixed(0)}</div>
                       <div className="text-xs text-sky-100">Contrast</div>
                     </div>
-                    <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
-                      <div className="text-2xl font-bold text-yellow-400">{qualityMetrics.brightness.toFixed(0)}</div>
+                    <div className="bg-slate-800 p-2 sm:p-3 rounded-lg border border-slate-700">
+                      <div className="text-lg sm:text-2xl font-bold text-yellow-400">{qualityMetrics.brightness.toFixed(0)}</div>
                       <div className="text-xs text-sky-100">Brightness</div>
                     </div>
-                    <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
-                      <div className="text-2xl font-bold text-red-400">{qualityMetrics.glare.toFixed(0)}</div>
+                    <div className="bg-slate-800 p-2 sm:p-3 rounded-lg border border-slate-700">
+                      <div className="text-lg sm:text-2xl font-bold text-red-400">{qualityMetrics.glare.toFixed(0)}</div>
                       <div className="text-xs text-sky-100">Glare</div>
                     </div>
                   </div>
@@ -981,13 +982,13 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
 
         {/* Step: Crop Adjustment */}
         {step === 'crop' && currentFrame && (
-          <div className="space-y-6">
-            <p className="text-center text-sky-100 font-medium">
+          <div className="space-y-4 sm:space-y-6">
+            <p className="text-center text-sky-100 font-medium text-sm sm:text-base">
               Adjust the circular crop area. Drag to move, drag the edge to resize.
             </p>
 
-            <div className="flex justify-center">
-              <div className="relative inline-block border-2 border-sky-500 rounded-lg overflow-hidden">
+            <div className="flex justify-center overflow-x-auto">
+              <div className="relative inline-block border-2 border-sky-500 rounded-lg overflow-hidden max-w-[90vw] sm:max-w-[500px]">
                 <canvas
                   ref={cropCanvasRef}
                   className="cursor-crosshair"
@@ -1003,20 +1004,20 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
               </div>
             </div>
 
-            <div className="flex justify-center gap-4">
-              <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                <p className="text-xs text-sky-100 mb-2 font-medium">Cropped Preview</p>
-                <canvas ref={previewCroppedRef} className="rounded-lg border border-slate-600" />
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+              <div className="bg-slate-800 p-3 sm:p-4 rounded-xl border border-slate-700">
+                <p className="text-xs sm:text-sm text-sky-100 mb-2 font-medium">Cropped Preview</p>
+                <canvas ref={previewCroppedRef} className="rounded-lg border border-slate-600 max-w-[200px]" />
               </div>
             </div>
 
-            <div className="flex justify-center gap-4">
-              <Button variant="outline" className="bg-transparent border-slate-500 text-white hover:bg-slate-700" onClick={resetCropToAuto}>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+              <Button variant="outline" className="flex-1 sm:flex-none bg-transparent border-slate-500 text-white text-sm hover:bg-slate-700" onClick={resetCropToAuto}>
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Reset to Auto
               </Button>
               <Button 
-                className="bg-sky-400 hover:bg-sky-500 text-black font-semibold"
+                className="flex-1 sm:flex-none bg-sky-400 hover:bg-sky-500 text-black font-semibold text-sm"
                 onClick={processAndEnhance}
               >
                 <Check className="w-4 h-4 mr-2" />
@@ -1028,11 +1029,11 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
 
         {/* Step: Processing */}
         {step === 'process' && (
-          <div className="space-y-6 py-8">
+          <div className="space-y-4 sm:space-y-6 py-6 sm:py-8">
             <div className="text-center">
-              <Loader2 className="w-16 h-16 animate-spin text-sky-400 mx-auto mb-4" />
-              <p className="text-xl font-bold text-white mb-2">{processingStage}</p>
-              <p className="text-sky-100">Enhancing your fundus image...</p>
+              <Loader2 className="w-12 h-12 sm:w-16 sm:h-16 animate-spin text-sky-400 mx-auto mb-3 sm:mb-4" />
+              <p className="text-lg sm:text-xl font-bold text-white mb-2">{processingStage}</p>
+              <p className="text-sm sm:text-base text-sky-100">Enhancing your fundus image...</p>
             </div>
             <Progress value={processingProgress} className="w-full h-2 bg-slate-700 [&>div]:bg-sky-400" />
           </div>
@@ -1040,20 +1041,20 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
 
         {/* Step: Result */}
         {step === 'result' && enhancedFrame && (
-          <div className="space-y-6">
-            <div className="flex justify-center">
-              <div className="bg-black p-4 rounded-xl">
-                <canvas ref={resultCanvasRef} className="rounded-lg" />
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex justify-center overflow-x-auto">
+              <div className="bg-black p-3 sm:p-4 rounded-xl">
+                <canvas ref={resultCanvasRef} className="rounded-lg max-w-[300px] sm:max-w-[400px]" />
               </div>
             </div>
 
-            <div className="flex justify-center gap-4">
-              <Button variant="outline" className="bg-transparent border-slate-500 text-white hover:bg-slate-700" onClick={() => setStep('crop')}>
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+              <Button variant="outline" className="flex-1 sm:flex-none bg-transparent border-slate-500 text-white text-sm hover:bg-slate-700" onClick={() => setStep('crop')}>
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Adjust Crop
               </Button>
               <Button 
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                className="flex-1 sm:flex-none bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm"
                 onClick={useExtractedImage}
               >
                 <Check className="w-4 h-4 mr-2" />
@@ -1069,8 +1070,8 @@ export const FundusVideoExtractor = ({ open, onClose, onImageExtracted }: Fundus
           </Alert>
         )}
 
-        <div className="flex justify-end gap-4 mt-4 pt-4 border-t border-slate-700">
-          <Button variant="outline" className="bg-transparent border-slate-500 text-white hover:bg-slate-700" onClick={onClose}>
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 mt-4 pt-4 border-t border-slate-700">
+          <Button variant="outline" className="w-full sm:w-auto bg-transparent border-slate-500 text-white hover:bg-slate-700 text-sm" onClick={onClose}>
             <X className="w-4 h-4 mr-2" />
             Cancel
           </Button>
