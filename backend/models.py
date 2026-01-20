@@ -44,14 +44,14 @@ def predict_eye_stroke(img_path, model_path="models/eye_stroke.h5", class_names=
     # ---------------------------
     # Map to scaled value
     # ---------------------------
-    if predicted_class == "NORMAL":
-      return 0.1
-    elif predicted_class == "RAO":
-      return 1.0
-    elif predicted_class == "CRVO":
-      return 0.8
-    elif predicted_class == "BRVO":
-      return 0.5
+    if strokeResults.retinal_occlusion_prob  == 0.1:
+      return "Normal"
+    elif strokeResults.retinal_occlusion_prob  ==  1.0:
+      return  "RAO"
+    elif strokeResults.retinal_occlusion_prob  == 0.8:
+      return  "CRVO"
+    elif strokeResults.retinal_occlusion_prob  == 0.5:
+      return  "BRVO"
     else:
       return 0
 
