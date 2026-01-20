@@ -129,34 +129,34 @@ const Login = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Side - Gradient Panel with Medical Images */}
-      <div ref={logoRef} className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-white via-sky-100 to-cyan-200 relative overflow-hidden items-end justify-start p-12">
+      <div ref={logoRef} className="hidden lg:flex lg:w-1/2 bg-[#0a0e1a] relative overflow-hidden items-end justify-start p-12">
         {/* Doctor Image */}
         <div className="absolute inset-0">
-          <img src="/src/assets/loginpage.png" alt="Medical Professional" className="w-full h-full object-cover opacity-90" />
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-sky-100/50 to-cyan-200/60"></div>
+          <img src="/src/assets/doctor.jpeg" alt="Medical Professional" className="w-full h-full object-cover opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a0e1a]/30 via-[#0f1419]/20 to-[#1a2332]/20"></div>
         </div>
 
         {/* Animated flowing lines */}
-        <div className="absolute inset-0 opacity-20">
-          <div ref={el => linesRef.current[0] = el} className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-sky-500 to-transparent"></div>
-          <div ref={el => linesRef.current[1] = el} className="absolute top-20 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
-          <div ref={el => linesRef.current[2] = el} className="absolute top-40 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
+        <div className="absolute inset-0 opacity-5">
+          <div ref={el => linesRef.current[0] = el} className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-sky-400 to-transparent"></div>
+          <div ref={el => linesRef.current[1] = el} className="absolute top-20 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sky-400 to-transparent"></div>
+          <div ref={el => linesRef.current[2] = el} className="absolute top-40 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sky-400 to-transparent"></div>
           <div ref={el => linesRef.current[3] = el} className="absolute top-60 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-sky-400 to-transparent"></div>
         </div>
 
         {/* Content - Bottom Left */}
         <div ref={headingRef} className="relative z-10 max-w-lg mb-8">
-          <h1 className="text-[3.5rem] leading-[1.1] font-light text-slate-800 mb-6 tracking-wide" style={{ fontFamily: "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif" }}>
-            Your <span className="font-semibold text-sky-600">path</span> to <span className="font-semibold text-cyan-500">health</span>
+          <h1 className="text-[3.5rem] leading-[1.1] font-light text-white mb-6 tracking-wide" style={{ fontFamily: "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif" }}>
+            Your <span className="font-semibold text-sky-400">path</span> to <span className="font-semibold text-sky-400">health</span>
           </h1>
-          <p className="text-slate-600 text-lg leading-relaxed font-light">
+          <p className="text-slate-400 text-lg leading-relaxed font-light">
             Join NeuroLens and revolutionize neurological diagnostics with cutting-edge AI technology.
           </p>
         </div>
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-black relative">
+      <div className="flex-1 flex items-center justify-center p-8 bg-[#0a0e1a] relative">
         <Card ref={cardRef} className="w-full max-w-md bg-transparent border-none shadow-none" style={{ fontFamily: "'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif" }}>
           <CardHeader className="space-y-4 mb-8">
             <CardTitle className="text-[2.5rem] font-light text-white text-center lg:text-left tracking-wide leading-tight">
