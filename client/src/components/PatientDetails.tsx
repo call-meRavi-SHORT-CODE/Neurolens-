@@ -180,37 +180,64 @@ export const PatientDetails = ({ patientId, onBack, onPatientSelect }: PatientDe
             filteredPatients.map((patient) => (
               <div 
                 key={patient.id} 
-                className="bg-[#0f1419] hover:bg-[#1a2332] transition-colors cursor-pointer rounded-xl p-5 flex items-center justify-between"
+                className="bg-[#0f1419] hover:bg-[#1a2332] transition-colors cursor-pointer rounded-xl p-3 sm:p-5"
                 onClick={() => handlePatientClick(patient)}
               >
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="w-12 h-12 rounded-full bg-sky-400/20 flex items-center justify-center flex-shrink-0">
-                    <User className="w-6 h-6 text-sky-400" />
+                {/* Mobile Layout */}
+                <div className="sm:hidden space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-sky-400/20 flex items-center justify-center flex-shrink-0">
+                      <User className="w-5 h-5 text-sky-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-white text-sm mb-1 truncate">{patient.name}</h3>
+                      <p className="text-xs text-sky-400 truncate">MRN: {patient.mrn}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-white text-base mb-1">{patient.name}</h3>
-                    <p className="text-sm text-sky-400">MRN: {patient.mrn}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
+                  <div className="grid grid-cols-2 gap-2 pl-13">
+                    {patient.phone && (
+                      <p className="text-xs text-slate-300 truncate"><span className="text-slate-500">Phone:</span> {patient.phone}</p>
+                    )}
                     {getAge(patient) && (
-                      <Badge className="bg-sky-500/10 text-sky-400 border-sky-500/30 font-medium px-3">
-                        {getAge(patient)} YEARS
-                      </Badge>
+                      <p className="text-xs text-slate-300"><span className="text-slate-500">Age:</span> {getAge(patient)} yrs</p>
                     )}
                     {patient.gender && (
-                      <Badge className="bg-sky-500/10 text-sky-400 border-sky-500/30 font-medium uppercase px-3">
-                        {patient.gender}
-                      </Badge>
+                      <p className="text-xs text-slate-300 capitalize"><span className="text-slate-500">Gender:</span> {patient.gender}</p>
                     )}
                   </div>
                 </div>
-                <div className="text-right ml-6">
-                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Last Visit</p>
-                  <p className="text-sm text-white font-medium">
-                    {patient.created_at 
-                      ? new Date(patient.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                      : 'Oct 12, 2023'}
-                  </p>
+
+                {/* Desktop Layout */}
+                <div className="hidden sm:flex items-center justify-between">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="w-12 h-12 rounded-full bg-sky-400/20 flex items-center justify-center flex-shrink-0">
+                      <User className="w-6 h-6 text-sky-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-white text-base mb-1 truncate">{patient.name}</h3>
+                      <p className="text-sm text-sky-400 truncate">MRN: {patient.mrn}</p>
+                    </div>
+                    <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+                      {getAge(patient) && (
+                        <Badge className="bg-sky-500/10 text-sky-400 border-sky-500/30 font-medium px-3 whitespace-nowrap">
+                          {getAge(patient)} YEARS
+                        </Badge>
+                      )}
+                      {patient.gender && (
+                        <Badge className="bg-sky-500/10 text-sky-400 border-sky-500/30 font-medium uppercase px-3 whitespace-nowrap">
+                          {patient.gender}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right ml-6 flex-shrink-0">
+                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Last Visit</p>
+                    <p className="text-sm text-white font-medium">
+                      {patient.created_at 
+                        ? new Date(patient.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : 'Oct 12, 2023'}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))
